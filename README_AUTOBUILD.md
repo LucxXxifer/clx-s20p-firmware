@@ -2,7 +2,7 @@
 
 本分支基於 dqsq2e2 的 `26.10.17_15.32.58_S20P-WIFI-YES`，固定原 wrapper `d46704afb327fce99e7d770c08fc46b48d5bb1b7` 的流程，以及 chasey `03eb30617955519e35845838c6255ebe687eb717`／Linux 6.12.112。原作者 README、全部 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置保留。
 
-原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 記錄本次重新解析的固定來源，不能冒充原10/17完整輸入。新 kernel ABI、build fingerprint 及 repository signing key 正常重建，絕不冒用舊 hash。
+原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 記錄本次重新解析的固定來源，不能還原10/17版本的完整輸入。新 kernel ABI、build fingerprint 及 repository signing key 正常重建，絕不套用舊 hash。
 
 ## 觸發方式
 
@@ -24,7 +24,7 @@
 
 詳細可選清單見 [ci/mobile-usb-packages.txt](ci/mobile-usb-packages.txt)，各裝置證據與限制見 [docs/mobile-usb.md](docs/mobile-usb.md)。同批編好不代表所有型號都已實物驗收。介面、APN、PIN、模式及供電仍要按實物確認；本流程不修改模組韌體、不自動切模式或啟動撥號服務。
 
-不包含私人 ArkBridge 設定、ShellCrash 訂閱、AdGuardHome 設定、Tailscale identity、factory、GPT或 SSH 私鑰。這些由後續私密遷移程序恢復。
+不包含私人設定、訂閱、factory、GPT或 SSH 私鑰。
 
 ## 自動檢查與產物
 

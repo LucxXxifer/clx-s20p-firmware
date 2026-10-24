@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "purpose": "Exact public GnuTLS known-answer test vectors in ELF libraries; never a path exemption.",
+  "purpose": "Exact public upstream crypto constants and non-key documentation placeholders; never a path exemption.",
   "source": {
     "url": "https://raw.githubusercontent.com/gnutls/gnutls/8a36455fd75ce76391cfc00c53213d8b0e1648da/lib/crypto-selftests-pk.c",
     "sha256": "fce9355507865b53ba0b5c5587932b9d8519be2cd195650b0d9ff69ac2c335c7",
@@ -68,6 +68,46 @@
       "symbol": "eddsa_ed448_privkey",
       "bytes": 156,
       "sha256": "19eb40f0c2c341a16b99274151649822a7611744d99cf29ac8e1365d74a0a8bc"
+    }
+  ],
+  "go_samples": [
+    {
+      "symbol": "cloudflared.helloKey EC PEM",
+      "purpose": "Upstream public sample Hello Server certificate key; not user identity or a test vector.",
+      "bytes": 287,
+      "sha256": "17ac4c2ca3deb87202cd2c101d4da9d4f4c0ec3d51a0381729329102b28e61a4",
+      "source": {
+        "url": "https://raw.githubusercontent.com/cloudflare/cloudflared/fe70e951a3c52d92abf9f6c4248e32937b2f42fc/tlsconfig/hello_ca.go",
+        "sha256": "865380d2cd64b66a6839fc6ab6c72a4b7f5ddef48bee9174b02e9ec97070af2c",
+        "package_recipe": "https://github.com/immortalwrt/packages/blob/d200499b31751dc5c72905f37a747712f009f155/net/cloudflared/Makefile",
+        "archive_sha256": "04cd85af52c2c012f08212c878b4c403eadf410865f2356a80f361d475d2fc92"
+      }
+    }
+  ],
+  "placeholders": [
+    {
+      "symbol": "openvpn_yaml_example",
+      "bytes": 80,
+      "sha256": "35aa83261724b30575bc53e4d26047d04af1a7767b635dad3ba11ae009ce8451",
+      "source": {
+        "url": "https://github.com/kenzok8/small-package/blob/a5fb03c51b55e0627c55ef9fe158003119a6f2bc/luci-app-openclash/root/usr/share/openclash/res/default.yaml",
+        "git_blob_sha1": "677a4d3cb20d9ab21e43dd0eff30e2e162d16c80",
+        "asset_bytes": 108819,
+        "asset_sha256": "6158556e497a51653c14ebbbb92d9a416e3b26a0e65caa8cecf44a13cde2cc47",
+        "offset": 52646
+      }
+    },
+    {
+      "symbol": "openvpn_codemirror_snippet",
+      "bytes": 65,
+      "sha256": "cb663ca5e1a30fb9fca4a4414bc16d762d58fc795350cf37d1eed61d57ee4a83",
+      "source": {
+        "url": "https://github.com/kenzok8/small-package/blob/a5fb03c51b55e0627c55ef9fe158003119a6f2bc/luci-app-openclash/root/www/luci-static/resources/openclash/js/cm6.min.js",
+        "git_blob_sha1": "90db2ebd900b37e0ab7bc349012fbd9e7204d2ae",
+        "asset_bytes": 510362,
+        "asset_sha256": "d035bbcbf51e4f1c31f23630d5575436a583715abda0300332815570f2bf8226",
+        "offset": 489938
+      }
     }
   ]
 }

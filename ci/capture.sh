@@ -41,9 +41,13 @@ PRIVATE = re.compile(rb"-----BEGIN (?:[A-Z0-9 ]* )?PRIVATE KEY-----")
 PRIVATE_NAMES = re.compile(r"^(?:private[-_]key(?:\..*)?|key-build|"
                            r"id_(?:rsa|dsa|ecdsa|ed25519)(?:\.pem)?|"
                            r"dropbear_.*_host_key|ssh_host_.*_key)$")
-PUBLIC_TEST_KEYS = json.loads(Path(sys.argv[3]).read_text())["vectors"]
+PUBLIC_KEY_POLICY = json.loads(Path(sys.argv[3]).read_text())
+PUBLIC_TEST_KEYS = PUBLIC_KEY_POLICY["vectors"]
 PUBLIC_TEST_HASHES = {entry["sha256"]: entry["bytes"] for entry in PUBLIC_TEST_KEYS}
-MAX_PUBLIC_TEST_KEY = max(PUBLIC_TEST_HASHES.values())
+PUBLIC_GO_SAMPLES = PUBLIC_KEY_POLICY.get("go_samples", [])
+PUBLIC_PLACEHOLDERS = PUBLIC_KEY_POLICY.get("placeholders", [])
+MAX_PUBLIC_TEST_KEY = max([*PUBLIC_TEST_HASHES.values(),
+                           *[entry["bytes"] for entry in PUBLIC_GO_SAMPLES + PUBLIC_PLACEHOLDERS]])
 
 
 def elf_readonly_ranges(stream, file_size):
@@ -59,7 +63,28 @@ def elf_readonly_ranges(stream, file_size):
     kind, _, version = struct.unpack_from(order + "HHI", header, 16)
     ehsize, phentsize, phnum = struct.unpack_from(order + "HHH", header, 52 if is64 else 40)
     phoff = struct.unpack_from(order + ("Q" if is64 else "I"), header, 32 if is64 else 28)[0]
-    if (kind not in (2, 3) or version != 1 or ehsize != size or phentsize != phsize
+    if version != 1 or ehsize != size:
+        return []
+    if kind == 1:
+        # ET_REL kernel modules have section headers instead of PT_LOAD.
+        shoff = struct.unpack_from(order + ("Q" if is64 else "I"), header, 40 if is64 else 32)[0]
+        shentsize, shnum = struct.unpack_from(order + "HH", header, 58 if is64 else 46)
+        shsize = 64 if is64 else 40
+        if (shentsize != shsize or not 0 < shnum <= 4096
+                or shoff + shnum * shsize > file_size):
+            return []
+        stream.seek(shoff)
+        ranges = []
+        for _ in range(shnum):
+            entry = struct.unpack(order + ("IIQQQQIIQQ" if is64 else "IIIIIIIIII"), stream.read(shsize))
+            _, stype, flags, _, offset, length, _, _, _, _ = entry
+            if stype == 1:
+                if offset + length > file_size:
+                    return []
+                if flags & 2 and not flags & 1:
+                    ranges.append((offset, offset + length))
+        return ranges
+    if (kind not in (2, 3) or phentsize != phsize
             or not 0 < phnum <= 128 or phoff + phnum * phsize > file_size):
         return []
     stream.seek(phoff)
@@ -94,18 +119,30 @@ def check_publication_file(path):
                 position = stream.tell()
                 offset = position - len(data) + marker.start()
                 stream.seek(offset)
-                candidate = stream.read(MAX_PUBLIC_TEST_KEY + 1).split(b"\0", 1)
+                raw = stream.read(MAX_PUBLIC_TEST_KEY + 1)
+                candidate = raw.split(b"\0", 1)
                 stream.seek(position)
                 value = candidate[0]
                 # Bare parser labels and these exact upstream public known-answer
                 # vectors are compiled constants, not signing/host credentials.
-                # Require the complete NUL-terminated string in read-only PT_LOAD;
-                # never exempt a filename or library wholesale.
+                # C strings require NUL termination in a read-only ELF area.
+                # Go string pools use explicit lengths: only the exact upstream
+                # public sample bytes may use that form, still in read-only ELF.
                 known = (value == marker.group() or
                          PUBLIC_TEST_HASHES.get(hashlib.sha256(value).hexdigest()) == len(value))
-                if (len(candidate) != 2 or not known or
-                        not any(start <= offset and offset + len(value) < end
-                                for start, end in readonly)):
+                c_constant = (len(candidate) == 2 and known and
+                              any(start <= offset and offset + len(value) < end
+                                  for start, end in readonly))
+                go_constant = any(
+                    hashlib.sha256(raw[:entry["bytes"]]).hexdigest() == entry["sha256"] and
+                    any(start <= offset and offset + entry["bytes"] <= end for start, end in readonly)
+                    for entry in PUBLIC_GO_SAMPLES)
+                # These exact upstream editor/docs snippets contain ellipses,
+                # never a real key body. No arbitrary malformed PEM is allowed.
+                placeholder = any(
+                    hashlib.sha256(raw[:entry["bytes"]]).hexdigest() == entry["sha256"]
+                    for entry in PUBLIC_PLACEHOLDERS)
+                if not c_constant and not go_constant and not placeholder:
                     fail("private key content in publication: " + str(path))
             if not chunk:
                 break
@@ -113,9 +150,17 @@ def check_publication_file(path):
 
 
 def audit(output):
+    failures = []
     for path in output.rglob("*"):
         if path.is_file() and not path.is_symlink():
-            check_publication_file(path)
+            try:
+                check_publication_file(path)
+            except RuntimeError as error:
+                failures.append(str(error))
+    if failures:
+        # Keep the publication blocked, but diagnose all files in one build.
+        fail("publication audit rejected " + str(len(failures)) + " files:\n" +
+             "\n".join(failures[:20]))
 
 
 def copy_file(source, destination):

@@ -1,0 +1,16 @@
+{
+  "notice": "Public Cloudflare cloudflared sample Hello Server key copied verbatim from tlsconfig/hello_ca.go. Distributed under Apache License 2.0. This published sample key is not an operator credential or a self-test vector. The full source Go raw string is preserved, including the EC PARAMETERS block and leading newline.",
+  "source": {
+    "repository": "https://github.com/cloudflare/cloudflared",
+    "tag": "2026.8.3",
+    "annotated_tag_object": "e3abe53bab3ffaecd85e5c6a7ccd15d2730e64b1",
+    "commit": "fe70e951a3c52d92abf9f6c4248e32937b2f42fc",
+    "path": "tlsconfig/hello_ca.go",
+    "url": "https://raw.githubusercontent.com/cloudflare/cloudflared/fe70e951a3c52d92abf9f6c4248e32937b2f42fc/tlsconfig/hello_ca.go",
+    "sha256": "865380d2cd64b66a6839fc6ab6c72a4b7f5ddef48bee9174b02e9ec97070af2c",
+    "license": "Apache-2.0",
+    "license_url": "https://raw.githubusercontent.com/cloudflare/cloudflared/fe70e951a3c52d92abf9f6c4248e32937b2f42fc/LICENSE",
+    "license_sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"
+  },
+  "helloKey": "\n-----BEGIN EC PARAMETERS-----\nBgUrgQQAIg==\n-----END EC PARAMETERS-----\n-----BEGIN EC PRIVATE KEY-----\nMIGkAgEBBDBGGfwhIJdiUiJUVIItqJjEIMmlXxsMa8TQeer47+g+cIZ466rgg8EK\n+Mdn6BY48GCgBwYFK4EEACKhZANiAASW//A9iDbPKg3OLkn7yJqLer32g9I5lBKR\ntPc/zBubQLLz9lAaYI6AOQiJXhGr5JkKmQfi1sYHK5rJITPFy4W8Et4hHLdazDZH\nWnEd+TStQABFUjrhtqXPWmGKcly0pOE=\n-----END EC PRIVATE KEY-----"
+}

@@ -366,6 +366,115 @@ else:
             b"\0-----BEGIN RSA PRIVATE KEY-----\0-----END RSA PRIVATE KEY-----\0"))
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    @staticmethod
+    def relocatable_with_data(data, flags=2):
+        # Kernel modules use allocated read-only sections, with no program table.
+        return (b"\x7fELF\x02\x01\x01" + b"\0" * 9
+                + struct.pack("<HHIQQQIHHHHHH", 1, 183, 1, 0, 0, 64, 0, 64, 0, 0, 64, 2, 0)
+                + b"\0" * 64
+                + struct.pack("<IIQQQQIIQQ", 0, 1, flags, 0, 192, len(data), 0, 0, 1, 0)
+                + data)
+
+    def test_kernel_module_readonly_parser_label_is_accepted(self):
+        result = self.audit_file("wifi.ko", self.relocatable_with_data(
+            b"-----BEGIN EC PRIVATE KEY-----\0"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_kernel_module_writable_parser_label_is_rejected(self):
+        result = self.audit_file("wifi.ko", self.relocatable_with_data(
+            b"-----BEGIN EC PRIVATE KEY-----\0", flags=3))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_kernel_module_unknown_key_is_rejected(self):
+        result = self.audit_file("wifi.ko", self.relocatable_with_data(
+            b"-----BEGIN EC PRIVATE KEY-----\nUNKNOWN\n-----END EC PRIVATE KEY-----\0"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    @staticmethod
+    def hello_sample():
+        fixture = REPO / "ci/tests/fixtures/cloudflared-public-hello-key.json"
+        value = json.loads(fixture.read_text())["helloKey"]
+        return value[value.index("-----BEGIN EC PRIVATE KEY-----"):].encode()
+
+    def test_exact_public_hello_key_in_go_string_pool_is_accepted(self):
+        result = self.audit_file("hello", self.elf_with_data(self.hello_sample() + b"GC cycle"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_public_go_sample_manifest_matches_source_fixture(self):
+        fixture = json.loads((REPO / "ci/tests/fixtures/cloudflared-public-hello-key.json").read_text())
+        policy = json.loads((REPO / "ci/public-test-keys.json").read_text())["go_samples"]
+        self.assertEqual(len(policy), 1)
+        self.assertEqual(policy[0]["source"]["url"], fixture["source"]["url"])
+        self.assertEqual(policy[0]["source"]["sha256"], fixture["source"]["sha256"])
+        self.assertEqual(policy[0]["bytes"], len(self.hello_sample()))
+        self.assertEqual(policy[0]["sha256"], hashlib.sha256(self.hello_sample()).hexdigest())
+
+    def test_public_go_sample_across_scan_boundary_is_accepted(self):
+        value = self.hello_sample()
+        data = b"\0" * (1024 * 1024 - 120 - 15) + value + b"GC cycle"
+        result = self.audit_file("hello", self.elf_with_data(data))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_public_go_sample_in_writable_segment_is_rejected(self):
+        result = self.audit_file("hello", self.elf_with_data(self.hello_sample() + b"GC cycle", flags=6))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_modified_hello_key_in_go_string_pool_is_rejected(self):
+        value = bytearray(self.hello_sample())
+        first_body_byte = value.index(b"\n") + 1
+        value[first_body_byte] = ord("N") if value[first_body_byte] != ord("N") else ord("M")
+        result = self.audit_file("hello", self.elf_with_data(value + b"GC cycle"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_public_hello_key_in_non_elf_file_is_rejected(self):
+        result = self.audit_file("hello.pem", self.hello_sample())
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_unknown_key_after_go_sample_is_rejected(self):
+        result = self.audit_file("hello", self.elf_with_data(
+            self.hello_sample() + b"-----BEGIN PRIVATE KEY-----\nUNKNOWN\0"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    @staticmethod
+    def public_placeholders():
+        return json.loads((REPO / "ci/tests/fixtures/openclash-public-placeholders.json").read_text())["vectors"]
+
+    def test_exact_public_documentation_placeholders_are_accepted(self):
+        value = b"\n".join(e["literal"].encode() for e in self.public_placeholders())
+        result = self.audit_file("documentation.txt", value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_public_placeholder_policy_matches_source_fixture(self):
+        policy = json.loads((REPO / "ci/public-test-keys.json").read_text())["placeholders"]
+        self.assertEqual(len(policy), 2)
+        for expected, fixture in zip(policy, self.public_placeholders()):
+            self.assertEqual(expected["source"], fixture["source"])
+            self.assertEqual(expected["bytes"], len(fixture["literal"].encode()))
+            self.assertEqual(expected["sha256"], hashlib.sha256(fixture["literal"].encode()).hexdigest())
+
+    def test_placeholder_across_scan_boundary_is_accepted(self):
+        value = self.public_placeholders()[0]["literal"].encode()
+        result = self.audit_file("documentation.txt", b"x" * (1024 * 1024 - 15) + value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_replacing_placeholder_body_with_key_material_is_rejected(self):
+        value = self.public_placeholders()[0]["literal"].replace("MIIE...example", "QUJDREVGR0g=").encode()
+        result = self.audit_file("documentation.txt", value)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_unknown_key_after_exact_placeholder_is_rejected(self):
+        value = self.public_placeholders()[0]["literal"].encode()
+        result = self.audit_file("documentation.txt", value + b"-----BEGIN PRIVATE KEY-----\nUNKNOWN")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
     def test_elf_private_key_label_split_across_scan_boundary_is_safe(self):
         data = b"\0" * (1024 * 1024 - 120 - 15) + b"-----BEGIN PRIVATE KEY-----\0"
         result = self.audit_file("parser.so", self.elf_with_data(data))
@@ -457,6 +566,17 @@ else:
                                 capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("private", result.stderr)
+
+    def test_audit_reports_multiple_unsafe_files_and_blocks_upload(self):
+        self.output.mkdir()
+        for name in ("first.pem", "second.pem"):
+            (self.output / name).write_bytes(b"-----BEGIN PRIVATE KEY-----\nUNKNOWN\n")
+        result = subprocess.run(["bash", str(CAPTURE), "--audit-output", str(self.output)],
+                                capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("first.pem", result.stderr)
+        self.assertIn("second.pem", result.stderr)
+        self.assertFalse((self.output / "SHA256SUMS").exists())
 
     def test_private_material_cannot_disguise_as_public_key(self):
         (self.build / "public-key.pem").write_text(

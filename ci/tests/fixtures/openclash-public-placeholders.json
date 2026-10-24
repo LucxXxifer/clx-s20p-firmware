@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "purpose": "Exact public OpenClash OpenVPN placeholders with no valid private-key body; never a filename or asset exemption.",
+  "source_repository": "https://github.com/kenzok8/small-package",
+  "source_commit": "a5fb03c51b55e0627c55ef9fe158003119a6f2bc",
+  "package_version": "0.48.002",
+  "license_notice": {
+    "repository_license": "Apache-2.0",
+    "license_url": "https://github.com/kenzok8/small-package/blob/a5fb03c51b55e0627c55ef9fe158003119a6f2bc/LICENSE",
+    "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "note": "The locked repository distributes an Apache-2.0 root LICENSE. These asset files contain no separate license notice. Only two short public documentation placeholder literals are reproduced; no bundled editor code is copied."
+  },
+  "vectors": [
+    {
+      "symbol": "openvpn_yaml_example",
+      "literal": "-----BEGIN PRIVATE KEY-----\n      MIIE...example\n      -----END PRIVATE KEY-----",
+      "bytes": 80,
+      "sha256": "35aa83261724b30575bc53e4d26047d04af1a7767b635dad3ba11ae009ce8451",
+      "source": {
+        "url": "https://github.com/kenzok8/small-package/blob/a5fb03c51b55e0627c55ef9fe158003119a6f2bc/luci-app-openclash/root/usr/share/openclash/res/default.yaml",
+        "git_blob_sha1": "677a4d3cb20d9ab21e43dd0eff30e2e162d16c80",
+        "asset_bytes": 108819,
+        "asset_sha256": "6158556e497a51653c14ebbbb92d9a416e3b26a0e65caa8cecf44a13cde2cc47",
+        "offset": 52646
+      },
+      "image_path": "/usr/share/openclash/res/default.yaml",
+      "body_is_documentation_placeholder": true
+    },
+    {
+      "symbol": "openvpn_codemirror_snippet",
+      "literal": "-----BEGIN PRIVATE KEY-----\n    ...\n    -----END PRIVATE KEY-----",
+      "bytes": 65,
+      "sha256": "cb663ca5e1a30fb9fca4a4414bc16d762d58fc795350cf37d1eed61d57ee4a83",
+      "source": {
+        "url": "https://github.com/kenzok8/small-package/blob/a5fb03c51b55e0627c55ef9fe158003119a6f2bc/luci-app-openclash/root/www/luci-static/resources/openclash/js/cm6.min.js",
+        "git_blob_sha1": "90db2ebd900b37e0ab7bc349012fbd9e7204d2ae",
+        "asset_bytes": 510362,
+        "asset_sha256": "d035bbcbf51e4f1c31f23630d5575436a583715abda0300332815570f2bf8226",
+        "offset": 489938
+      },
+      "image_path": "/www/luci-static/resources/openclash/js/cm6.min.js",
+      "body_is_documentation_placeholder": true
+    }
+  ]
+}

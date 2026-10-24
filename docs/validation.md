@@ -24,8 +24,12 @@
 - 原生APK signed-index／unsigned-payload信任模型在隔離Linux工具上驗證，腐壞payload會拒絕；最終same-build host apk仍由首次完整編譯實際核對。
 - 真Linux非root SquashFS抽取與獨立fakeroot process核對numeric uid/gid、char device metadata通過；沒有放寬image owner/device檢查。
 
+## 首次雲端執行
+
+已建立公開庫 [LucxXxifer/s20p-firmware](https://github.com/LucxXxifer/s20p-firmware)，推送 `094a21009cd98371b6893f34190401d63cefe2e3`，並於2026-10-24 08:45 Asia/Shanghai手動啟動[首次 Actions](https://github.com/LucxXxifer/s20p-firmware/actions/runs/40046525148)。Ubuntu24.04 runner 已通過 checkout 與 focused policy tests，後續完整編譯仍在執行。已從 GitHub 核對 workflow `active`、預設分支 `main` 與每日04:20 Asia/Shanghai排程。
+
 ## 尚待驗證
 
-尚未建立公開GitHub庫、push、dispatch或完整編譯kernel/toolchain/package/image。首輪雲端結果可能因無法還原歷史feeds而進入 `review_required`；必須看實際差異，不能預先批准所有差異。
+尚未完成完整編譯kernel/toolchain/package/image。首輪雲端結果可能因無法還原歷史feeds而進入 `review_required`；必須看實際差異，不能預先批准所有差異。
 
 沒有新ROM成品，因此image保留／same-build feed完整信任鏈尚未在最終產物上執行。沒有開機、USB SuperSpeed／2.5G吞吐、DJI/U20實物、ArkBridge故障切換、Wi-Fi或ER01接替驗收。Git來源固定；部分HTTP動態資產只記錄hash並受recipe／image gate約束，不承諾所有輸入位元重現。

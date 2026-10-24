@@ -1,15 +1,4 @@
-> **S20P 專用每日重建分支**：固定 10/17 的上游基準，保留原 pipeline，新增 HiLink／ipset／ArkBridge Python 依賴。使用說明、限制與驗收見 [README_AUTOBUILD.md](README_AUTOBUILD.md)。原作者說明保留如下。
-
-## 高质量免费交流群
-
-- [加入 IPQ技术讨论群](https://qm.qq.com/q/v7nMhzB4oU)
-- 该群为普通交流群。
-
-## 高质量付费中转站
-
-- [注册高质量付费中转站](https://api.zipimg.cn/register?aff=LMPJPW5QCLPL)
-- [加入 LiBwrt-Ai学习群](https://qm.qq.com/q/HTa7OiWNCU)
-- 该群为 AI 中转站群。
+> **CLX-S20P 專用每日重建分支**：固定 10/17 的上游基準，保留原 pipeline，新增 HiLink／ipset／ArkBridge Python 依賴。使用說明、限制與驗收見 [README_AUTOBUILD.md](README_AUTOBUILD.md)。原作者說明保留如下。
 
 ---
 

@@ -14,7 +14,7 @@ if [[ $(id -u) != 0 && -z ${FAKEROOTKEY:-} ]]; then
     [[ ! -f $state_file ]] || fakeroot_args=(-i "$state_file" "${fakeroot_args[@]}")
     exec fakeroot "${fakeroot_args[@]}" -- bash "$0" "$@"
 fi
-python3 - "$1" "$2" <<'PY'
+python3 - "$1" "$2" "$(dirname -- "${BASH_SOURCE[0]}")/public-test-keys.json" <<'PY'
 import hashlib
 import json
 import os
@@ -41,6 +41,40 @@ PRIVATE = re.compile(rb"-----BEGIN (?:[A-Z0-9 ]* )?PRIVATE KEY-----")
 PRIVATE_NAMES = re.compile(r"^(?:private[-_]key(?:\..*)?|key-build|"
                            r"id_(?:rsa|dsa|ecdsa|ed25519)(?:\.pem)?|"
                            r"dropbear_.*_host_key|ssh_host_.*_key)$")
+PUBLIC_TEST_KEYS = json.loads(Path(sys.argv[3]).read_text())["vectors"]
+PUBLIC_TEST_HASHES = {entry["sha256"]: entry["bytes"] for entry in PUBLIC_TEST_KEYS}
+MAX_PUBLIC_TEST_KEY = max(PUBLIC_TEST_HASHES.values())
+
+
+def elf_readonly_ranges(stream, file_size):
+    header = stream.read(64)
+    if (len(header) < 52 or header[:4] != b"\x7fELF" or header[4] not in (1, 2)
+            or header[5] not in (1, 2) or header[6] != 1):
+        return []
+    order = "<" if header[5] == 1 else ">"
+    is64 = header[4] == 2
+    size, phsize = (64, 56) if is64 else (52, 32)
+    if len(header) < size:
+        return []
+    kind, _, version = struct.unpack_from(order + "HHI", header, 16)
+    ehsize, phentsize, phnum = struct.unpack_from(order + "HHH", header, 52 if is64 else 40)
+    phoff = struct.unpack_from(order + ("Q" if is64 else "I"), header, 32 if is64 else 28)[0]
+    if (kind not in (2, 3) or version != 1 or ehsize != size or phentsize != phsize
+            or not 0 < phnum <= 128 or phoff + phnum * phsize > file_size):
+        return []
+    stream.seek(phoff)
+    ranges = []
+    for _ in range(phnum):
+        entry = struct.unpack(order + ("IIQQQQQQ" if is64 else "IIIIIIII"), stream.read(phsize))
+        if is64:
+            ptype, flags, offset, _, _, filesz, _, _ = entry
+        else:
+            ptype, offset, _, _, filesz, _, flags, _ = entry
+        if offset + filesz > file_size:
+            return []
+        if ptype == 1 and flags & 4 and not flags & 2:
+            ranges.append((offset, offset + filesz))
+    return ranges
 
 
 def check_publication_file(path):
@@ -48,10 +82,33 @@ def check_publication_file(path):
         fail("private key filename in publication: " + str(path))
     tail = b""
     with path.open("rb") as stream:
-        while chunk := stream.read(1024 * 1024):
+        readonly = elf_readonly_ranges(stream, path.stat().st_size)
+        stream.seek(0)
+        while True:
+            chunk = stream.read(1024 * 1024)
             data = tail + chunk
-            if PRIVATE.search(data):
-                fail("private key content in publication: " + str(path))
+            for marker in PRIVATE.finditer(data):
+                if marker.end() == len(data) and chunk:
+                    # Retain the match until its following byte is available.
+                    continue
+                position = stream.tell()
+                offset = position - len(data) + marker.start()
+                stream.seek(offset)
+                candidate = stream.read(MAX_PUBLIC_TEST_KEY + 1).split(b"\0", 1)
+                stream.seek(position)
+                value = candidate[0]
+                # Bare parser labels and these exact upstream public known-answer
+                # vectors are compiled constants, not signing/host credentials.
+                # Require the complete NUL-terminated string in read-only PT_LOAD;
+                # never exempt a filename or library wholesale.
+                known = (value == marker.group() or
+                         PUBLIC_TEST_HASHES.get(hashlib.sha256(value).hexdigest()) == len(value))
+                if (len(candidate) != 2 or not known or
+                        not any(start <= offset and offset + len(value) < end
+                                for start, end in readonly)):
+                    fail("private key content in publication: " + str(path))
+            if not chunk:
+                break
             tail = data[-128:]
 
 
@@ -239,7 +296,20 @@ def verify_feeds(build, output, installed):
             info = json.loads(run([apk, "adbdump", "--format", "json", package])).get("info", {})
             identity = (info.get("name"), info.get("version"))
             expected = identities.get(identity, {})
-            if not expected or any(expected.get(key) != value for key, value in info.items()):
+            # apk-tools 3.0.5 app_mkpkg embeds a 20-byte UID in info.hashes.
+            # app_mkndx replaces it with the SHA256 ADB identity and adds the
+            # APK file size. Native offline fetch below verifies that identity
+            # and every payload; these two hashes are not the same value.
+            package_uid = info.get("hashes")
+            index_identity = expected.get("hashes")
+            if (not isinstance(package_uid, str) or not re.fullmatch(r"[0-9a-f]{40}", package_uid) or
+                    not isinstance(index_identity, str) or not re.fullmatch(r"[0-9a-f]{64}", index_identity) or
+                    "file-size" in info or type(expected.get("file-size")) is not int or
+                    expected["file-size"] != package.stat().st_size):
+                fail("signed index derived metadata differs from APK metadata: " + str(package))
+            package_info = {key: value for key, value in info.items() if key != "hashes"}
+            index_info = {key: value for key, value in expected.items() if key not in {"hashes", "file-size"}}
+            if package_info != index_info:
                 fail("signed index metadata differs from APK metadata: " + str(package))
             found.add(identity)
         if found != set(identities):

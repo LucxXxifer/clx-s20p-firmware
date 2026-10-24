@@ -137,7 +137,18 @@ elif 'verify' in args:
         if arg.endswith('.apk') or pathlib.Path(arg).read_text().startswith('UNTRUSTED'):
             sys.exit(1)
 elif 'adbdump' in args:
-    print(pathlib.Path(args[-1]).read_text())
+    source = pathlib.Path(args[-1])
+    metadata = json.loads(source.read_text())
+    if source.suffix == '.apk':
+        metadata['info'].setdefault('hashes', 'a' * 40)
+    else:
+        for record in metadata['packages']:
+            record.setdefault('hashes', 'b' * 64)
+            for package in source.parent.glob('*.apk'):
+                info = json.loads(package.read_text())['info']
+                if (info['name'], info['version']) == (record['name'], record['version']):
+                    record.setdefault('file-size', package.stat().st_size)
+    print(json.dumps(metadata))
 elif 'fetch' in args:
     import shutil
     dest = pathlib.Path(args[args.index('--output') + 1])
@@ -336,6 +347,109 @@ else:
         self.assertIn("private", result.stderr)
         self.assertFalse((self.output / "SHA256SUMS").exists())
 
+    def audit_file(self, filename, data):
+        self.output.mkdir()
+        (self.output / filename).write_bytes(data)
+        return subprocess.run(["bash", str(CAPTURE), "--audit-output", str(self.output)],
+                              capture_output=True, text=True)
+
+    @staticmethod
+    def elf_with_data(data, flags=4):
+        # One read-only PT_LOAD containing ELF64 constants, as in crypto libraries.
+        return (b"\x7fELF\x02\x01\x01" + b"\0" * 9
+                + struct.pack("<HHIQQQIHHHHHH", 3, 183, 1, 0, 64, 0, 0, 64, 56, 1, 0, 0, 0)
+                + struct.pack("<IIQQQQQQ", 1, flags, 0, 0, 0, 120 + len(data), 120 + len(data), 1)
+                + data)
+
+    def test_elf_private_key_parser_label_is_not_private_key_material(self):
+        result = self.audit_file("parser.so", self.elf_with_data(
+            b"\0-----BEGIN RSA PRIVATE KEY-----\0-----END RSA PRIVATE KEY-----\0"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_elf_private_key_label_split_across_scan_boundary_is_safe(self):
+        data = b"\0" * (1024 * 1024 - 120 - 15) + b"-----BEGIN PRIVATE KEY-----\0"
+        result = self.audit_file("parser.so", self.elf_with_data(data))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_actual_private_key_in_elf_is_rejected(self):
+        result = self.audit_file("parser.so", self.elf_with_data(
+            b"\0-----BEGIN PRIVATE KEY-----\nQUJD\n-----END PRIVATE KEY-----\n\0"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    @staticmethod
+    def public_test_vectors():
+        fixture = REPO / "ci/tests/fixtures/gnutls-public-test-keys.json"
+        return [value.encode() for value in json.loads(fixture.read_text())["vectors"].values()]
+
+    def test_public_vector_policy_matches_pinned_source_fixture(self):
+        policy = json.loads((REPO / "ci/public-test-keys.json").read_text())
+        fixture = json.loads((REPO / "ci/tests/fixtures/gnutls-public-test-keys.json").read_text())
+        self.assertEqual(policy["source"]["url"], fixture["source"])
+        self.assertEqual(len(policy["vectors"]), 12)
+        self.assertEqual({entry["symbol"] for entry in policy["vectors"]}, set(fixture["vectors"]))
+        for entry in policy["vectors"]:
+            value = fixture["vectors"][entry["symbol"]].encode()
+            self.assertEqual(entry["bytes"], len(value))
+            self.assertEqual(entry["sha256"], hashlib.sha256(value).hexdigest())
+
+    def test_exact_public_gnutls_vectors_in_elf_are_accepted(self):
+        result = self.audit_file("crypto.so", self.elf_with_data(
+            b"\0" + b"\0".join(self.public_test_vectors()) + b"\0"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_public_vector_split_across_scan_boundary_is_accepted(self):
+        vector = self.public_test_vectors()[0]
+        data = b"\0" * (1024 * 1024 - 120 - len(vector) // 2) + vector + b"\0"
+        result = self.audit_file("crypto.so", self.elf_with_data(data))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_public_vector_in_writable_segment_is_rejected(self):
+        result = self.audit_file("crypto.so", self.elf_with_data(
+            self.public_test_vectors()[0] + b"\0", flags=6))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_public_vector_appended_outside_load_segment_is_rejected(self):
+        result = self.audit_file("crypto.so", self.elf_with_data(b"\0")
+                                 + self.public_test_vectors()[0] + b"\0")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_modified_public_vector_is_rejected(self):
+        vector = self.public_test_vectors()[0].replace(b"MII", b"NII", 1)
+        result = self.audit_file("crypto.so", self.elf_with_data(vector + b"\0"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_appending_private_material_to_known_vector_is_rejected(self):
+        vector = self.public_test_vectors()[0]
+        result = self.audit_file("crypto.so", self.elf_with_data(vector + b"SECRET\0"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_unknown_key_after_known_vector_is_rejected(self):
+        data = self.public_test_vectors()[0] + b"\0-----BEGIN PRIVATE KEY-----\nSECRET\0"
+        result = self.audit_file("crypto.so", self.elf_with_data(data))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_public_vector_in_non_elf_file_is_rejected(self):
+        result = self.audit_file("unknown.pem", self.public_test_vectors()[0])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_pem_marker_in_non_elf_binary_is_still_rejected(self):
+        result = self.audit_file("unknown.bin", b"\0-----BEGIN PRIVATE KEY-----\0")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
+    def test_invalid_elf_header_cannot_bypass_private_key_scan(self):
+        result = self.audit_file("fake.so", b"\x7fELF" + b"\0" * 60
+                                 + b"-----BEGIN PRIVATE KEY-----\0")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private", result.stderr)
+
     def test_binary_dropbear_private_key_is_rejected_by_filename(self):
         self.output.mkdir()
         (self.output / "dropbear_rsa_host_key").write_bytes(b"\x00\x00\x00\x07ssh-rsa\x00secret")
@@ -389,6 +503,7 @@ class BuildPolicyTests(unittest.TestCase):
         (self.repo / "wrt_core").mkdir()
         for name in ("build.sh", "capture.sh"):
             shutil.copy2(REPO / "ci" / name, self.repo / "ci" / name)
+        shutil.copy2(REPO / "ci/public-test-keys.json", self.repo / "ci/public-test-keys.json")
         for name in ("source_lock.py", "provenance.py", "sources.lock.json", "mobile-usb-packages.txt"):
             (self.repo / "ci" / name).write_text("")
         (self.repo / "ci/baseline/policy.json").write_text("{}")

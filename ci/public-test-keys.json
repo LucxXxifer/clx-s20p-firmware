@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "purpose": "Exact public GnuTLS known-answer test vectors in ELF libraries; never a path exemption.",
+  "source": {
+    "url": "https://raw.githubusercontent.com/gnutls/gnutls/8a36455fd75ce76391cfc00c53213d8b0e1648da/lib/crypto-selftests-pk.c",
+    "sha256": "fce9355507865b53ba0b5c5587932b9d8519be2cd195650b0d9ff69ac2c335c7",
+    "package_recipe": "https://github.com/immortalwrt/packages/blob/d200499b31751dc5c72905f37a747712f009f155/libs/gnutls/Makefile",
+    "official_archive": "https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/gnutls-3.8.10.tar.xz",
+    "official_archive_sha256": "db7fab7cce791e7727ebbef2334301c821d79a550ec55c9ef096b610b03eb6b7"
+  },
+  "vectors": [
+    {
+      "symbol": "rsa_2048_privkey",
+      "bytes": 1675,
+      "sha256": "f4b1de2f94f1df2d588ff6c18290e0f7f5091267b9ef0da8433c622bad3d127a"
+    },
+    {
+      "symbol": "dsa_2048_privkey",
+      "bytes": 1212,
+      "sha256": "80ec06e06b06635bcad5c71b0e9e7a3516c02133c682a2369b09599addb8d7f3"
+    },
+    {
+      "symbol": "ecdsa_secp256r1_privkey",
+      "bytes": 227,
+      "sha256": "d653005e4d23cf91e3572fe8148ab6db2e474924d9711838521d3ba352b193f5"
+    },
+    {
+      "symbol": "ecdsa_secp192r1_privkey",
+      "bytes": 190,
+      "sha256": "934b3e9bfd9936c5e30c7f0ed7d36a05e2044f755c0aa433e1d6bef6a68d1391"
+    },
+    {
+      "symbol": "ecdsa_secp224r1_privkey",
+      "bytes": 202,
+      "sha256": "a0b9679665e29ac220dfb0b366317e1b9dd5fe31e9def8b2e511669a041389ae"
+    },
+    {
+      "symbol": "ecdsa_secp384r1_privkey",
+      "bytes": 282,
+      "sha256": "293216817f0d585f0b54f225582f59e7b2e2a795b5f8002e2d71c5e3d49ce9b0"
+    },
+    {
+      "symbol": "ecdsa_secp521r1_privkey",
+      "bytes": 354,
+      "sha256": "f8766749b0c6f9b5661364568226af0ba7ae8d87c0073df24e440de4417521cd"
+    },
+    {
+      "symbol": "gost01_privkey",
+      "bytes": 152,
+      "sha256": "b8369cc647a1e1e8f8e420b6b8580c36223f89b0f8e70281732d028aebf15fac"
+    },
+    {
+      "symbol": "gost12_256_privkey",
+      "bytes": 156,
+      "sha256": "3de5d1d9ca9af8e24d29bab925c3d500c2cdd11a06c4a2c6a6b336e73bb3ad56"
+    },
+    {
+      "symbol": "gost12_512_privkey",
+      "bytes": 201,
+      "sha256": "c72070fc1ffb2df729650b949157c85ec03d8ec9743ba7956c03e21d385bce4e"
+    },
+    {
+      "symbol": "eddsa_ed25519_privkey",
+      "bytes": 119,
+      "sha256": "3aed91bdaf682226d080b2d6cd473ec542de17924db839ed58dc0247a1e2b5f8"
+    },
+    {
+      "symbol": "eddsa_ed448_privkey",
+      "bytes": 156,
+      "sha256": "19eb40f0c2c341a16b99274151649822a7611744d99cf29ac8e1365d74a0a8bc"
+    }
+  ]
+}

@@ -28,6 +28,8 @@
 
 已建立公開庫 [LucxXxifer/s20p-firmware](https://github.com/LucxXxifer/s20p-firmware)，推送 `094a21009cd98371b6893f34190401d63cefe2e3`，並於2026-10-24 08:45 Asia/Shanghai手動啟動[首次 Actions](https://github.com/LucxXxifer/s20p-firmware/actions/runs/40046525148)。Ubuntu24.04 runner 已通過 checkout 與 focused policy tests，後續完整編譯仍在執行。已從 GitHub 核對 workflow `active`、預設分支 `main` 與每日04:20 Asia/Shanghai排程。
 
+首輪來源準備、config gate、Go host dependency gate、來源包下載與校驗已通過，進入 `tools/compile`。並行對照固定 source 發現 `tools/squashfs4/Makefile` 將工具安裝為 `staging_dir/host/bin/unsquashfs4`，原 capture 誤找不帶 suffix 的名稱。先將 fixture 改為真實名稱重現 `same-build unsquashfs is missing`，再修正 capture；29 項 capture tests、bash syntax、ShellCheck 與 diff check 全通過。仍只使用同批工具，沒有改用系統 fallback 或放寬檢查。
+
 ## 尚待驗證
 
 尚未完成完整編譯kernel/toolchain/package/image。首輪雲端結果可能因無法還原歷史feeds而進入 `review_required`；必須看實際差異，不能預先批准所有差異。

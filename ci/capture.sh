@@ -396,9 +396,10 @@ def capture(build, output):
     for name in ("config.buildinfo", "feeds.buildinfo", "version.buildinfo"):
         copy_file(image.parent / name, output / "metadata/buildinfo" / name)
     inspection = output / "inspection"
-    unsquashfs = build / "staging_dir/host/bin/unsquashfs"
+    # The locked upstream installs squashfs4 tools with their version suffix.
+    unsquashfs = build / "staging_dir/host/bin/unsquashfs4"
     if not unsquashfs.is_file():
-        fail("same-build unsquashfs is missing")
+        fail("same-build unsquashfs4 is missing")
     listing = run([unsquashfs, "-lln", inspection / "rootfs.squashfs"])
     (output / "metadata/squashfs-listing.txt").write_text(listing)
     run([unsquashfs, "-no-progress", "-d", inspection / "rootfs", inspection / "rootfs.squashfs"])

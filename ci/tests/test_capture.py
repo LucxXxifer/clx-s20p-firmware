@@ -115,7 +115,8 @@ import pathlib, shutil, sys
 source = pathlib.Path(sys.argv[-1]).with_suffix('.metadata.json')
 shutil.copy2(source, pathlib.Path(sys.argv[sys.argv.index('-i') + 1]))
 ''')
-        self.write_tool(host / "unsquashfs", '''
+        # tools/squashfs4 installs this exact name in the locked upstream.
+        self.write_tool(host / "unsquashfs4", '''
 import pathlib, sys
 if '-lln' in sys.argv:
     print('drwxr-xr-x 0/0 0 2026-10-17 00:00 squashfs-root')
@@ -265,7 +266,7 @@ else:
         external = self.base / "host-keyring"
         external.mkdir()
         shutil.copy2(self.build / "public-key.pem", external / "public-key.pem")
-        unsquashfs = self.build / "staging_dir/host/bin/unsquashfs"
+        unsquashfs = self.build / "staging_dir/host/bin/unsquashfs4"
         source = unsquashfs.read_text()
         start = source.index("(root / 'etc/apk/keys').mkdir(parents=True)")
         source = source[:start] + (

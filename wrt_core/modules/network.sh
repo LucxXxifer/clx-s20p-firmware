@@ -26,14 +26,40 @@ git_retry() {
     local attempt=1
     local exit_code
     local clone_target=""
+    local clone_url=""
+    local argument
+    local locked_commit
 
     if [[ ${1:-} == "clone" ]]; then
-        clone_target="${@: -1}"
+        clone_target="${!#}"
+        for argument in "$@"; do
+            case "$argument" in
+                https://*|http://*|file://*) clone_url=$argument ;;
+            esac
+        done
+        if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+            [[ -n $clone_url && -n ${S20P_LOCK_TOOL:-} && -n ${S20P_SOURCE_LOCK:-} ]] || return 1
+            locked_commit=$(python3 "$S20P_LOCK_TOOL" --lock "$S20P_SOURCE_LOCK" get "$clone_url") || return
+        fi
     fi
 
     while true; do
-        git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 "$@" && return 0
-        exit_code=$?
+        if git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 "$@"; then
+            if [[ -n $clone_target && ${S20P_AUTOBUILD:-0} == 1 ]]; then
+                if [[ $(git -C "$clone_target" rev-parse --is-shallow-repository) == true ]]; then
+                    git -C "$clone_target" fetch --depth 1 origin "$locked_commit" || return
+                else
+                    git -C "$clone_target" fetch origin "$locked_commit" || return
+                fi
+                git -C "$clone_target" checkout --detach "$locked_commit" || return
+                python3 "$S20P_LOCK_TOOL" --lock "$S20P_SOURCE_LOCK" verify "$clone_target" --expected "$clone_url" || return
+                python3 "${S20P_CI_DIR:?}/provenance.py" record-clone \
+                    "$clone_target" --output "${S20P_GIT_LOG:?}" || return
+            fi
+            return 0
+        else
+            exit_code=$?
+        fi
         if ((attempt >= max_attempts)); then
             return "$exit_code"
         fi
@@ -50,9 +76,19 @@ git_retry() {
 }
 
 curl_retry() {
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        python3 "${S20P_CI_DIR:?}/http_record.py" "${S20P_HTTP_LOG:?}" \
+            curl --retry 3 --retry-delay 2 --retry-all-errors "$@"
+        return
+    fi
     network_retry curl --retry 3 --retry-delay 2 --retry-all-errors "$@"
 }
 
 wget_retry() {
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        python3 "${S20P_CI_DIR:?}/http_record.py" "${S20P_HTTP_LOG:?}" \
+            wget --tries=3 --waitretry=2 "$@"
+        return
+    fi
     network_retry wget --tries=3 --waitretry=2 "$@"
 }

@@ -266,6 +266,28 @@ fix_kconfig_recursive_dependency() {
         sed -i 's/<PACKAGE_\$pkgname/!=y/g' "$file"
         echo "已修复 package-metadata.pl 的 Kconfig 递归依赖生成逻辑。"
     fi
+    fix_weechat_provider_dependency
+}
+
+
+fix_weechat_provider_dependency() {
+    local luci_recipe="$BUILD_DIR/feeds/luci/applications/luci-app-weechat/Makefile"
+    local provider_recipe="$BUILD_DIR/feeds/packages/net/weechat/Makefile"
+    local old='LUCI_DEPENDS:=+luci-base +weechat +rpcd-mod-ucode'
+    local new='LUCI_DEPENDS:=+luci-base +weechat-minimal +rpcd-mod-ucode'
+
+    [[ -f $luci_recipe && -f $provider_recipe ]] || return 0
+    grep -qx 'define Package/weechat-minimal' "$provider_recipe" || return 0
+    if grep -Fxq "$old" "$luci_recipe"; then
+        # A virtual +weechat selects two conflicting providers and creates a
+        # Kconfig loop. LuCI uses the declared default headless provider.
+        sed -i.bak "s/^$old\$/$new/" "$luci_recipe"
+        rm -f "$luci_recipe.bak"
+        grep -Fxq "$new" "$luci_recipe" || return 1
+    elif ! grep -Fxq "$new" "$luci_recipe"; then
+        echo "Error: unsupported luci-app-weechat dependency recipe; refusing to guess a provider." >&2
+        return 1
+    fi
 }
 
 

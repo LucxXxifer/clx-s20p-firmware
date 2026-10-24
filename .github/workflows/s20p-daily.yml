@@ -1,0 +1,109 @@
+name: S20P locked daily candidate
+run-name: S20P 10-17 baseline · ${{ github.run_number }}
+
+on:
+  schedule:
+    # GitHub schedules use UTC: 20:20 UTC = next day 04:20 Asia/Shanghai.
+    - cron: '20 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: s20p-locked-daily
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    outputs:
+      publish_candidate: ${{ steps.build.outputs.publish_candidate }}
+    steps:
+      - name: Checkout build policy
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Run focused policy tests
+        run: |
+          python3 -m unittest discover -s ci/tests -v
+          bash ci/tests/test_network.sh
+          bash -n ci/build.sh ci/capture.sh ci/setup-runner.sh build.sh
+      - name: Install reviewed runner dependencies
+        run: bash ci/setup-runner.sh
+      - name: Build and preserve same-build outputs
+        id: build
+        run: bash ci/build.sh
+      - name: Audit all evidence before upload
+        if: ${{ always() && !cancelled() }}
+        id: audit
+        run: |
+          if [[ -d output ]]; then
+            bash ci/capture.sh --audit-output "$PWD/output"
+            echo 'safe=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload build evidence
+        if: ${{ always() && !cancelled() && steps.audit.outputs.safe == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: s20p-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            output/bin/
+            output/public-keys/
+            output/host-tools/
+            output/metadata/
+            output/provenance/
+            output/reports/
+            output/logs/
+            output/inspection/kernel.fit
+            output/inspection/board.dtb
+            output/inspection/rootfs.squashfs
+            output/inspection/installed-packages.json
+            output/inspection/fwtool-metadata.json
+            output/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload validated candidate bundle
+        if: ${{ success() && steps.build.outputs.publish_candidate == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: s20p-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: output/release/
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-candidate:
+    needs: build
+    if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download validated candidate bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: s20p-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: candidate
+      - name: Publish prerelease only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          (cd candidate && sha256sum -c SHA256SUMS)
+          tag="s20p-candidate-${RUN_ID}-${RUN_ATTEMPT}"
+          cat > release-notes.md <<'NOTES'
+          Dedicated S20P candidate based on the locked 2026-10-17 upstream.
+          Image preservation and signed same-build APK feed checks passed.
+          Original historical feeds were unavailable; this is not a bit-identical rebuild.
+          Live hardware acceptance and migration acceptance have not run. This is not stable.
+          The bundle includes complete bin/, public keys, kernel metadata, provenance, checksums and logs.
+          NOTES
+          gh release create "$tag" candidate/* --target "$BUILD_COMMIT" \
+            --title "S20P candidate ${RUN_ID}.${RUN_ATTEMPT}" \
+            --notes-file release-notes.md --prerelease --latest=false

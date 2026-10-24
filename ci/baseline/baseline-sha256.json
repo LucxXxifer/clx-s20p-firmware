@@ -1,0 +1,13 @@
+{
+  "artifact-sha256.json": "74c50db662a36b45b86bed8430b88ca5e5c29a7410ed23b6bdcf63872b9d342f",
+  "baseline-mtk-config.txt": "5459ce8624fe475918029971dead4ea66155b39e9e89c0477ee15516fac19e20",
+  "critical-files-manifest.json": "d7c1cfba05905dc6a1bb1b570f8047d5b0433b667f8446af88ea36e186825b49",
+  "full-rootfs-manifest.json": "150fbab4d08985b9eeada33a6822ae98a710fbf67bb2859c70c5f1d54bf04268",
+  "original-S20P-WIFI-YES.config": "4f9d91e38e7237504b95f65bab6ed5fe182bfc370b581168896d645d0fbea6a6",
+  "original-board.dtb": "560b11119c9f709d5c7d1278427d97fe3fd89df9319be05a9ba3cd0810af0ca8",
+  "original-compile_base.config": "50a64c9015943e619519a97175cecb5e201729dfcbdaa5a1a46194a202d58e41",
+  "original-fragments-docker_deps.config": "64e5847895e2c059a8d90ed7c817756b7bbf99e8108d2c8841a414f543423b1d",
+  "original-fragments-honk.config": "a3f8e648c9a5503b438e2adbee041f56834e8ae1afe9f6aac390b18820d7f83a",
+  "original-package-manifest.json": "db9641bd5365413332684356215eef094a4f2d28aeca5d2f12afb39266abe461",
+  "policy.json": "bde93ef24a1ce82785f56bcd60ef43163b32de6671f38a5153be8ee84639aabf"
+}

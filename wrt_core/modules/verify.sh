@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 # 构建树一致性检查。
 
+run_defconfig_checked() {
+    local log_file="${1:-tmp/defconfig.log}"
+    local statuses=()
+    mkdir -p "$(dirname "$log_file")" || return
+    if make defconfig 2>&1 | tee "$log_file"; then
+        statuses=("${PIPESTATUS[@]}")
+    else
+        statuses=("${PIPESTATUS[@]}")
+    fi
+    [[ ${statuses[0]} == 0 ]] || return "${statuses[0]}"
+    [[ ${statuses[1]} == 0 ]] || return "${statuses[1]}"
+    # Kconfig can write .config and return zero after a recursive dependency
+    # error. Such output must never reach the config or image gates as success.
+    if grep -Eiq '(^|:)[[:space:]]*(error:|syntax error([[:space:]]|$))' "$log_file"; then
+        echo "Error: Kconfig diagnostics found despite make defconfig returning zero: $log_file" >&2
+        return 1
+    fi
+}
+
 verify_native_apk_repository_support() {
     local apk_makefile="$BUILD_DIR/package/system/apk/Makefile"
     local base_files_makefile="$BUILD_DIR/package/base-files/Makefile"
@@ -92,6 +111,8 @@ verify_expected_kernel_version() {
     local expected="$1"
     local target_makefile="$2"
     local actual
+    local details
+    local suffix
 
     [[ -n $expected ]] || return 0
     if [[ ! -f $target_makefile ]]; then
@@ -100,6 +121,25 @@ verify_expected_kernel_version() {
     fi
 
     actual=$(sed -nE 's/^KERNEL_PATCHVER[[:space:]]*:=[[:space:]]*([^[:space:]]+).*/\1/p' "$target_makefile" | head -n 1)
+    # OpenWrt stores the patch suffix separately, e.g. 6.12 + .112.
+    # Keep series-only checks used by the original wrapper, but do not treat
+    # a matching series as proof of the dedicated build's exact patch version.
+    if [[ $actual != "$expected" && $expected == "$actual".* && -n $actual ]]; then
+        details="$(dirname -- "$target_makefile")/../generic/kernel-$actual"
+        if [[ ! -f $details ]]; then
+            echo "Error: kernel patch details not found: $details" >&2
+            return 1
+        fi
+        suffix=$(awk -F= -v key="LINUX_VERSION-$actual" '
+            { gsub(/[[:space:]]/, "", $1) }
+            $1 == key { sub(/[[:space:]]*#.*/, "", $2); gsub(/[[:space:]]/, "", $2); print $2; exit }
+        ' "$details")
+        [[ $suffix =~ ^\.[0-9]+$ ]] || {
+            echo "Error: missing or unsupported kernel patch suffix in $details" >&2
+            return 1
+        }
+        actual="$actual$suffix"
+    fi
     if [[ $actual != "$expected" ]]; then
         echo "Error: expected kernel $expected, upstream target uses ${actual:-unknown}." >&2
         return 1

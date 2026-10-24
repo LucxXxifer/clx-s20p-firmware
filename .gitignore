@@ -34,3 +34,16 @@ wrt_core/deconfig/test.config
 .taskmaster/
 .sisyphus/
 AGENTS.md
+
+# S20P dedicated build output (never publish local credentials or private data).
+action_build/
+output/
+.ci-http/
+__pycache__/
+*.pyc
+*.key
+*.pem
+key-build*
+!.gitignore
+.tools/
+/provenance-final.log

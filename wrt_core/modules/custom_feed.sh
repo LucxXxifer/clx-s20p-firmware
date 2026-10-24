@@ -409,6 +409,11 @@ PY
         rm -rf "$tmp_dir"
         return 1
     fi
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        # A rolling release must not silently select a different historical recipe.
+        python3 "$S20P_LOCK_TOOL" --lock "$S20P_SOURCE_LOCK" verify "$tmp_dir/repo" \
+            --expected https://github.com/kenzok8/openwrt-honk.git || return
+    fi
     if [[ ! -f $tmp_dir/repo/honk/Makefile || ! -f $tmp_dir/repo/luci-app-honk/Makefile ]]; then
         echo "Error: matching Honk snapshot lacks the required package pair" >&2
         rm -rf "$tmp_dir"

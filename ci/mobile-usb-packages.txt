@@ -1,0 +1,31 @@
+# Must all exist in the same-build signed package repository before publication.
+kmod-usb-net-rndis
+kmod-usb-net-cdc-ncm
+kmod-usb-net-huawei-cdc-ncm
+kmod-usb-net-qmi-wwan
+kmod-usb-net-cdc-mbim
+kmod-usb-serial-option
+kmod-usb-serial-wwan
+kmod-usb-acm
+kmod-usb-wdm
+uqmi
+umbim
+comgt
+comgt-ncm
+luci-proto-qmi
+luci-proto-mbim
+luci-proto-ncm
+luci-proto-3g
+usb-modeswitch
+usbutils
+picocom
+
+# USB Ethernet adapter families (same-build optional packages).
+kmod-usb-net-rtl8152
+r8152-firmware
+kmod-usb-net-asix
+kmod-usb-net-asix-ax88179
+kmod-usb-net-aqc111
+kmod-usb-net-lan78xx
+kmod-usb-net-smsc75xx
+kmod-usb-net-smsc95xx

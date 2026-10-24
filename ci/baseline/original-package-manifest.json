@@ -1,0 +1,2900 @@
+[
+  {
+    "name": "apk-openssl",
+    "version": "3.0.5-r3",
+    "dependencies": "libc libopenssl3 wget-any zlib",
+    "identity": "Q1w3ul3zH3Nf3sl02vnH8EbsGv7k0="
+  },
+  {
+    "name": "attr",
+    "version": "2.5.2-r3",
+    "dependencies": "libattr libc",
+    "identity": "Q1qg4M/at9QavH1eUcdgCXPxBAK7A="
+  },
+  {
+    "name": "autocore",
+    "version": "42",
+    "dependencies": "libc",
+    "identity": "Q1KcdO6xs18bZrB2YwPBQ5vA8a9Lk="
+  },
+  {
+    "name": "automount",
+    "version": "10",
+    "dependencies": "block-mount e2fsprogs kmod-fs-exfat kmod-fs-ext4 kmod-fs-vfat kmod-usb-storage kmod-usb-storage-extras kmod-usb-storage-uas libc ntfs3-mount",
+    "identity": "Q1giQQH4YXdWABKgYX7OkwYvvcuoc="
+  },
+  {
+    "name": "avahi-dbus-daemon",
+    "version": "0.9_rc5-r1",
+    "dependencies": "libavahi-dbus-support libc libdaemon libexpat librt",
+    "identity": "Q1tqoOjMQqPTZ3YKwPIbRpDFvCneo="
+  },
+  {
+    "name": "axonhub",
+    "version": "20261016-r1",
+    "dependencies": "ca-bundle libc zoneinfo-asia zoneinfo-core",
+    "identity": "Q1988cXWYDHFD3NaJ8Zww0mesCHz8="
+  },
+  {
+    "name": "base-files",
+    "version": "1~03eb306",
+    "dependencies": "busybox fstools fwtool jsonfilter libc netifd openwrt-keyring procd procd-seccomp ubi-utils usign",
+    "identity": "Q1ml02ms7H2zdG2uu6lZePi2+RVdw="
+  },
+  {
+    "name": "bash",
+    "version": "5.3-r5",
+    "dependencies": "libc libncurses6 libreadline8",
+    "identity": "Q1y0CvZKKXy1PSSTmIVg8++TdpTcw="
+  },
+  {
+    "name": "blkid",
+    "version": "2.41.5-r1",
+    "dependencies": "libblkid1 libc libuuid1",
+    "identity": "Q1oGIPJZBjAv9OxoKct9uHgDuFTL0="
+  },
+  {
+    "name": "block-mount",
+    "version": "2026.05.23~16718b6e-r1",
+    "dependencies": "fstools libblobmsg-json20260213 libc libjson-c5 libubox20260213 libuci20250120 ubox",
+    "identity": "Q1V9QtHH2FhahPeQ1eZCn94aZVKIg="
+  },
+  {
+    "name": "blockdev",
+    "version": "2.41.5-r1",
+    "dependencies": "libc librt",
+    "identity": "Q1lWJSwTckXXkrWYIEF4WDfbtHpSo="
+  },
+  {
+    "name": "btrfs-progs",
+    "version": "6.11-r3",
+    "dependencies": "kmod-fs-btrfs libattr libblkid1 libc liblzo2 libmount1 libpthread libuuid1 zlib",
+    "identity": "Q1JpKH5o6roGjnKSR70YGpEkk8Y3A="
+  },
+  {
+    "name": "busybox",
+    "version": "1.37.0-r6",
+    "dependencies": "jsonfilter libc",
+    "identity": "Q1LZaft1G+vekRCuaiPdJnnK+7TLw="
+  },
+  {
+    "name": "bzip2",
+    "version": "1.0.8-r1",
+    "dependencies": "libbz2-1.0 libc",
+    "identity": "Q171qZSWNdHgbFdon/ZyrZTFXB6Lw="
+  },
+  {
+    "name": "ca-bundle",
+    "version": "20260816-r1",
+    "dependencies": "libc",
+    "identity": "Q1ydpdzolUshToaQlkVlxr46VJxxY="
+  },
+  {
+    "name": "ca-certificates",
+    "version": "20260816-r1",
+    "dependencies": "libc",
+    "identity": "Q1cfpQ/wt1BvovZEz/vPa8tdRxhzY="
+  },
+  {
+    "name": "cgi-io",
+    "version": "2026.07.21~31cb3c89-r1",
+    "dependencies": "libc libubox20260213 libubus20251202",
+    "identity": "Q1zXRckRYNTtje5g4CYgaIKem4Ysg="
+  },
+  {
+    "name": "cloudflared",
+    "version": "2026.8.3-r1",
+    "dependencies": "ca-bundle libc",
+    "identity": "Q1e6COk1YW61V3mfy/ZFdNup2Ngd4="
+  },
+  {
+    "name": "containerd",
+    "version": "2.2.5-r1",
+    "dependencies": "btrfs-progs libc runc",
+    "identity": "Q1zdqCjfrdhlA1SiYhtWo+5cNH9Uc="
+  },
+  {
+    "name": "coremark",
+    "version": "2025.05.01~1f483d5b-r1",
+    "dependencies": "libc",
+    "identity": "Q1YyNlxN+YB0QaM0uXR2fsmH7J+hc="
+  },
+  {
+    "name": "coreutils",
+    "version": "9.9-r2",
+    "dependencies": "libc",
+    "identity": "Q1I3HE9uNzcyVvnMRX61bAxryfCe0="
+  },
+  {
+    "name": "coreutils-stat",
+    "version": "9.9-r2",
+    "dependencies": "coreutils libc",
+    "identity": "Q1GszgqLUNuDhEYywSXyrcA7rR22w="
+  },
+  {
+    "name": "coreutils-stty",
+    "version": "9.9-r2",
+    "dependencies": "coreutils libc",
+    "identity": "Q13UxQcMOrWG+UR+RGx5Pj5LUR6+s="
+  },
+  {
+    "name": "curl",
+    "version": "8.22.0-r1",
+    "dependencies": "libc libcurl4",
+    "identity": "Q1fYSzp6uv5R3fPs+LjuugQpQT4zU="
+  },
+  {
+    "name": "datconf",
+    "version": "1",
+    "dependencies": "kvcedit libc",
+    "identity": "Q1zL8fjyvy1I6yg+k69+qUk/shfeg="
+  },
+  {
+    "name": "dbus",
+    "version": "1.16.2-r4",
+    "dependencies": "libc libdbus libexpat",
+    "identity": "Q1lByzvYEAkqh1PmwHOcvcU+diiR8="
+  },
+  {
+    "name": "default-settings",
+    "version": "29",
+    "dependencies": "libc luci",
+    "identity": "Q1x6gzY6LgNqxuuwRt0lCBgMBZbwA="
+  },
+  {
+    "name": "default-settings-chn",
+    "version": "29",
+    "dependencies": "default-settings libc luci-i18n-base-zh-cn",
+    "identity": "Q1jkdg2I90emcWx4Ov6ISozfjuGuM="
+  },
+  {
+    "name": "dnsmasq-full",
+    "version": "2.93-r1",
+    "dependencies": "libc libnetfilter-conntrack3 libnettle8 libubus20251202 nftables-json",
+    "identity": "Q1KP3kxFDyOFAXT9LR5Bh3J7Ms7Cc="
+  },
+  {
+    "name": "docker",
+    "version": "29.6.1-r1",
+    "dependencies": "libc",
+    "identity": "Q1kC9JJNOv/HGJNFYAO7YphaGAXf8="
+  },
+  {
+    "name": "docker-compose",
+    "version": "5.1.4-r1",
+    "dependencies": "docker libc",
+    "identity": "Q1MBU99aanYVjK3Bu2sJsBIRaL4Nk="
+  },
+  {
+    "name": "dockerd",
+    "version": "29.6.1-r1",
+    "dependencies": "ca-certificates containerd fuse-overlayfs ip6tables-nft iptables-mod-extra iptables-nft kmod-ipt-nat kmod-ipt-nat6 kmod-ipt-physdev kmod-nf-ipvs kmod-nft-nat kmod-veth libc libseccomp nftables tini uci-firewall",
+    "identity": "Q1KPCrh/2CEEvUUBUugjlzdDturyc="
+  },
+  {
+    "name": "dropbear",
+    "version": "2025.89-r3",
+    "dependencies": "libc",
+    "identity": "Q1r4vYaoY8IfLNWiKEXbaWuW8qe6A="
+  },
+  {
+    "name": "e2fsprogs",
+    "version": "1.47.3-r1",
+    "dependencies": "libc libe2p2 libext2fs2 libuuid1",
+    "identity": "Q16N3wTjTGm38vzxRUWes1ijvVr2w="
+  },
+  {
+    "name": "easytier",
+    "version": "2.7.0",
+    "dependencies": "kmod-tun libc",
+    "identity": "Q1t1L0SWAZrVtEJDp8UtGrNbPMeMQ="
+  },
+  {
+    "name": "eip197-mini-firmware",
+    "version": "20260221-r1",
+    "dependencies": "libc",
+    "identity": "Q1843fVlOWB4KQ2YXhgPyY6hFiNyE="
+  },
+  {
+    "name": "etherwake",
+    "version": "1.09-r5",
+    "dependencies": "libc",
+    "identity": "Q1Zm+eQSK91sbC8wJF5K8cwQWA+Mo="
+  },
+  {
+    "name": "f2fsck",
+    "version": "1.16.0-r4",
+    "dependencies": "libc libf2fs6",
+    "identity": "Q1iCWZSEdhOHMvQjzKcechy0LhcX4="
+  },
+  {
+    "name": "fdisk",
+    "version": "2.41.5-r1",
+    "dependencies": "libblkid1 libc libfdisk1 libncursesw6 libsmartcols1",
+    "identity": "Q1PPOsVf6Vu+PIvzENr5uDesxOOn4="
+  },
+  {
+    "name": "firewall4",
+    "version": "2025.03.17~b6e51575-r2",
+    "dependencies": "kmod-nft-core kmod-nft-fib kmod-nft-fullcone kmod-nft-nat kmod-nft-offload libc nftables-json ucode>=2022.03.22 ucode-mod-fs ucode-mod-ubus ucode-mod-uci",
+    "identity": "Q1dJH+J6XteSnZG4izBi9DteL0Pv0="
+  },
+  {
+    "name": "fit-check-sign",
+    "version": "2025.10-r2",
+    "dependencies": "libc",
+    "identity": "Q14565vLRzD7+5+TlOJu3/REcxbGM="
+  },
+  {
+    "name": "fitblk",
+    "version": "2",
+    "dependencies": "fit-check-sign libc",
+    "identity": "Q1TUfdQGz0WNpQxeLmYEji+pu2CWs="
+  },
+  {
+    "name": "fstools",
+    "version": "2026.05.23~16718b6e-r1",
+    "dependencies": "libc ubi-utils ubox",
+    "identity": "Q1VHGP08SU7EwiwTbF0Lx71gy5+j4="
+  },
+  {
+    "name": "fuse-overlayfs",
+    "version": "1.15-r1",
+    "dependencies": "libc libfuse3-3",
+    "identity": "Q1FE7KhKYOhiBSyaQiP+1kbHdbzhQ="
+  },
+  {
+    "name": "fuse-utils",
+    "version": "2.9.9-r2",
+    "dependencies": "libc libfuse1",
+    "identity": "Q14bTCa5+T7j35nyS7FI4pCktOYbM="
+  },
+  {
+    "name": "fwtool",
+    "version": "2025.10.03~04cd252e-r1",
+    "dependencies": "libc",
+    "identity": "Q1qUcVZ4vDvgNbGD6jbhr7eF4nSYA="
+  },
+  {
+    "name": "getrandom",
+    "version": "2025.10.30~6f78fa49-r1",
+    "dependencies": "libc",
+    "identity": "Q1hic1HvUOj+nc49odY/qm+ZumqHU="
+  },
+  {
+    "name": "hnat-detect",
+    "version": "1-r1",
+    "dependencies": "kmod-dummy libc ucode ucode-mod-fs ucode-mod-log ucode-mod-uci",
+    "identity": "Q1LFhD4fUktQbebvfFbntfJEF8dsM="
+  },
+  {
+    "name": "honk",
+    "version": "2026.10.10-r2",
+    "dependencies": "ca-bundle coreutils-stat ip-full jshn jsonfilter kmod-nft-queue kmod-sched-bpf kmod-sched-core kmod-veth libc libubox20260213 sqlite3-cli ubus usign v2ray-geoip v2ray-geosite",
+    "identity": "Q1Q2p/pnB2wP7F0TEuJ3vPIk+WAXE="
+  },
+  {
+    "name": "hostapd-common",
+    "version": "2025.08.26~ca266cc2-r5",
+    "dependencies": "libc",
+    "identity": "Q1HqRI5duGWeh40jum0/qYkuR+7o8="
+  },
+  {
+    "name": "htop",
+    "version": "3.5.1-r1",
+    "dependencies": "libc libncurses6",
+    "identity": "Q1+Qe0Rw/ErUKRHkKE+1DjK++aMjM="
+  },
+  {
+    "name": "ip-full",
+    "version": "6.18.0-r2",
+    "dependencies": "libbpf1 libc libnl-tiny1",
+    "identity": "Q1EcWLDRD493DNkek4HtoTIVpdtlE="
+  },
+  {
+    "name": "ip6tables-nft",
+    "version": "1.8.10-r3",
+    "dependencies": "kmod-ip6tables libc xtables-nft",
+    "identity": "Q1hQP+ptuIMyPLS89ku/H44CW31lg="
+  },
+  {
+    "name": "iptables-mod-extra",
+    "version": "1.8.10-r3",
+    "dependencies": "kmod-ipt-extra libc libxtables12",
+    "identity": "Q1i47WHCRy7+6Cgvu1/ZetGSt/G1k="
+  },
+  {
+    "name": "iptables-nft",
+    "version": "1.8.10-r3",
+    "dependencies": "kmod-ipt-core libc xtables-nft",
+    "identity": "Q1o6LRZCCfBIBgQsiokVnj4L3H/ug="
+  },
+  {
+    "name": "iwinfo-ucode",
+    "version": "1.0-r1",
+    "dependencies": "libc ucode-mod-iwinfo",
+    "identity": "Q1tk5p/SiC0+BDr4QoEdjoTLHFA88="
+  },
+  {
+    "name": "jansson4",
+    "version": "2.14.1-r1",
+    "dependencies": "libc",
+    "identity": "Q1fbeLSu7lXk879LM5AT7e688pe00="
+  },
+  {
+    "name": "jshn",
+    "version": "2026.06.19~7dd12784-r1",
+    "dependencies": "libblobmsg-json20260213 libc libjson-c5 libubox20260213",
+    "identity": "Q1FLW7kwmqCmD7m2LQsBwP9SYnLYU="
+  },
+  {
+    "name": "jsonfilter",
+    "version": "2026.03.16~b9034210-r1",
+    "dependencies": "libc libjson-c5 libubox20260213",
+    "identity": "Q1uB8dSDXSEOmm8KBevUSkAmK+TRw="
+  },
+  {
+    "name": "kernel",
+    "version": "6.12.112~61387475456bc43b27290a665572950c-r1",
+    "dependencies": "libc",
+    "identity": "Q1K0Y5b1tWsGGgVdbAlpMzWWO2FoI="
+  },
+  {
+    "name": "kmod-bonding",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1KLwCgRRGvXtj8q7aWkRRJEaWSs8="
+  },
+  {
+    "name": "kmod-br-netfilter",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-core",
+    "identity": "Q1mgUlx40OMZjNmX/R/+flnvsDwrQ="
+  },
+  {
+    "name": "kmod-conninfra",
+    "version": "6.12.112.20231229-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1BNEH+uaBqn+ELTJzMeAJwoCyWTg="
+  },
+  {
+    "name": "kmod-crypto-acompress",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1aDLtEmYEmUh/Qf4JdKUHoERIal8="
+  },
+  {
+    "name": "kmod-crypto-aead",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-null",
+    "identity": "Q1dBd+B+Z1Elq7TJmZhtbCREFNzeE="
+  },
+  {
+    "name": "kmod-crypto-arc4",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-user",
+    "identity": "Q1L73BLcFLuVHnU7lqKDClZO7L1Ys="
+  },
+  {
+    "name": "kmod-crypto-authenc",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-manager kmod-crypto-null",
+    "identity": "Q154QgoyIsSEwAN23ZGL4rxZlyvjA="
+  },
+  {
+    "name": "kmod-crypto-blake2b",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1OKA2RCF1TfcgHsn872/fUmqTZ+k="
+  },
+  {
+    "name": "kmod-crypto-crc32",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q119I6K+vyVkWuB1mK9iGezZ8b0fk="
+  },
+  {
+    "name": "kmod-crypto-crc32c",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1Tp3DsedcJ+Pk3j1ENkbCsgGzvbU="
+  },
+  {
+    "name": "kmod-crypto-des",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1vJBDpunKw66S/kx0NRP7dOF5q70="
+  },
+  {
+    "name": "kmod-crypto-ecb",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-manager",
+    "identity": "Q1Hi06gV1LyNpY4tyLq0cNadx+TJU="
+  },
+  {
+    "name": "kmod-crypto-hash",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q19W/PL/KumuFDCmc1Mdt1PYKcduk="
+  },
+  {
+    "name": "kmod-crypto-hmac",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash kmod-crypto-manager",
+    "identity": "Q1nuEYe9fKuu28oQHFq47RNZVXUDQ="
+  },
+  {
+    "name": "kmod-crypto-hw-safexcel",
+    "version": "6.12.112-r1",
+    "dependencies": "eip197-mini-firmware kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-authenc kmod-crypto-des kmod-crypto-hmac kmod-crypto-md5 kmod-crypto-sha1 kmod-crypto-sha256 kmod-crypto-sha512",
+    "identity": "Q1CvCSL4wOAs9lSkWUG2CklqNR2gg="
+  },
+  {
+    "name": "kmod-crypto-kpp",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1IfxYwkfRL1Ru1+0o73bVWRA1GK8="
+  },
+  {
+    "name": "kmod-crypto-lib-chacha20",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1IvZ1PdEpxv+0d5P8/v4l09Yur14="
+  },
+  {
+    "name": "kmod-crypto-lib-chacha20poly1305",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-lib-chacha20 kmod-crypto-lib-poly1305",
+    "identity": "Q1GxfglSUc5WkitINERqrA4aXXGSA="
+  },
+  {
+    "name": "kmod-crypto-lib-curve25519",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-kpp",
+    "identity": "Q1TaHy8sm/0xtlpaDDYzawBqT20nY="
+  },
+  {
+    "name": "kmod-crypto-lib-poly1305",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1aGzUI3Y+92hRwN+dPLNfsrQDboM="
+  },
+  {
+    "name": "kmod-crypto-manager",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-aead kmod-crypto-hash",
+    "identity": "Q10bZparzsxDy2xIjK7Z+euN6S7GA="
+  },
+  {
+    "name": "kmod-crypto-md5",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1h9WSBJFdWy4U+PFSM1tSithUuUc="
+  },
+  {
+    "name": "kmod-crypto-null",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1YG252S+RHi+qTWB//tewY1dLI0o="
+  },
+  {
+    "name": "kmod-crypto-rng",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash kmod-crypto-hmac kmod-crypto-sha3 kmod-crypto-sha512",
+    "identity": "Q1uangOrE902SmAhs3gqs1cA7jwtw="
+  },
+  {
+    "name": "kmod-crypto-sha1",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1CqOw9fyHcfziTzgZOa570ScF7sM="
+  },
+  {
+    "name": "kmod-crypto-sha256",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1GjcuhXxm6i8ANYcKglyxNKAP25M="
+  },
+  {
+    "name": "kmod-crypto-sha3",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1g6d7A6c4aTvMWrbHTHt/A2UX/LI="
+  },
+  {
+    "name": "kmod-crypto-sha512",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash",
+    "identity": "Q1wJSvn4iHyXI0uflE3xMIeIo2RRc="
+  },
+  {
+    "name": "kmod-crypto-user",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash kmod-crypto-manager kmod-crypto-rng",
+    "identity": "Q1WuhYw4mDOCp4mHQCFtr5CqtEZCA="
+  },
+  {
+    "name": "kmod-crypto-xxhash",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-hash kmod-lib-xxhash",
+    "identity": "Q1rZRgkry1XFycfTlH5iMn9wu6n7I="
+  },
+  {
+    "name": "kmod-dummy",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1bMH7izuZSJD/bjbY7/vjYdWg0fo="
+  },
+  {
+    "name": "kmod-fs-btrfs",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-blake2b kmod-crypto-xxhash kmod-lib-crc32c kmod-lib-lzo kmod-lib-raid6 kmod-lib-xor kmod-lib-zlib-deflate kmod-lib-zlib-inflate kmod-lib-zstd",
+    "identity": "Q14zf8nMeAe45VVTYZsl7P7mpL9e0="
+  },
+  {
+    "name": "kmod-fs-exfat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1AU0gJTwTZaBFBJ4fx4+JlfmyYdM="
+  },
+  {
+    "name": "kmod-fs-ext4",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-crc32c kmod-crypto-hash kmod-lib-crc16",
+    "identity": "Q1A5zk+FxmOqzo7fNDrytN/0ARnT0="
+  },
+  {
+    "name": "kmod-fs-f2fs",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-crc32 kmod-crypto-hash kmod-nls-base",
+    "identity": "Q1ckR7zOr6EzTo9kwnN4ouxIJLIkE="
+  },
+  {
+    "name": "kmod-fs-msdos",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-fs-vfat kmod-nls-base",
+    "identity": "Q1aJ77o+NTyVIlBwS5jZpieLFE2kM="
+  },
+  {
+    "name": "kmod-fs-ntfs3",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1SKBCbja5da2ac1fLO/mS62s66tQ="
+  },
+  {
+    "name": "kmod-fs-vfat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8",
+    "identity": "Q1nnxe8510+eUC6P6WZyfbuU2cLQc="
+  },
+  {
+    "name": "kmod-fuse",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1k4zMFMU5HOZr45XnJUAAVHT0rQ4="
+  },
+  {
+    "name": "kmod-gpio-button-hotplug",
+    "version": "6.12.112-r5",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1QWzFD4hPnSg26ZTOIajipT9Adf4="
+  },
+  {
+    "name": "kmod-hwmon-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-i2c-core",
+    "identity": "Q1zI31/sRYsMQw+KYHWgUcey5l93k="
+  },
+  {
+    "name": "kmod-i2c-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1/kUSXVYPIL3RpYjB4+Dz07+GH9s="
+  },
+  {
+    "name": "kmod-ifb",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1mRN31GE2lpTQcv7AQcpAP/ayFEw="
+  },
+  {
+    "name": "kmod-inet-diag",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1uv3uYSfmbf8lGogz6TyViIUUjAM="
+  },
+  {
+    "name": "kmod-ip6tables",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-core kmod-nf-ipt6 kmod-nf-reject6",
+    "identity": "Q1yRhOtbGU/LuljE/1jrpqM+o34Ac="
+  },
+  {
+    "name": "kmod-ipt-conntrack",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-core kmod-nf-conntrack",
+    "identity": "Q13E9pJ+ai0ebpONkjKPMxzwYg6t8="
+  },
+  {
+    "name": "kmod-ipt-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-ipt kmod-nf-log kmod-nf-reject",
+    "identity": "Q1lvobUIq0K8oXyx1v2ZJ5u5CvW+s="
+  },
+  {
+    "name": "kmod-ipt-extra",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-core",
+    "identity": "Q1ZIYaInrdJ6lN8w1f8+TaNSqoP24="
+  },
+  {
+    "name": "kmod-ipt-nat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-core kmod-nf-nat",
+    "identity": "Q1I8zOusHmFS0HUW6so71g0kCAg9U="
+  },
+  {
+    "name": "kmod-ipt-nat6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ip6tables kmod-ipt-conntrack kmod-ipt-core kmod-ipt-nat kmod-nf-nat6",
+    "identity": "Q1pUybxVd1ZHkWAmoo68je+eVBklQ="
+  },
+  {
+    "name": "kmod-ipt-physdev",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-br-netfilter kmod-ipt-core",
+    "identity": "Q1fHC43XXMbMFBHYlb0Mv+V6KeQ5c="
+  },
+  {
+    "name": "kmod-leds-gpio",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1MqJRoVKwuoXi9N9HPzTQOGbGjHE="
+  },
+  {
+    "name": "kmod-lib-crc-ccitt",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1hvtkvMJJ28QMmU/nyiMau0Sqj1M="
+  },
+  {
+    "name": "kmod-lib-crc16",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1t98LnnRS55U0a/j0DfNCpbGYWHA="
+  },
+  {
+    "name": "kmod-lib-crc32c",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-crc32c",
+    "identity": "Q1n88AI+V5XLkSuLEHUcAe6MkuLYY="
+  },
+  {
+    "name": "kmod-lib-lzo",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-acompress",
+    "identity": "Q1e3wViXNQRPKzAPexGGAGyenjHWA="
+  },
+  {
+    "name": "kmod-lib-raid6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1jiHOkChufmxrKQ7G3ycm6R8fvxw="
+  },
+  {
+    "name": "kmod-lib-xor",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1ecK1KGSGNlYr05IgXdap2D4oGxc="
+  },
+  {
+    "name": "kmod-lib-xxhash",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1eQy8hJlveRwgWhfWbY2BoWMqpg8="
+  },
+  {
+    "name": "kmod-lib-zlib-deflate",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1v6kgmNMk4e4hLnRDwY9cur8Qt5o="
+  },
+  {
+    "name": "kmod-lib-zlib-inflate",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1/wTRPq1Ftbrza6JWZsbc488AKTc="
+  },
+  {
+    "name": "kmod-lib-zstd",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-acompress kmod-lib-xxhash",
+    "identity": "Q1XVBHYb6vzKP7k1x25r/Ah5jshe4="
+  },
+  {
+    "name": "kmod-macvlan",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1WdcND28qh2yX7Y3EVfcy+ZCY6AU="
+  },
+  {
+    "name": "kmod-md-mod",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1Ds4+ewWTugPqQRSFmZyN9POjd5Q="
+  },
+  {
+    "name": "kmod-mediatek_hnat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack",
+    "identity": "Q17e+IYEjOhq4PlKpTCLqrjYu5DGQ="
+  },
+  {
+    "name": "kmod-mmc",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q10051p0QNECDfBdXO7TkeEAmBmMs="
+  },
+  {
+    "name": "kmod-mppe",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-arc4 kmod-crypto-ecb kmod-crypto-sha1 kmod-ppp",
+    "identity": "Q1IA2pVFEOo3m9gSQg2y0L9z2gd2s="
+  },
+  {
+    "name": "kmod-mt_wifi",
+    "version": "6.12.112.7.6.7.3-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-conninfra kmod-mediatek_hnat kmod-warp wifi-dats",
+    "identity": "Q1iRFwb7xzbBlA2wv0BrR8zzxVmt4="
+  },
+  {
+    "name": "kmod-nf-conntrack",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1xSuVTuWC5f8EtDq/FUf4AwYnKxQ="
+  },
+  {
+    "name": "kmod-nf-conntrack-netlink",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack kmod-nfnetlink",
+    "identity": "Q1F6fn041k14WfAwWT0e4dSLjoTyk="
+  },
+  {
+    "name": "kmod-nf-conntrack6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack",
+    "identity": "Q1MK55ACIgSCjYwuv6DqxntMGOJiQ="
+  },
+  {
+    "name": "kmod-nf-flow",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack",
+    "identity": "Q1UxMJBPlY8Ud3JK1XSp4vcii2yMk="
+  },
+  {
+    "name": "kmod-nf-ipt",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1SnggK7M7b9QuAZ6Ls9EwC5hVdqo="
+  },
+  {
+    "name": "kmod-nf-ipt6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-ipt kmod-nf-log6",
+    "identity": "Q1OuaE/Z4vnDdPgvfzFy5ptlbFpfs="
+  },
+  {
+    "name": "kmod-nf-ipvs",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ipt-conntrack kmod-ipt-core kmod-lib-crc32c kmod-nf-conntrack",
+    "identity": "Q1zZAStq0uMjrj6xrsX1FfXt2Yv3Q="
+  },
+  {
+    "name": "kmod-nf-log",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1JgNb3wbnUsY+3l/BYDlr954WNSQ="
+  },
+  {
+    "name": "kmod-nf-log6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-log",
+    "identity": "Q1j1sp8QKUch2P8XyTko47CQV6FPo="
+  },
+  {
+    "name": "kmod-nf-nat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack",
+    "identity": "Q1MJZJWWnkYHn7sjlxyGJ7ikKXKNA="
+  },
+  {
+    "name": "kmod-nf-nat6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack6 kmod-nf-nat",
+    "identity": "Q1CytyAXsq8NwbLCWffWzbIpyy1B0="
+  },
+  {
+    "name": "kmod-nf-reject",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1LoaE0q46yFz1a5Z6nhIjMn8jEgI="
+  },
+  {
+    "name": "kmod-nf-reject6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1zmf1tL8Ospu14vMcviC5SFwjIGI="
+  },
+  {
+    "name": "kmod-nf-tproxy",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q13h+9fUv4hdTIo96HaSiRfYXSTQQ="
+  },
+  {
+    "name": "kmod-nfnetlink",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q15hJ4JvxsaZ5x5ui6Bph4hpgI9Q8="
+  },
+  {
+    "name": "kmod-nfnetlink-queue",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nfnetlink",
+    "identity": "Q1HBOURtudAKU0lzkWTqt4jJ9oPcI="
+  },
+  {
+    "name": "kmod-nft-compat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-ipt kmod-nft-core",
+    "identity": "Q19fBe3DAPN8/A6N7FRK37GH12E8o="
+  },
+  {
+    "name": "kmod-nft-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-lib-crc32c kmod-nf-conntrack6 kmod-nf-log kmod-nf-log6 kmod-nf-nat kmod-nf-reject kmod-nf-reject6 kmod-nfnetlink",
+    "identity": "Q1u9A/h8E6VgAgsAQUyVUCP+1cQKQ="
+  },
+  {
+    "name": "kmod-nft-fib",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nft-core",
+    "identity": "Q1y1ItoYFsiQMoxaUepsqUdm25CzY="
+  },
+  {
+    "name": "kmod-nft-fullcone",
+    "version": "6.12.112.2023.05.17~07d93b62-r3",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nft-nat",
+    "identity": "Q1t8dno6/qxV+u9Z/IsVS3VDAk2Bw="
+  },
+  {
+    "name": "kmod-nft-nat",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-nat kmod-nft-core",
+    "identity": "Q1fiPo7WCk8XOFBbGHTqq4N1JG3Iw="
+  },
+  {
+    "name": "kmod-nft-netdev",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nft-core",
+    "identity": "Q1KUZvOHiLZw4CJXthOE9WTkRFoF4="
+  },
+  {
+    "name": "kmod-nft-offload",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-flow kmod-nft-nat",
+    "identity": "Q1a3X3A0FH/uWeTMjqwOA+OBaSIek="
+  },
+  {
+    "name": "kmod-nft-queue",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nfnetlink-queue kmod-nft-core",
+    "identity": "Q1A3qN+j9+mCRn+VCqec3lJiVDYcc="
+  },
+  {
+    "name": "kmod-nft-tproxy",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nf-conntrack kmod-nf-tproxy kmod-nft-core",
+    "identity": "Q1Vrc4YmHEESHkOINRw8pPcStHmLI="
+  },
+  {
+    "name": "kmod-nls-base",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1E6Bcm4fh4oBwMCIA6uMSfE2JJcE="
+  },
+  {
+    "name": "kmod-nls-cp437",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1OCiwqYR3wRJdMxp1RRQfNjvbWfE="
+  },
+  {
+    "name": "kmod-nls-cp932",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1foBLTyhWl+oY9GzSXc8qYkA1+nA="
+  },
+  {
+    "name": "kmod-nls-cp936",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1EtLJw2R8L7Fmja9oTYdIjGfGCEk="
+  },
+  {
+    "name": "kmod-nls-cp950",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1qXDOUyk++j/wun9Ijm/k27jBKM0="
+  },
+  {
+    "name": "kmod-nls-iso8859-1",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q1pEBY3ZRDq7KuQYHXiOnc6YlbR90="
+  },
+  {
+    "name": "kmod-nls-utf8",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base",
+    "identity": "Q13G3ADsP+9muTnrDdfRuSqoc786U="
+  },
+  {
+    "name": "kmod-nvme",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-hwmon-core",
+    "identity": "Q19WJF69JriTyuzY466WAdeE66PUs="
+  },
+  {
+    "name": "kmod-ppp",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-lib-crc-ccitt kmod-slhc",
+    "identity": "Q1JibxttkmgSaguazl6BGuPPUcKfc="
+  },
+  {
+    "name": "kmod-pppoe",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ppp kmod-pppox",
+    "identity": "Q1P7CbTfDXuc9ZWA3oO/ITgsMfHsI="
+  },
+  {
+    "name": "kmod-pppox",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-ppp",
+    "identity": "Q1r/CeOAGqIvfkIyTqY1kw1vG/gQw="
+  },
+  {
+    "name": "kmod-sched-bpf",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1uKmeFE4F0OIDWjC/dXXdMDk5FLg="
+  },
+  {
+    "name": "kmod-sched-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1hPrRsjFUsmVRyLcJ1XBEV4J1SJA="
+  },
+  {
+    "name": "kmod-scsi-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1zTouMCIllYtCKJZyv5Ena1oDALY="
+  },
+  {
+    "name": "kmod-slhc",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-lib-crc-ccitt",
+    "identity": "Q1JYXgPbo8xpFS8VQ6N+MR3JHU6gs="
+  },
+  {
+    "name": "kmod-tcp-bbr",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1PxTUbIRL9x4yOZQPIWFNUbmcvVY="
+  },
+  {
+    "name": "kmod-tun",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1bB0IW0BIqzuQnFk+jZoMVzHSTZI="
+  },
+  {
+    "name": "kmod-udptunnel4",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1O+RZEog4B1+xoPyNKoos972Rc1E="
+  },
+  {
+    "name": "kmod-udptunnel6",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1aL6KSzcCZ4+y1eFX49Zja0Nz1lA="
+  },
+  {
+    "name": "kmod-usb-common",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1BJcxsyx04+c4P3fXgL9WWJQyKcs="
+  },
+  {
+    "name": "kmod-usb-core",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-nls-base kmod-usb-common",
+    "identity": "Q1/wr5S2nhb4rKeCErlRcQxAns8Xc="
+  },
+  {
+    "name": "kmod-usb-storage",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-scsi-core kmod-usb-core",
+    "identity": "Q1E5B3j7EIC1sg7abOvnNlFMCdCsE="
+  },
+  {
+    "name": "kmod-usb-storage-extras",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-usb-storage",
+    "identity": "Q1GltbBZNrQyYB/Qj1P+/2d+ncTAQ="
+  },
+  {
+    "name": "kmod-usb-storage-uas",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-usb-storage",
+    "identity": "Q1kiS1AE3S5wRy9veTXIt8Nijrczk="
+  },
+  {
+    "name": "kmod-usb-xhci-hcd",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-usb-core",
+    "identity": "Q1aoiQ0bfS/uy4L0EPZMYaT46H0Kc="
+  },
+  {
+    "name": "kmod-usb-xhci-mtk",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-usb-core kmod-usb-xhci-hcd",
+    "identity": "Q16zj5JMVY0SdCiVpLj/08Y0MOqUw="
+  },
+  {
+    "name": "kmod-usb3",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-usb-core kmod-usb-xhci-hcd kmod-usb-xhci-mtk",
+    "identity": "Q1/yBMjwarjBAMEA1A3sXT7zHhdhs="
+  },
+  {
+    "name": "kmod-veth",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q1oJeB+FFDUXTyNuXn5paetpSW8N4="
+  },
+  {
+    "name": "kmod-warp",
+    "version": "6.12.112.20250408-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-mediatek_hnat",
+    "identity": "Q1qMALcBR8B/4L2J89q2d/vRSd86s="
+  },
+  {
+    "name": "kmod-wireguard",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1 kmod-crypto-lib-chacha20poly1305 kmod-crypto-lib-curve25519 kmod-udptunnel4 kmod-udptunnel6",
+    "identity": "Q1/6s5vPiY7cLN9MyaIqrwtBr7MB8="
+  },
+  {
+    "name": "kmod-xdp-sockets-diag",
+    "version": "6.12.112-r1",
+    "dependencies": "kernel=6.12.112~61387475456bc43b27290a665572950c-r1",
+    "identity": "Q15fVi/Jr7zbCiuSzs35NroH1gVDw="
+  },
+  {
+    "name": "kvcedit",
+    "version": "1",
+    "dependencies": "libc libkvcutil",
+    "identity": "Q1X6DKMszo12pPYQoC1BAfz7EjKBw="
+  },
+  {
+    "name": "l1util",
+    "version": "2025.12.11~081bb312-r1",
+    "dependencies": "libc libl1parser",
+    "identity": "Q1IMHJvAU0Rw9ziySiA0EoKXg3glw="
+  },
+  {
+    "name": "libacl",
+    "version": "2.3.2-r2",
+    "dependencies": "libattr libc",
+    "identity": "Q140GwPFSNqOUH96bCMdsTrwcDFsE="
+  },
+  {
+    "name": "libatomic1",
+    "version": "14.3.0-r5",
+    "dependencies": "libgcc1",
+    "identity": "Q1R/GiYUBk5nRUgg2cxB/6hQlSvo0="
+  },
+  {
+    "name": "libattr",
+    "version": "2.5.2-r3",
+    "dependencies": "libc",
+    "identity": "Q1CZEAPBCVqgNR5gNcwpABNtgl5us="
+  },
+  {
+    "name": "libavahi-client",
+    "version": "0.9_rc5-r1",
+    "dependencies": "avahi-dbus-daemon libc",
+    "identity": "Q1v/xM9TAFWSusApacHuNMdG7NpG0="
+  },
+  {
+    "name": "libavahi-dbus-support",
+    "version": "0.9_rc5-r1",
+    "dependencies": "dbus libc",
+    "identity": "Q1bqrYrxrNuql7pe4qyQRlUMoABiA="
+  },
+  {
+    "name": "libblkid1",
+    "version": "2.41.5-r1",
+    "dependencies": "libc libuuid1",
+    "identity": "Q1VS+CWPH8I+vDwQDn3xg++t7uYKQ="
+  },
+  {
+    "name": "libblobmsg-json20260213",
+    "version": "2026.06.19~7dd12784-r1",
+    "dependencies": "libc libjson-c5 libubox20260213",
+    "identity": "Q18RGXvKzAeT4XxYBTToFuYAUYDVU="
+  },
+  {
+    "name": "libbpf1",
+    "version": "1.6.2-r1",
+    "dependencies": "libc libelf1",
+    "identity": "Q19RYxmIxjtcTRDVzfAaN9tUY6H3k="
+  },
+  {
+    "name": "libbz2-1.0",
+    "version": "1.0.8-r1",
+    "dependencies": "libc",
+    "identity": "Q1HK29BMGjpSmr6KUMmmM1F1nPPQ0="
+  },
+  {
+    "name": "libc",
+    "version": "1.2.5-r5",
+    "dependencies": "libgcc1",
+    "identity": "Q1+myA3Q/4h9AyWYmlhkjhQ5o29+I="
+  },
+  {
+    "name": "libcap",
+    "version": "2.69-r1",
+    "dependencies": "libc",
+    "identity": "Q1Q9g1yWnsQmKucT/tDNvKLK5B+Zc="
+  },
+  {
+    "name": "libcap-ng",
+    "version": "0.8.4-r2",
+    "dependencies": "libc",
+    "identity": "Q1sor01WUtU0PdWSixUAePf2qHp1M="
+  },
+  {
+    "name": "libcomerr0",
+    "version": "1.47.3-r1",
+    "dependencies": "libc libuuid1",
+    "identity": "Q18+srXSBaRrmARE0iFlNLw+4/k2M="
+  },
+  {
+    "name": "libcurl4",
+    "version": "8.22.0-r1",
+    "dependencies": "ca-bundle libc libnghttp2-14 libopenssl3 libpthread zlib",
+    "identity": "Q15jlpGSDyiDPzc8qd2MsAf0zm0PI="
+  },
+  {
+    "name": "libdaemon",
+    "version": "0.14-r5",
+    "dependencies": "libc",
+    "identity": "Q1dUroL8Y7iUfj+fmzlGhUIU4fakg="
+  },
+  {
+    "name": "libdbus",
+    "version": "1.16.2-r4",
+    "dependencies": "libc libpthread",
+    "identity": "Q19nEiJOFr4AwrxDWh5O6U8ul1YLY="
+  },
+  {
+    "name": "libe2p2",
+    "version": "1.47.3-r1",
+    "dependencies": "libc libuuid1",
+    "identity": "Q1g3VORxK3LNAOj7GDTgjoE1TzvZA="
+  },
+  {
+    "name": "libelf1",
+    "version": "0.192-r1",
+    "dependencies": "libc zlib",
+    "identity": "Q16bWLL6lQCJ96d/4jRSU/KB65WKg="
+  },
+  {
+    "name": "libexpat",
+    "version": "2.8.4-r1",
+    "dependencies": "libc",
+    "identity": "Q1LPRup77pyobN8lGY9Yo6Dya/PaM="
+  },
+  {
+    "name": "libext2fs2",
+    "version": "1.47.3-r1",
+    "dependencies": "libblkid1 libc libcomerr0 libss2 libuuid1",
+    "identity": "Q1VejjuRbnlmPtKqtBI54UhaidHpk="
+  },
+  {
+    "name": "libf2fs6",
+    "version": "1.16.0-r4",
+    "dependencies": "libc libuuid1",
+    "identity": "Q1f3Y9c4V0rC8kTk7pxDdLt2Daq+E="
+  },
+  {
+    "name": "libfdisk1",
+    "version": "2.41.5-r1",
+    "dependencies": "libblkid1 libc libuuid1",
+    "identity": "Q107eDxu5k+dgjSlkhRxSmfg2wkEs="
+  },
+  {
+    "name": "libfuse1",
+    "version": "2.9.9-r2",
+    "dependencies": "kmod-fuse libc libpthread",
+    "identity": "Q1Qv/HNzdfCtxRUuUt2p325jITXX4="
+  },
+  {
+    "name": "libfuse3-3",
+    "version": "3.17.3-r1",
+    "dependencies": "kmod-fuse libc libpthread",
+    "identity": "Q1KdfItR4CmDB8Kb8j7Bofz0hmdnQ="
+  },
+  {
+    "name": "libgcc1",
+    "version": "14.3.0-r5",
+    "dependencies": "",
+    "identity": "Q1g/QPcV+h9kD6MnpWH/wUnfUupvc="
+  },
+  {
+    "name": "libgmp10",
+    "version": "6.3.0-r2",
+    "dependencies": "libc",
+    "identity": "Q1pqvsI1ayYsidKcOuzDo/y/nLb30="
+  },
+  {
+    "name": "libgnutls",
+    "version": "3.8.10-r1",
+    "dependencies": "libatomic1 libc libgmp10 libnettle8",
+    "identity": "Q19zyz9ZUyaUu/XL3kf3aTmFoYFGQ="
+  },
+  {
+    "name": "libiptext-nft0",
+    "version": "1.8.10-r3",
+    "dependencies": "libc libxtables12",
+    "identity": "Q1T0v1mhTOB3curU3mX1/4K0fwWKc="
+  },
+  {
+    "name": "libiptext0",
+    "version": "1.8.10-r3",
+    "dependencies": "libc libxtables12",
+    "identity": "Q1prDOa6NF3mqUwqZCDXsF+n+UWkQ="
+  },
+  {
+    "name": "libiptext6-0",
+    "version": "1.8.10-r3",
+    "dependencies": "libc libxtables12",
+    "identity": "Q1ANg8Fxfs/RPwo2iKk12MnOM1dCg="
+  },
+  {
+    "name": "libiwinfo-data",
+    "version": "2026.05.26~66bdd1a0-r1",
+    "dependencies": "libc",
+    "identity": "Q1qSXLVTEnMUGudMfm8d5zEOsfsTw="
+  },
+  {
+    "name": "libiwinfo20230701",
+    "version": "2026.05.26~66bdd1a0-r1",
+    "dependencies": "libc libiwinfo-data libl1parser libnl-tiny1 libubus20251202 libuci20250120",
+    "identity": "Q1HUTx0udtCjlSRNEW+H0blBfQu+o="
+  },
+  {
+    "name": "libjson-c5",
+    "version": "0.18-r1",
+    "dependencies": "libc",
+    "identity": "Q1rj9ImRvV3NHcAd4b4aZiql4JoIg="
+  },
+  {
+    "name": "libjson-script20260213",
+    "version": "2026.06.19~7dd12784-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1JVdI7o/SIjduBJHTtwfn7U15lUU="
+  },
+  {
+    "name": "libkvcutil",
+    "version": "1",
+    "dependencies": "libc",
+    "identity": "Q1f4GDdJPr5j7rfkPUm8AqZZi1Yzc="
+  },
+  {
+    "name": "libl1parser",
+    "version": "2025.12.11~081bb312-r1",
+    "dependencies": "libc libstdcpp6",
+    "identity": "Q1NdrT7jD7PZsr2hnU9iTVsbOnn/A="
+  },
+  {
+    "name": "liblua5.1.5",
+    "version": "5.1.5-r11",
+    "dependencies": "libc",
+    "identity": "Q1mQz0fx0K4k4xIEqy0ofKD1eBPxw="
+  },
+  {
+    "name": "liblucihttp-lua",
+    "version": "2023.03.15~9b5b683f-r1",
+    "dependencies": "libc liblua5.1.5 liblucihttp0",
+    "identity": "Q198vl7Jb3R3vFh02zvbj/XaTDDIs="
+  },
+  {
+    "name": "liblucihttp-ucode",
+    "version": "2023.03.15~9b5b683f-r1",
+    "dependencies": "libc liblucihttp0 libucode20230711",
+    "identity": "Q1ZvAU6hxhFiwNQfq4ASvD+Rifukc="
+  },
+  {
+    "name": "liblucihttp0",
+    "version": "2023.03.15~9b5b683f-r1",
+    "dependencies": "libc",
+    "identity": "Q149noL5BpUC2D8oydHWSYcC35maQ="
+  },
+  {
+    "name": "liblzma",
+    "version": "5.8.3-r1",
+    "dependencies": "libc libpthread",
+    "identity": "Q1RIARbYw3ersnF8b1yyLp3Adzvt4="
+  },
+  {
+    "name": "liblzo2",
+    "version": "2.10-r5",
+    "dependencies": "libc",
+    "identity": "Q1fULkonE2SN6FG7HbbkSd9nzc17k="
+  },
+  {
+    "name": "libmnl0",
+    "version": "1.0.5-r1",
+    "dependencies": "libc",
+    "identity": "Q1nGCliuXXeW0SPWYezgOX5PLQdDE="
+  },
+  {
+    "name": "libmount1",
+    "version": "2.41.5-r1",
+    "dependencies": "libblkid1 libc",
+    "identity": "Q1fwRVnfnOp5L6NBmuwH7al0w1iN4="
+  },
+  {
+    "name": "libncurses6",
+    "version": "6.4-r3",
+    "dependencies": "libc terminfo",
+    "identity": "Q1HlLRm4WwrOJnu8rFDm/MDxB5HOY="
+  },
+  {
+    "name": "libnetfilter-conntrack3",
+    "version": "1.1.0-r1",
+    "dependencies": "kmod-nf-conntrack-netlink libc libmnl0 libnfnetlink0",
+    "identity": "Q158V58mnPLlQhhJhwCiLnHgJEDPU="
+  },
+  {
+    "name": "libnettle8",
+    "version": "3.10.2-r1",
+    "dependencies": "libc libgmp10",
+    "identity": "Q1DDpVQ2Dowzxlg8nNzQoCVw7L13c="
+  },
+  {
+    "name": "libnfnetlink0",
+    "version": "1.0.2-r1",
+    "dependencies": "libc",
+    "identity": "Q1ZCOeqApxWUvVe+HFil1+NPZ3ERI="
+  },
+  {
+    "name": "libnftnl11",
+    "version": "1.3.1-r1",
+    "dependencies": "libc libmnl0",
+    "identity": "Q1AtQml2jdfodo9lTAA5l+0WtN4pY="
+  },
+  {
+    "name": "libnghttp2-14",
+    "version": "1.70.0-r1",
+    "dependencies": "libc",
+    "identity": "Q15vrUgTcpClWT9fo8+9qCQ5lx5CI="
+  },
+  {
+    "name": "libnl-tiny1",
+    "version": "2025.12.02~40493a65-r1",
+    "dependencies": "libc",
+    "identity": "Q16gVMCaFFBUfJdhf9RgS7vp/tzoQ="
+  },
+  {
+    "name": "libopenssl-conf",
+    "version": "3.5.9-r1",
+    "dependencies": "libc libopenssl3",
+    "identity": "Q1ujsa8N7Ncz3mkZXyzs5LFjR1Umc="
+  },
+  {
+    "name": "libopenssl-legacy",
+    "version": "3.5.9-r1",
+    "dependencies": "libc libopenssl-conf libopenssl3",
+    "identity": "Q1xVlEKWFWDt+GKVNnGObTG/zsaKU="
+  },
+  {
+    "name": "libopenssl3",
+    "version": "3.5.9-r1",
+    "dependencies": "libc",
+    "identity": "Q1ex/JJIWCPySeGGoYt4RREqwD+QA="
+  },
+  {
+    "name": "libparted",
+    "version": "3.6-r2",
+    "dependencies": "libblkid1 libc libuuid1",
+    "identity": "Q1BxNepOfK8mo1NA42jcixE1TDxuc="
+  },
+  {
+    "name": "libpcap1",
+    "version": "1.10.6-r1",
+    "dependencies": "libc",
+    "identity": "Q1eNyjyKAvqDeyKUEYw2Rz47CPTpg="
+  },
+  {
+    "name": "libpopt0",
+    "version": "1.19-r1",
+    "dependencies": "libc",
+    "identity": "Q11A15RCeQydk2FgA43u2o1y4LbvU="
+  },
+  {
+    "name": "libpthread",
+    "version": "1.2.5-r5",
+    "dependencies": "libgcc1",
+    "identity": "Q1LOqwu81X4GrpFT7ulUjOVa0qoe4="
+  },
+  {
+    "name": "libqrencode",
+    "version": "4.1.1-r2",
+    "dependencies": "libc",
+    "identity": "Q1Y1Tmi+OzR/pbGESVSs9n+PUtb7k="
+  },
+  {
+    "name": "libreadline8",
+    "version": "8.3-r1",
+    "dependencies": "libc libncursesw6",
+    "identity": "Q19n66e6clAP/NIGqEVFK47Unq5sE="
+  },
+  {
+    "name": "librt",
+    "version": "1.2.5-r5",
+    "dependencies": "libpthread",
+    "identity": "Q1sd/2Yeoyt7vTT5Lj0VzqHVfl8Zg="
+  },
+  {
+    "name": "libruby3.4",
+    "version": "3.4.9-r1",
+    "dependencies": "libc libgmp10 libpthread librt zlib",
+    "identity": "Q1mlzPOFzvPmZ76sJ53NEXRFJjcbA="
+  },
+  {
+    "name": "libseccomp",
+    "version": "2.5.5-r1",
+    "dependencies": "libc",
+    "identity": "Q1FRe1hSgMpR2NslBa2WIqqhfWb1o="
+  },
+  {
+    "name": "libsmartcols1",
+    "version": "2.41.5-r1",
+    "dependencies": "libc librt",
+    "identity": "Q12uq2zsbjPYbAuSayNNoGPF/rzV4="
+  },
+  {
+    "name": "libsqlite3-0",
+    "version": "3.53.1-r1",
+    "dependencies": "libc libpthread zlib",
+    "identity": "Q1r3Xxtzir+xHvZWFC3ivXh7Os/eY="
+  },
+  {
+    "name": "libss2",
+    "version": "1.47.3-r1",
+    "dependencies": "libc libcomerr0",
+    "identity": "Q1btJJki7u6GMGpM3L09GpGHaUukk="
+  },
+  {
+    "name": "libstdcpp6",
+    "version": "14.3.0-r5",
+    "dependencies": "",
+    "identity": "Q1nPZK9PQInQPPVhy5sKzQ1DzT+r0="
+  },
+  {
+    "name": "libtasn1",
+    "version": "4.19.0-r2",
+    "dependencies": "libc",
+    "identity": "Q1AbkgK1XxnTh2pJ/4MW6bMq7sSfc="
+  },
+  {
+    "name": "libtirpc",
+    "version": "1.3.7-r2",
+    "dependencies": "libc libpthread",
+    "identity": "Q1S+4ycEUBQDEnBEKQepraGiB0GLE="
+  },
+  {
+    "name": "libubox20260213",
+    "version": "2026.06.19~7dd12784-r1",
+    "dependencies": "libc",
+    "identity": "Q1fcqxMyR3Kbje6qViX7nPDWTUpHY="
+  },
+  {
+    "name": "libubus-lua",
+    "version": "2026.06.28~24864e78-r2",
+    "dependencies": "libc liblua5.1.5 libubus20251202",
+    "identity": "Q1MPNCxG9VCvKqRKnP12T/PuLDQ8E="
+  },
+  {
+    "name": "libubus20251202",
+    "version": "2026.06.28~24864e78-r2",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1Zkxim2stRy7ICuIsUEw+7b6xf+o="
+  },
+  {
+    "name": "libuci-lua",
+    "version": "2025.12.02~66127cd7-r1",
+    "dependencies": "libc liblua5.1.5 libuci20250120",
+    "identity": "Q1oe7iODmFFjKNYEYFxyXTihvkAFk="
+  },
+  {
+    "name": "libuci20250120",
+    "version": "2025.12.02~66127cd7-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1J2Xw0Pj5W6FWVHl0XznYSupJrSM="
+  },
+  {
+    "name": "libuclient20201210",
+    "version": "2026.06.07~daad21fa-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q150DTUIq2ns7NA5fDhmqfsjHUwtE="
+  },
+  {
+    "name": "libucode20230711",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libjson-c5",
+    "identity": "Q1uOknOsWLJaodJjodjWDwQ1nNFRg="
+  },
+  {
+    "name": "libudebug",
+    "version": "2026.01.16~875e1a7a",
+    "dependencies": "libc libubox20260213 libubus20251202",
+    "identity": "Q1lh79Wg6F9q21MuNsoL+yKBECkCQ="
+  },
+  {
+    "name": "liburing",
+    "version": "2.7-r1",
+    "dependencies": "libc",
+    "identity": "Q19/TG1xfT07RuJ8sH4MYoXTYWW2k="
+  },
+  {
+    "name": "libustream-openssl20201210",
+    "version": "2026.03.01~99f1c0db-r1",
+    "dependencies": "libc libopenssl3 libubox20260213",
+    "identity": "Q1LYrSsjeKJSaAeke2RHraVbHWbsQ="
+  },
+  {
+    "name": "libuuid1",
+    "version": "2.41.5-r1",
+    "dependencies": "libc librt",
+    "identity": "Q1tCWGgX4UwQ2q7AV+Zc9rUzuFFbA="
+  },
+  {
+    "name": "libuv1",
+    "version": "1.48.0-r1",
+    "dependencies": "libc libpthread librt",
+    "identity": "Q1U1prEmJraVXlVVomuMsVrM5DRu8="
+  },
+  {
+    "name": "libwebsockets-full",
+    "version": "4.4.1-r1",
+    "dependencies": "libc libcap libopenssl3 libubox20260213 libuv1 zlib",
+    "identity": "Q1f5noUreTXLI+3mGKaXD69+8gIgk="
+  },
+  {
+    "name": "libxtables12",
+    "version": "1.8.10-r3",
+    "dependencies": "libc",
+    "identity": "Q1w5e9bCZJhtUxb3RvWp4Rqjnf+pU="
+  },
+  {
+    "name": "libyaml",
+    "version": "0.2.5-r2",
+    "dependencies": "libc",
+    "identity": "Q1UtLELughpM5b7o2/Z5zwldwkiLg="
+  },
+  {
+    "name": "libzstd",
+    "version": "1.5.7-r1",
+    "dependencies": "libc",
+    "identity": "Q1+PqwWIFo2btCETeaHBgXB5haJuE="
+  },
+  {
+    "name": "logd",
+    "version": "2025.10.30~6f78fa49-r1",
+    "dependencies": "libblobmsg-json20260213 libc libubox20260213 libubus20251202 libudebug",
+    "identity": "Q1l46fb+DuT2aREDOlJV0IDWjxr5Y="
+  },
+  {
+    "name": "losetup",
+    "version": "2.41.5-r1",
+    "dependencies": "libc libsmartcols1",
+    "identity": "Q1sKyvp8LfBg0XOSxvPSKNx9BugM4="
+  },
+  {
+    "name": "lsblk",
+    "version": "2.41.5-r1",
+    "dependencies": "libblkid1 libc libmount1 libncurses6 libsmartcols1",
+    "identity": "Q1aSVLHGiurHA5JCaZ6/DFGMRhMZE="
+  },
+  {
+    "name": "lua",
+    "version": "5.1.5-r11",
+    "dependencies": "libc liblua5.1.5",
+    "identity": "Q10re1Ns5IaPM+giAdDBqNKWCaNVo="
+  },
+  {
+    "name": "luci",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-package-manager luci-light",
+    "identity": "Q1dD0c/OCd6+69Aen+YPnJoSlgGsk="
+  },
+  {
+    "name": "luci-app-argon-config",
+    "version": "1.0-r20230608",
+    "dependencies": "libc luci-theme-argon",
+    "identity": "Q1dw3rDShdub2mFWbut5yWuzfLC4o="
+  },
+  {
+    "name": "luci-app-aurora-config",
+    "version": "1.2.5-r20260920",
+    "dependencies": "libc luci-base",
+    "identity": "Q1a8d+qAQUTKyWiODgFeUhP5OjBs8="
+  },
+  {
+    "name": "luci-app-autoreboot",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc",
+    "identity": "Q1swnhp1SPwqmrMlaCEmy/UXAgS6M="
+  },
+  {
+    "name": "luci-app-axonhub",
+    "version": "20261016-r1",
+    "dependencies": "axonhub>=20261013-r7 libc luci-base",
+    "identity": "Q1rkNzbngoXMKcCghIUaVxIz55olE="
+  },
+  {
+    "name": "luci-app-cloudflared",
+    "version": "1.2-r1",
+    "dependencies": "cloudflared libc",
+    "identity": "Q1asbRfixWxOM/+Pbs5BKVMkDSEpI="
+  },
+  {
+    "name": "luci-app-dockerman",
+    "version": "0.5.26-r1",
+    "dependencies": "docker dockerd libc luci-compat luci-lib-docker luci-lib-ip luci-lua-runtime ttyd",
+    "identity": "Q1WY9jZOfPG0Qdi1mjN6+f4N0ydWA="
+  },
+  {
+    "name": "luci-app-easytier",
+    "version": "2.7.0-r1",
+    "dependencies": "kmod-tun libc luci-compat luci-lua-runtime",
+    "identity": "Q11xSaHSyC2qj2aF85emhb05Qo7MU="
+  },
+  {
+    "name": "luci-app-eqos-mtk",
+    "version": "26.289.36031~03eb306",
+    "dependencies": "kmod-ifb kmod-mediatek_hnat kmod-sched-core libc nftables tc",
+    "identity": "Q1gZFHMlDn14JcEVMmPFhgzWCplzo="
+  },
+  {
+    "name": "luci-app-firewall",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base uci-firewall",
+    "identity": "Q1ZOdRqElDCdzXlNegDfwEOHmv/YM="
+  },
+  {
+    "name": "luci-app-honk",
+    "version": "2026.10.05-r8",
+    "dependencies": "cgi-io honk jsonfilter libc libubox20260213 luci-base rpcd",
+    "identity": "Q1GEQlWvd285n5iZFheG3DXDrEMsg="
+  },
+  {
+    "name": "luci-app-lucky",
+    "version": "3.0.0-r26",
+    "dependencies": "libc lua luci-lib-ip luci-lib-jsonc luci-lib-nixio lucky rpcd-mod-file",
+    "identity": "Q1xuiUpiYFHpUv7yka2FigEE3D734="
+  },
+  {
+    "name": "luci-app-mini-diskmanager",
+    "version": "1.0.29-r20260215",
+    "dependencies": "block-mount fdisk libc lsblk luci-base parted",
+    "identity": "Q11PeFhbcA247xqz83n2neRwtU5Bo="
+  },
+  {
+    "name": "luci-app-mtwifi-cfg",
+    "version": "1-r1",
+    "dependencies": "libc mtwifi-cfg-ucode",
+    "identity": "Q1DNoc63A8i85rgIbRyqrMVmIH7SI="
+  },
+  {
+    "name": "luci-app-openclash",
+    "version": "0.48.002",
+    "dependencies": "bash ca-bundle curl dnsmasq-full ip-full kmod-tun libc ruby ruby-yaml unzip",
+    "identity": "Q1MhfSrwb3k1KARs8GJEF7qV4KlLM="
+  },
+  {
+    "name": "luci-app-package-manager",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base",
+    "identity": "Q1XreUE5szB/R25FlqE14NfO2R8gk="
+  },
+  {
+    "name": "luci-app-quickstart",
+    "version": "0.12.10-r1",
+    "dependencies": "libc luci-app-ttyd luci-lua-runtime quickstart",
+    "identity": "Q1+rOzQWaI4B/xLyvE241Ah6xQDp4="
+  },
+  {
+    "name": "luci-app-samba4",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base samba4-server",
+    "identity": "Q11qsHgupnGPCdXJsq0wvcevQ8IDY="
+  },
+  {
+    "name": "luci-app-store",
+    "version": "0.2.1-r1",
+    "dependencies": "curl libc libuci-lua luci-lib-taskd>=1.0.19 luci-lua-runtime mount-utils tar",
+    "identity": "Q1+oYb5qtKjYEx/rOFCtXTkE6ThUM="
+  },
+  {
+    "name": "luci-app-tingreader",
+    "version": "2.0.6-r1",
+    "dependencies": "ca-bundle curl jshn jsonfilter libc luci-base rpcd rpcd-mod-ucode",
+    "identity": "Q10DffqYXOBjaUKlYdTMMfFrEaUQ4="
+  },
+  {
+    "name": "luci-app-ttyd",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base ttyd",
+    "identity": "Q1G/naYIQBKMjJXju/GJGP80kW07Y="
+  },
+  {
+    "name": "luci-app-turboacc-mtk",
+    "version": "26.289.36031~03eb306",
+    "dependencies": "kmod-tcp-bbr libc",
+    "identity": "Q19edjAUxaeIJjmDS9WAfdJ78zdxQ="
+  },
+  {
+    "name": "luci-app-upnp",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base miniupnpd rpcd-mod-ucode",
+    "identity": "Q1+YADl5BXRdsn/MuGPFOBbL2M15E="
+  },
+  {
+    "name": "luci-app-vlmcsd",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc vlmcsd",
+    "identity": "Q1hz87bQy64qvLDjlXZyJRmFSPQAw="
+  },
+  {
+    "name": "luci-app-wolultra",
+    "version": "20261016-r1",
+    "dependencies": "etherwake libc luci-base",
+    "identity": "Q1imb0Kq8q+y8VCvyef/K0enGlA0E="
+  },
+  {
+    "name": "luci-base",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "cgi-io libc liblucihttp-ucode rpcd rpcd-mod-file rpcd-mod-luci rpcd-mod-ucode ucode ucode-mod-fs ucode-mod-html ucode-mod-log ucode-mod-math ucode-mod-ubus ucode-mod-uci",
+    "identity": "Q1EUgSUBlZMZPmbGcywjlvAUPhyuw="
+  },
+  {
+    "name": "luci-compat",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-lua-runtime",
+    "identity": "Q1hC/eOmvs8tc59sfeVw978kgWa4A="
+  },
+  {
+    "name": "luci-i18n-argon-config-zh-cn",
+    "version": "0",
+    "dependencies": "libc luci-app-argon-config",
+    "identity": "Q1FsS6KnXkW6W8unfNtAki7QdWEmA="
+  },
+  {
+    "name": "luci-i18n-aurora-config-zh-cn",
+    "version": "0",
+    "dependencies": "libc luci-app-aurora-config",
+    "identity": "Q1IQSwZ4tN23/8X+rbsXo31hwtmq8="
+  },
+  {
+    "name": "luci-i18n-autoreboot-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-autoreboot",
+    "identity": "Q1cmxOwOrSxK+qXOAGkgFxBQ84wR4="
+  },
+  {
+    "name": "luci-i18n-axonhub-zh-cn",
+    "version": "20261016-r1",
+    "dependencies": "libc luci-app-axonhub",
+    "identity": "Q1PERo2SUbwop6uZMQRIkam7NUToU="
+  },
+  {
+    "name": "luci-i18n-base-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base",
+    "identity": "Q1MTfAVMvO7L4nVyOApkAlzeItVq8="
+  },
+  {
+    "name": "luci-i18n-cloudflared-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-cloudflared",
+    "identity": "Q1JWspAj8m8yusPDkRUVKE6YoSgfg="
+  },
+  {
+    "name": "luci-i18n-dockerman-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-dockerman",
+    "identity": "Q1aDj3OtvPeV4NeQPwDSWPtg6ouPQ="
+  },
+  {
+    "name": "luci-i18n-easytier-zh-cn",
+    "version": "2.7.0",
+    "dependencies": "libc luci-app-easytier",
+    "identity": "Q1wXzCcanHiVSvZUqqH9KaGwiaUA8="
+  },
+  {
+    "name": "luci-i18n-eqos-mtk-zh-cn",
+    "version": "26.289.36031~03eb306",
+    "dependencies": "libc luci-app-eqos-mtk",
+    "identity": "Q1uXJRvfYZllSzdy9P6MgS97aWrP8="
+  },
+  {
+    "name": "luci-i18n-firewall-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-firewall",
+    "identity": "Q1FZzgbaLeQo/5ojx44wLQfUbk4GA="
+  },
+  {
+    "name": "luci-i18n-lucky-zh-cn",
+    "version": "0",
+    "dependencies": "libc luci-app-lucky",
+    "identity": "Q1bQ+8JorKsZOG5DEt+sZXt9QMmCw="
+  },
+  {
+    "name": "luci-i18n-mini-diskmanager-zh-cn",
+    "version": "0",
+    "dependencies": "libc luci-app-mini-diskmanager",
+    "identity": "Q1KkmuiLOUslzoB693QHfCAmhii2Y="
+  },
+  {
+    "name": "luci-i18n-mtwifi-cfg-zh-cn",
+    "version": "26.289.36031~03eb306",
+    "dependencies": "libc luci-app-mtwifi-cfg",
+    "identity": "Q1Dp4n4kTvHSRsd4DIWR6CeaVFGX8="
+  },
+  {
+    "name": "luci-i18n-package-manager-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-package-manager",
+    "identity": "Q1iw7ymUpfA0stiHrYxpiioekhoHA="
+  },
+  {
+    "name": "luci-i18n-quickstart-zh-cn",
+    "version": "0",
+    "dependencies": "libc luci-app-quickstart",
+    "identity": "Q10gniksuulH/NTd9vLdXpSR8D08I="
+  },
+  {
+    "name": "luci-i18n-samba4-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-samba4",
+    "identity": "Q1FSE9oQdLoRJ+8YpyyUa6hf5djfA="
+  },
+  {
+    "name": "luci-i18n-tingreader-zh-cn",
+    "version": "2.0.6-r1",
+    "dependencies": "libc luci-app-tingreader",
+    "identity": "Q1O0CqZan6ivHqK8dNNSMUREr7nNk="
+  },
+  {
+    "name": "luci-i18n-ttyd-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-ttyd",
+    "identity": "Q1mlmtfKCSQM5FCbz8mBCcghPm4H8="
+  },
+  {
+    "name": "luci-i18n-turboacc-mtk-zh-cn",
+    "version": "26.289.36031~03eb306",
+    "dependencies": "libc luci-app-turboacc-mtk",
+    "identity": "Q19M9XxsK94ZdvjWYiPAZ+Zr27wxg="
+  },
+  {
+    "name": "luci-i18n-upnp-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-upnp",
+    "identity": "Q13M1K+2LfJZZd9OGnZxTZOFDXimU="
+  },
+  {
+    "name": "luci-i18n-vlmcsd-zh-cn",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-vlmcsd",
+    "identity": "Q1OT5u4iz45i0gHNS9tIGgv6p/tcg="
+  },
+  {
+    "name": "luci-i18n-wolultra-zh-cn",
+    "version": "20261016-r1",
+    "dependencies": "libc luci-app-wolultra",
+    "identity": "Q1J1YAXltxsumOzMSBQBKfX2qBld0="
+  },
+  {
+    "name": "luci-lib-base",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc liblucihttp-lua lua luci-lib-ip luci-lib-jsonc luci-lib-nixio",
+    "identity": "Q1yhWA4CbpodcFH+uG1VdVmaMw5FE="
+  },
+  {
+    "name": "luci-lib-docker",
+    "version": "0.3.4-r1",
+    "dependencies": "libc luci-lib-jsonc luci-lua-runtime",
+    "identity": "Q1A4HuUl9ZvVoGSbgtvNolUburnHk="
+  },
+  {
+    "name": "luci-lib-ip",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc liblua5.1.5 libnl-tiny1",
+    "identity": "Q1BrIT2dsCl5hQYSM6c11/DBDtBrU="
+  },
+  {
+    "name": "luci-lib-jsonc",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc libjson-c5 liblua5.1.5",
+    "identity": "Q1gqVAGEVZ9zRt1r6XlNJGLzSj1lU="
+  },
+  {
+    "name": "luci-lib-nixio",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc liblua5.1.5",
+    "identity": "Q1wmkEWKVyDy+0/ovqL+tTBRTtMQ4="
+  },
+  {
+    "name": "luci-lib-taskd",
+    "version": "1.0.26",
+    "dependencies": "libc luci-lib-xterm luci-lua-runtime taskd>=1.0.3",
+    "identity": "Q16uLhIkzLfv5ouNwQbCmMd8Ot4Wo="
+  },
+  {
+    "name": "luci-lib-uqr",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc",
+    "identity": "Q1J54b9HIrfI8oKb5cs13suntTwH4="
+  },
+  {
+    "name": "luci-lib-xterm",
+    "version": "4.18.0",
+    "dependencies": "libc luci-lua-runtime",
+    "identity": "Q18WhMeq+0n/aw6GJEQbrhPumgipI="
+  },
+  {
+    "name": "luci-light",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-app-firewall luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-theme-argon rpcd-mod-rrdns uhttpd uhttpd-mod-ubus",
+    "identity": "Q14zPH6VvLO55+2vI2NPoUcnTbpQw="
+  },
+  {
+    "name": "luci-lua-runtime",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc liblucihttp-lua libubus-lua lua luci-base luci-lib-base luci-lib-ip luci-lib-jsonc luci-lib-nixio ucode-mod-lua",
+    "identity": "Q1yeXKI9IaIraORgb4MNolGJhxnog="
+  },
+  {
+    "name": "luci-mod-admin-full",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base luci-mod-network luci-mod-status luci-mod-system",
+    "identity": "Q1wFownd7WPqfc3GZBn0GmQGEBS/k="
+  },
+  {
+    "name": "luci-mod-network",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base luci-lib-uqr rpcd-mod-iwinfo",
+    "identity": "Q1axNU5WUQK4KCapJ7OMp8wj5yzeM="
+  },
+  {
+    "name": "luci-mod-status",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc libiwinfo20230701 luci-base rpcd-mod-iwinfo",
+    "identity": "Q154nKcDlAzzZ07lCcTDNwHvogbAM="
+  },
+  {
+    "name": "luci-mod-system",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base",
+    "identity": "Q16lAoXhurugr5WULw6Kcx9T0noFE="
+  },
+  {
+    "name": "luci-proto-ipv6",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc",
+    "identity": "Q1ibYWBtENNUyUq6qb8GRdwTChDUU="
+  },
+  {
+    "name": "luci-proto-ppp",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc",
+    "identity": "Q1vxSNqRbxCvgs0wk+tRm4qv9L4S0="
+  },
+  {
+    "name": "luci-proto-relay",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc relayd",
+    "identity": "Q1x+XC3c38/jS9RPAZkYSeJF2DcLw="
+  },
+  {
+    "name": "luci-proto-wireguard",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-lib-uqr resolveip ucode wireguard-tools",
+    "identity": "Q10ac90zXpTsNfDTI1nJ31hCJht/A="
+  },
+  {
+    "name": "luci-theme-argon",
+    "version": "2.4.2-r20260210",
+    "dependencies": "curl jsonfilter libc ucode-mod-math",
+    "identity": "Q1BO08/h69xKyMK+gqKYUGJoxBwJ8="
+  },
+  {
+    "name": "luci-theme-aurora",
+    "version": "1.4.0-r20260920",
+    "dependencies": "libc luci-base",
+    "identity": "Q13H8OpOwvaur2Tp+2YunVdpR4FX8="
+  },
+  {
+    "name": "luci-theme-bootstrap",
+    "version": "26.289.10016~36e3f0d",
+    "dependencies": "libc luci-base",
+    "identity": "Q1PSNODva/c8Oj+4CA9BqjW69gJ9c="
+  },
+  {
+    "name": "lucky",
+    "version": "3.2.4-r3",
+    "dependencies": "libc",
+    "identity": "Q1vrx5wTKSMFp9p31uaWxNYxWLut4="
+  },
+  {
+    "name": "mii_mgr",
+    "version": "1",
+    "dependencies": "libc",
+    "identity": "Q1bum7cJPK9SGEGkmJv5gCyY5nOVY="
+  },
+  {
+    "name": "miniupnpd-nftables",
+    "version": "2.3.9-r1",
+    "dependencies": "libc libcap-ng libmnl0 libnftnl11 libuuid1",
+    "identity": "Q1ePdknSRdd1xo3/j1/9mECm9/bGw="
+  },
+  {
+    "name": "mkf2fs",
+    "version": "1.16.0-r4",
+    "dependencies": "libc libf2fs6",
+    "identity": "Q1+PkIE0dmU6AjZgqBgsQf7OE78iE="
+  },
+  {
+    "name": "mmc-utils",
+    "version": "2024.03.05~e1281d4d-r1",
+    "dependencies": "libc",
+    "identity": "Q1Ibbb2qgnLq6fYETNAzEWsxOzN5A="
+  },
+  {
+    "name": "mount-utils",
+    "version": "2.41.5-r1",
+    "dependencies": "libc libmount1 librt libsmartcols1",
+    "identity": "Q1pW9+e8ymOyUfOring77Zaa61tLM="
+  },
+  {
+    "name": "mtd",
+    "version": "27",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1F/tvPT2gw5+Ky0IZ83Umta84USQ="
+  },
+  {
+    "name": "mtk-smp",
+    "version": "1",
+    "dependencies": "libc",
+    "identity": "Q1Y11j0FC1lTLjl0Fm5eDJjZzXJYw="
+  },
+  {
+    "name": "mtkhqos_util",
+    "version": "1-r1",
+    "dependencies": "libc",
+    "identity": "Q1vuKJUnHN8xptL6jn1VoclZuwG+k="
+  },
+  {
+    "name": "mtwifi-cfg-ucode",
+    "version": "3-r1",
+    "dependencies": "iwinfo-ucode libc ucode ucode-mod-datconf ucode-mod-fs ucode-mod-l1parser ucode-mod-log ucode-mod-ubus ucode-mod-uci wifi-scripts",
+    "identity": "Q17WTBql2H09NKPA9YWI9AGd0TzUw="
+  },
+  {
+    "name": "netifd",
+    "version": "2026.02.26~cbb83a18-r2",
+    "dependencies": "jshn libc libnl-tiny1 libubox20260213 libubus20251202 libuci20250120 libudebug ubus ubusd ucode ucode-mod-fs ucode-mod-ubus ucode-mod-uci ucode-mod-uloop",
+    "identity": "Q15piAWhks/iRdJ/NGKy4JP7ikAOM="
+  },
+  {
+    "name": "nftables-json",
+    "version": "1.1.6-r2",
+    "dependencies": "jansson4 kmod-nft-core libc libnftnl11",
+    "identity": "Q1O522zSCJyt06ZuFjQvpQRsCNhdw="
+  },
+  {
+    "name": "ntfs3-mount",
+    "version": "10",
+    "dependencies": "kmod-fs-ntfs3 libc",
+    "identity": "Q11a8HXQwDra1xUynczoZZCIwvdzQ="
+  },
+  {
+    "name": "odhcp6c",
+    "version": "2026.06.27~10a52220-r3",
+    "dependencies": "libc libubox20260213 libubus20251202",
+    "identity": "Q1sGWsCDhNcdTcVaay84q5ArYG3w4="
+  },
+  {
+    "name": "odhcpd-ipv6only",
+    "version": "2026.06.29~5d7be43f-r1",
+    "dependencies": "libc libjson-c5 libnl-tiny1 libubox20260213 libubus20251202 libuci20250120",
+    "identity": "Q1pPghvOcEzFL+3YPTnu398jN6NiA="
+  },
+  {
+    "name": "openssh-sftp-server",
+    "version": "10.6_p1-r1",
+    "dependencies": "libc",
+    "identity": "Q13JKCLYNk+cC6t6lOFsvBrtOnd1U="
+  },
+  {
+    "name": "openssl-util",
+    "version": "3.5.9-r1",
+    "dependencies": "libc libopenssl-conf libopenssl3",
+    "identity": "Q1/A2Qkt/ZLN4k/fo1FK4JcPMFWaY="
+  },
+  {
+    "name": "openwrt-keyring",
+    "version": "2025.12.11~14e1f88b-r1",
+    "dependencies": "libc",
+    "identity": "Q1sD4Xdw2PoSNLpa0NlLVNMrvZqy8="
+  },
+  {
+    "name": "parted",
+    "version": "3.6-r2",
+    "dependencies": "libc libncurses6 libparted libreadline8",
+    "identity": "Q1U6eMfU5fZAeeFAWXhiFsSKr3fUA="
+  },
+  {
+    "name": "ppp",
+    "version": "2.5.2-r4",
+    "dependencies": "kmod-mppe kmod-ppp libc shellsync",
+    "identity": "Q16jXCHguMObxOxR2pKjWf1hKFSDI="
+  },
+  {
+    "name": "ppp-mod-pppoe",
+    "version": "2.5.2-r4",
+    "dependencies": "kmod-pppoe libc",
+    "identity": "Q1N7JygLEJinlCnAQLuqgYABI+Wao="
+  },
+  {
+    "name": "procd",
+    "version": "2026.03.13~58eb263d-r1",
+    "dependencies": "jshn libblobmsg-json20260213 libc libjson-c5 libjson-script20260213 libubox20260213 libubus20251202 libudebug ubox ubus ubusd",
+    "identity": "Q1mc99AOkzlVgi2zyd20jBvoY8QyQ="
+  },
+  {
+    "name": "procd-seccomp",
+    "version": "2026.03.13~58eb263d-r1",
+    "dependencies": "libblobmsg-json20260213 libc libubox20260213",
+    "identity": "Q1s6tGqqdPrIWN+nOxDJrCPymWXjk="
+  },
+  {
+    "name": "procd-ujail",
+    "version": "2026.03.13~58eb263d-r1",
+    "dependencies": "libblobmsg-json20260213 libc libubox20260213 libubus20251202 libuci20250120",
+    "identity": "Q1Zy8gEuqYhBTDYLwhaWiwyQknzPU="
+  },
+  {
+    "name": "proto-bonding",
+    "version": "2021.04.09-r1",
+    "dependencies": "kmod-bonding libc",
+    "identity": "Q1nzg006SrSqn+glM87Crnb5Omt1k="
+  },
+  {
+    "name": "qrencode",
+    "version": "4.1.1-r2",
+    "dependencies": "libc libqrencode",
+    "identity": "Q11IJ+7Bj0nAwOjNlIGWe7JHS8RV8="
+  },
+  {
+    "name": "quickstart",
+    "version": "0.13.0-r1",
+    "dependencies": "bash block-mount ip-full libc lsblk mount-utils shadow-useradd shadow-utils smartd ubus uci",
+    "identity": "Q1nDN998UNl390qh+haIU4bPfWw6k="
+  },
+  {
+    "name": "regs",
+    "version": "1",
+    "dependencies": "libc",
+    "identity": "Q1U6RxgxONH4yt9KajMwAEhZzV5Z0="
+  },
+  {
+    "name": "relayd",
+    "version": "2025.10.04~708a76fa-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q19nrxjWPLQ+pgAZdc9u1J7g2odUg="
+  },
+  {
+    "name": "resolveip",
+    "version": "2",
+    "dependencies": "libc",
+    "identity": "Q1JxbFZglYdeVb6IKzY6lvwgCPEJk="
+  },
+  {
+    "name": "rpcd",
+    "version": "2026.10.04~d99f703e-r1",
+    "dependencies": "libblobmsg-json20260213 libc libjson-c5 libubox20260213 libubus20251202 libuci20250120",
+    "identity": "Q1usAKZZe2uau7mGpKScgRqxP0rbM="
+  },
+  {
+    "name": "rpcd-mod-file",
+    "version": "2026.10.04~d99f703e-r1",
+    "dependencies": "libc libubox20260213 libubus20251202 rpcd",
+    "identity": "Q18A6WwkE0DUcTYlBZozr9FKJM9Tg="
+  },
+  {
+    "name": "rpcd-mod-iwinfo",
+    "version": "2026.10.04~d99f703e-r1",
+    "dependencies": "libc libiwinfo20230701>=2023.01.21 libubox20260213 libubus20251202 rpcd",
+    "identity": "Q1gNdJPHdOwjBLBDTlcDjkQhMd6b0="
+  },
+  {
+    "name": "rpcd-mod-luci",
+    "version": "20240305-r1",
+    "dependencies": "libc libnl-tiny1 libubox20260213 libubus20251202 rpcd",
+    "identity": "Q1C1GeRvZStlrmuw+U+tr1cvBxM08="
+  },
+  {
+    "name": "rpcd-mod-rrdns",
+    "version": "20170710",
+    "dependencies": "libc libubox20260213 libubus20251202 rpcd",
+    "identity": "Q1rlF0yIhe4+iD3UFt5DQce93yLrk="
+  },
+  {
+    "name": "rpcd-mod-ucode",
+    "version": "2026.10.04~d99f703e-r1",
+    "dependencies": "libc libubox20260213 libubus20251202 libucode20230711 rpcd",
+    "identity": "Q19wGlhMcaSwhkX1Ch3AyafwirXes="
+  },
+  {
+    "name": "ruby",
+    "version": "3.4.9-r1",
+    "dependencies": "libc libruby3.4",
+    "identity": "Q1DGhf0uMlohnuY1qF0A8DTt1SUJQ="
+  },
+  {
+    "name": "ruby-bigdecimal",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby",
+    "identity": "Q14D3Ibqj82oB5n+Oi933slqlyuMQ="
+  },
+  {
+    "name": "ruby-date",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby",
+    "identity": "Q1yLKQDtaZCvN54u0njzJhMqpBKf8="
+  },
+  {
+    "name": "ruby-digest",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby",
+    "identity": "Q17j/kUio0jAk9/7yKxCcGQkN84DI="
+  },
+  {
+    "name": "ruby-enc",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby",
+    "identity": "Q12owdJzapEWfgKbESaSWdkKAnaEc="
+  },
+  {
+    "name": "ruby-pstore",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby ruby-digest ruby-enc",
+    "identity": "Q16bXMgATKz0R7CyNeCG8aaZF+yZ0="
+  },
+  {
+    "name": "ruby-psych",
+    "version": "3.4.9-r1",
+    "dependencies": "libc libyaml ruby ruby-bigdecimal ruby-date ruby-enc ruby-stringio",
+    "identity": "Q1vYgYSLNXh5kzTXQsPvaWJipirQs="
+  },
+  {
+    "name": "ruby-stringio",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby",
+    "identity": "Q13ChdClXuoJLS5OK9lD4RkwvBy88="
+  },
+  {
+    "name": "ruby-yaml",
+    "version": "3.4.9-r1",
+    "dependencies": "libc ruby ruby-pstore ruby-psych",
+    "identity": "Q1b0+5bWiodphoYlJsHDLPtCQVtRI="
+  },
+  {
+    "name": "runc",
+    "version": "1.3.6-r1",
+    "dependencies": "libc libseccomp",
+    "identity": "Q1kq16phroG8W51i92upFUuyK2Il4="
+  },
+  {
+    "name": "samba4-libs",
+    "version": "4.22.7-r3",
+    "dependencies": "attr libavahi-client libc libcap libgnutls libopenssl3 libpopt0 libreadline8 libtasn1 libtirpc liburing libuuid1 zlib",
+    "identity": "Q1/y8ki0gubpiLKJ6ujgvni7X/tCM="
+  },
+  {
+    "name": "samba4-server",
+    "version": "4.22.7-r3",
+    "dependencies": "libc samba4-libs",
+    "identity": "Q1wCasME306EZx1KlQvG3wmNXTN0c="
+  },
+  {
+    "name": "script-utils",
+    "version": "2.41.5-r1",
+    "dependencies": "libc librt",
+    "identity": "Q1/xpfGpXFrKHasMaVTCOqSORsPRU="
+  },
+  {
+    "name": "sgdisk",
+    "version": "1.0.10-r1",
+    "dependencies": "libc libpopt0 libstdcpp6 libuuid1",
+    "identity": "Q19paCCFmf5sRhjaWzRaM/GKFxTBI="
+  },
+  {
+    "name": "shadow",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-chage shadow-chfn shadow-chgpasswd shadow-chpasswd shadow-chsh shadow-expiry shadow-faillog shadow-gpasswd shadow-groupadd shadow-groupdel shadow-groupmems shadow-groupmod shadow-grpck shadow-grpconv shadow-grpunconv shadow-login shadow-logoutd shadow-newgidmap shadow-newgrp shadow-newuidmap shadow-newusers shadow-nologin shadow-passwd shadow-pwck shadow-pwconv shadow-pwunconv shadow-su shadow-useradd shadow-userdel shadow-usermod shadow-vipw",
+    "identity": "Q1ajWnHRj2/NdsKdfkQgnAgAUuUkc="
+  },
+  {
+    "name": "shadow-chage",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1JQg4llcFhIUadctvl36F0euQWEE="
+  },
+  {
+    "name": "shadow-chfn",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1SMab2AQ4F3r6AgdBjqd6rxdEqks="
+  },
+  {
+    "name": "shadow-chgpasswd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1MdvDIdAmgd36/GqFGxWe8g0WFOA="
+  },
+  {
+    "name": "shadow-chpasswd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1erY9YPzs3xxYu5boaj2ZMY+W6xM="
+  },
+  {
+    "name": "shadow-chsh",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1RZnWQEi1vSZgZGhqCqtzOoLEbEg="
+  },
+  {
+    "name": "shadow-common",
+    "version": "4.19.4-r2",
+    "dependencies": "libc",
+    "identity": "Q1XpWbW8ZuoHf9rIRFCrLxA8xLq90="
+  },
+  {
+    "name": "shadow-expiry",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1s/7J10E3qPqc31qTjHrz3QC2+lw="
+  },
+  {
+    "name": "shadow-faillog",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1rEaaPaKxitq2HsZCeZxnQGko/AE="
+  },
+  {
+    "name": "shadow-gpasswd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1pqdiTy3iJx2fBb68RBBreIk+GCQ="
+  },
+  {
+    "name": "shadow-groupadd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1w4Vx2cnPvY6MGDhFIIivZjsTZAw="
+  },
+  {
+    "name": "shadow-groupdel",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q18LOJH+jfXBcJ9MgAbWYCkTwt/oo="
+  },
+  {
+    "name": "shadow-groupmems",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q150xvctd37NjlkwR3ET0g//gBOMc="
+  },
+  {
+    "name": "shadow-groupmod",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1/Hx4fxXQfa4fM30IBFC3YiPRZJ0="
+  },
+  {
+    "name": "shadow-grpck",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1N5O7E+FhWbDCfESOADdXPPoWZm8="
+  },
+  {
+    "name": "shadow-grpconv",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1qv0oRGDCASo3Ym1NqF+SwvEWYhM="
+  },
+  {
+    "name": "shadow-grpunconv",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1NbFbjGV2T2R7efuu823ZegsktGg="
+  },
+  {
+    "name": "shadow-login",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1lddX1aUODYmcc9HpUMVzsImHIKQ="
+  },
+  {
+    "name": "shadow-logoutd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1cX2p6BpqWeWLlfgF5JYgtfGKBLg="
+  },
+  {
+    "name": "shadow-newgidmap",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q12oAVDfoEaBlkkqmvNpHsEDWD3EQ="
+  },
+  {
+    "name": "shadow-newgrp",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1QL909P+zfSgkwOXwSQm2auREmVc="
+  },
+  {
+    "name": "shadow-newuidmap",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1WYFomx6miqBMJvSuhfudeVXUhRQ="
+  },
+  {
+    "name": "shadow-newusers",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1TGdtQKK65UiwY5RKRbyFqxLJGZI="
+  },
+  {
+    "name": "shadow-nologin",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1NUPm3rv/ecPK+S1+JY3CH8UXHNA="
+  },
+  {
+    "name": "shadow-passwd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1sUTc086Q53dxi0ApxeehZMOelNs="
+  },
+  {
+    "name": "shadow-pwck",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1BQElwESkne2X3RevilOWahDHBF4="
+  },
+  {
+    "name": "shadow-pwconv",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q16USH/kk/7KEl5Pd0aRnQvYm7UEE="
+  },
+  {
+    "name": "shadow-pwunconv",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1PfQc8/N3N7gcS99pg63wcucMoPk="
+  },
+  {
+    "name": "shadow-su",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1CE2Uc6FC+bmV/itRylk5lmCilGM="
+  },
+  {
+    "name": "shadow-useradd",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1xDzFE6Yc1YUJidyvba9PzkI5DtU="
+  },
+  {
+    "name": "shadow-userdel",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1to3w5rPt6zUfUbssFBC+BSU6mx0="
+  },
+  {
+    "name": "shadow-usermod",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q1EfdVnvFmPm0VJC699w5eI/a6Ez8="
+  },
+  {
+    "name": "shadow-utils",
+    "version": "4.19.4-r2",
+    "dependencies": "libc",
+    "identity": "Q1Nsgh1kFKtMrVvsSNkR6fVZuIvls="
+  },
+  {
+    "name": "shadow-vipw",
+    "version": "4.19.4-r2",
+    "dependencies": "libc shadow-common",
+    "identity": "Q13XZIgyTXMm6kArGbcZDq1vqF6QI="
+  },
+  {
+    "name": "shellsync",
+    "version": "0.2-r2",
+    "dependencies": "kmod-macvlan libc libpthread",
+    "identity": "Q1QOZf3pjROj1fR05L8vjXTtEbFkk="
+  },
+  {
+    "name": "smartd",
+    "version": "7.5-r1",
+    "dependencies": "libc libstdcpp6",
+    "identity": "Q1mJQvCmHzShmHz//HIXOf37Yubk0="
+  },
+  {
+    "name": "sqlite3-cli",
+    "version": "3.53.1-r1",
+    "dependencies": "libc libsqlite3-0=3.53.1-r1",
+    "identity": "Q1qR4R0HXbE2/XkHylcJNRkMAjoSg="
+  },
+  {
+    "name": "switch",
+    "version": "1",
+    "dependencies": "libc libnl-tiny1",
+    "identity": "Q1Y0yBy6JWomBhzeLffQb8PyBjv9k="
+  },
+  {
+    "name": "tar",
+    "version": "1.35-r1",
+    "dependencies": "bzip2 libacl libattr libc libzstd xz",
+    "identity": "Q1Sv/c9xNZSG2kTqmtpBI2r1JE0PE="
+  },
+  {
+    "name": "taskd",
+    "version": "1.0.3-r2",
+    "dependencies": "coreutils coreutils-stty libc procd script-utils",
+    "identity": "Q1AoOkDSVV5qdP3GXTmxBBeOPHCnI="
+  },
+  {
+    "name": "tc-tiny",
+    "version": "6.18.0-r2",
+    "dependencies": "kmod-sched-core libc",
+    "identity": "Q1M1+UWgfJNYmPPPtMtuQRO7JztdU="
+  },
+  {
+    "name": "tcpdump",
+    "version": "4.99.6-r1",
+    "dependencies": "libc libpcap1",
+    "identity": "Q1Cj2xtQ/bFjPfyJcZybbHVqu8APk="
+  },
+  {
+    "name": "terminfo",
+    "version": "6.4-r3",
+    "dependencies": "libc",
+    "identity": "Q1acTroM/5f5Fnae/LzFld3GufFXk="
+  },
+  {
+    "name": "tini",
+    "version": "0.19.0-r4",
+    "dependencies": "libc",
+    "identity": "Q1jGnp9VVPHp9mjOC3lfxCRFLbWQs="
+  },
+  {
+    "name": "ttyd",
+    "version": "1.7.7-r1",
+    "dependencies": "libc libcap libjson-c5 libopenssl3 libuv1 libwebsockets-full zlib",
+    "identity": "Q1St9sqhbxFdJ2weAD0FAOMDN34m8="
+  },
+  {
+    "name": "ubi-utils",
+    "version": "2.3.0-r1",
+    "dependencies": "libc",
+    "identity": "Q1AzZAKB1Nva9wQompvl0KWnddpkQ="
+  },
+  {
+    "name": "uboot-envtools",
+    "version": "2025.10-r2",
+    "dependencies": "libc",
+    "identity": "Q11IK7XvFJGbGXYTCU87ysL4x+/74="
+  },
+  {
+    "name": "ubox",
+    "version": "2025.10.30~6f78fa49-r1",
+    "dependencies": "libc libubox20260213 libubus20251202 libuci20250120 ubus ubusd",
+    "identity": "Q1hAlVvhEyMWUARNksIEl/LS57FDQ="
+  },
+  {
+    "name": "ubus",
+    "version": "2026.06.28~24864e78-r2",
+    "dependencies": "libblobmsg-json20260213 libc libubus20251202 ubusd",
+    "identity": "Q1rVee4l5KEnT6y7Wi+lKzPZ9jbG8="
+  },
+  {
+    "name": "ubusd",
+    "version": "2026.06.28~24864e78-r2",
+    "dependencies": "libblobmsg-json20260213 libc libubox20260213",
+    "identity": "Q1CDNQHhpX8rZiqHw+BPmNbzNrqPs="
+  },
+  {
+    "name": "uci",
+    "version": "2025.12.02~66127cd7-r1",
+    "dependencies": "libc libuci20250120",
+    "identity": "Q1aRGF5YEWZpyRjQA/jDStoUB9tRE="
+  },
+  {
+    "name": "uclient-fetch",
+    "version": "2026.06.07~daad21fa-r1",
+    "dependencies": "libc libuclient20201210",
+    "identity": "Q1f8+ndI3MKRSlBNKXKQHvlevYDEU="
+  },
+  {
+    "name": "ucode",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libucode20230711",
+    "identity": "Q19pq/vcBQ9pHEpZE2QIwtVzwHHoo="
+  },
+  {
+    "name": "ucode-mod-datconf",
+    "version": "1",
+    "dependencies": "datconf libc libucode20230711",
+    "identity": "Q19SwXKc/MRhZMK6azwKJ25IfI5Qk="
+  },
+  {
+    "name": "ucode-mod-digest",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc ucode",
+    "identity": "Q1LPOKD+197Ad+FuURjREX1fp19Ow="
+  },
+  {
+    "name": "ucode-mod-fs",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc ucode",
+    "identity": "Q1jY4bthAhgQ8+vzHVjh+leJ3Ijmk="
+  },
+  {
+    "name": "ucode-mod-html",
+    "version": "1",
+    "dependencies": "libc libucode20230711",
+    "identity": "Q1puFRKegpy8VaVA5eO2T0WwIMUCY="
+  },
+  {
+    "name": "ucode-mod-iwinfo",
+    "version": "1.0-r1",
+    "dependencies": "libc libiwinfo20230701 libucode20230711",
+    "identity": "Q1yimajx2Jrbr+ax9WTghV9YxWQIk="
+  },
+  {
+    "name": "ucode-mod-l1parser",
+    "version": "2025.12.11~081bb312-r1",
+    "dependencies": "libc libl1parser libucode20230711",
+    "identity": "Q1St8LjG9GSBVZkocaAG2UpP528QE="
+  },
+  {
+    "name": "ucode-mod-log",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libubox20260213 ucode",
+    "identity": "Q1e9naFEQGTrO4JVB4m/waP1+HNgg="
+  },
+  {
+    "name": "ucode-mod-lua",
+    "version": "1",
+    "dependencies": "libc liblua5.1.5 libucode20230711",
+    "identity": "Q1vcnqNoFv2FC1+0GGHeq0NKwcCI4="
+  },
+  {
+    "name": "ucode-mod-math",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc ucode",
+    "identity": "Q1L0m4mfXJvt4YSmYtVNQjasoKr+U="
+  },
+  {
+    "name": "ucode-mod-nl80211",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libnl-tiny1 libubox20260213 ucode",
+    "identity": "Q1YWjUWCpIxNPU4Vm+Oa+X/E5Ve48="
+  },
+  {
+    "name": "ucode-mod-rtnl",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libnl-tiny1 libubox20260213 ucode",
+    "identity": "Q1c08PH3Lyjd0u2si3cRyHB9/+AoE="
+  },
+  {
+    "name": "ucode-mod-ubus",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libblobmsg-json20260213 libc libubus20251202 ucode",
+    "identity": "Q1YSAssDdvU+Ldf04P9EiKLBttZ7c="
+  },
+  {
+    "name": "ucode-mod-uci",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libuci20250120 ucode",
+    "identity": "Q1fYayLD/CEEyk9lBVIqiCQh8hpb0="
+  },
+  {
+    "name": "ucode-mod-uloop",
+    "version": "2026.01.16~85922056-r2",
+    "dependencies": "libc libubox20260213 ucode",
+    "identity": "Q1sm6m55pxt1ntxYC/cu0Uwg9PRnQ="
+  },
+  {
+    "name": "uhttpd",
+    "version": "2026.08.24~373145f7-r1",
+    "dependencies": "libblobmsg-json20260213 libc libjson-c5 libjson-script20260213 libubox20260213",
+    "identity": "Q1gu85iMOq/BSUJkDrhngHZizhKQE="
+  },
+  {
+    "name": "uhttpd-mod-ubus",
+    "version": "2026.08.24~373145f7-r1",
+    "dependencies": "libblobmsg-json20260213 libc libubus20251202 uhttpd",
+    "identity": "Q1mRrUM3dhj13FIaNvekEDCm8WI+A="
+  },
+  {
+    "name": "unzip",
+    "version": "6.0-r9",
+    "dependencies": "libc",
+    "identity": "Q1SIJlMiNX0kJKYz2sLlMKk8T6qdg="
+  },
+  {
+    "name": "urandom-seed",
+    "version": "3",
+    "dependencies": "getrandom libc",
+    "identity": "Q1EipqR5vdwF/WDd+a9sNP2GTB0yQ="
+  },
+  {
+    "name": "urngd",
+    "version": "2025.10.03~f17e33d9-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1805d0+LtLMuK3g2KBJ7/8JfIXu4="
+  },
+  {
+    "name": "usign",
+    "version": "2025.10.03~c4c72b1b-r1",
+    "dependencies": "libc libubox20260213",
+    "identity": "Q1NaovMzoDEENuuaBVHBh1Ftvul/E="
+  },
+  {
+    "name": "v2ray-geoip",
+    "version": "202610050438-r1",
+    "dependencies": "libc",
+    "identity": "Q1AdaCUTj9rjZ52xYLPWNMdtiH0fw="
+  },
+  {
+    "name": "v2ray-geosite",
+    "version": "20261015074526-r1",
+    "dependencies": "libc",
+    "identity": "Q1ZrvwatIunRw1cZbBU+QiX6LnXu4="
+  },
+  {
+    "name": "vlmcsd",
+    "version": "2020.03.30~e5990804-r8",
+    "dependencies": "libc libpthread",
+    "identity": "Q111J9VP6I1ojZwnQR0IhGf63ZNKY="
+  },
+  {
+    "name": "wifi-dats",
+    "version": "1",
+    "dependencies": "libc",
+    "identity": "Q1UkeCwvlaRu/UEQPufN04DUX3cBE="
+  },
+  {
+    "name": "wifi-scripts",
+    "version": "1.0-r1",
+    "dependencies": "libc netifd ucode ucode-mod-digest ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uci",
+    "identity": "Q1/XCjQ1aAaAuQD9kc+8mxYkF4KtY="
+  },
+  {
+    "name": "wireguard-tools",
+    "version": "1.0.20260223-r1",
+    "dependencies": "kmod-wireguard libc",
+    "identity": "Q1YHHafszxbLIiKq49qC76ylKJ5hM="
+  },
+  {
+    "name": "wireless-tools",
+    "version": "29-r6",
+    "dependencies": "libc",
+    "identity": "Q1nUE5EIvwKXUpEateX05RWdJMtSc="
+  },
+  {
+    "name": "wpad-openssl",
+    "version": "2025.08.26~ca266cc2-r5",
+    "dependencies": "hostapd-common=2025.08.26~ca266cc2-r5 libblobmsg-json20260213 libc libnl-tiny1 libopenssl-legacy libopenssl3 libubus20251202 libucode20230711 libudebug ucode ucode-mod-fs ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uloop",
+    "identity": "Q187gOiyUXHVf980UmvzI7vsnxHCw="
+  },
+  {
+    "name": "wsdd2",
+    "version": "2023.12.21~b676d8ac-r2",
+    "dependencies": "libc",
+    "identity": "Q1CoEbarfUMZsvBbg8bc8hUzJ+vuE="
+  },
+  {
+    "name": "xtables-nft",
+    "version": "1.8.10-r3",
+    "dependencies": "kmod-nft-compat libc libiptext-nft0 libiptext0 libiptext6-0 libnftnl11",
+    "identity": "Q1aFx9ZGVccPxDcwJGe4oozFXh0cg="
+  },
+  {
+    "name": "xz",
+    "version": "5.8.3-r1",
+    "dependencies": "libc liblzma xz-utils",
+    "identity": "Q1+UtJZmhNjgf/e3E5aHP9Fb3j2hs="
+  },
+  {
+    "name": "xz-utils",
+    "version": "5.8.3-r1",
+    "dependencies": "libc",
+    "identity": "Q17imYuzNKlihRqsXYKClFT0CCEeM="
+  },
+  {
+    "name": "zlib",
+    "version": "1.3.1-r1",
+    "dependencies": "libc",
+    "identity": "Q1F4TP1Or+rTHJ5N/eYQ+1ZOfsY34="
+  },
+  {
+    "name": "zoneinfo-asia",
+    "version": "2026d-r1",
+    "dependencies": "libc zoneinfo-core",
+    "identity": "Q1Cyv2otFaMXdRU1I4UcKNha2eFdM="
+  },
+  {
+    "name": "zoneinfo-core",
+    "version": "2026d-r1",
+    "dependencies": "libc",
+    "identity": "Q1j2zz/u4UxQGQEENdoeui3HTM+1g="
+  }
+]

@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-23T20:45:02.309108+00:00",
+  "provenance_notice": "Main source is the original release commit; all other refs were resolved when this lock was created. Original 2026-10-17 feed commits are unavailable. This is not a bit-reproducibility claim.",
+  "sources": [
+    {
+      "url": "https://github.com/4IceG/luci-app-mini-diskmanager.git",
+      "ref": "main",
+      "commit": "4b2b7332896063ef888f34da2187c3cc6f366037",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/4IceG/luci-app-mini-diskmanager.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/Carton32/quectel-CM.git",
+      "ref": "HEAD",
+      "commit": "b3659fa205e223f8525eb8550ba95e12ec8bfb34",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/service_fixes.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/Carton32/quectel-CM.git HEAD"
+    },
+    {
+      "url": "https://github.com/NONGFAH/luci-app-athena-led.git",
+      "ref": "HEAD",
+      "commit": "f8eeb3119008ac0e429fc642c125512f9253ec1b",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/NONGFAH/luci-app-athena-led.git HEAD"
+    },
+    {
+      "url": "https://github.com/Openwrt-Passwall/openwrt-passwall.git",
+      "ref": "main",
+      "commit": "409d28cc7d7d2d806039bf03f7ebf4724c03ea99",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/Openwrt-Passwall/openwrt-passwall.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/VIKINGYFY/packages.git",
+      "ref": "main",
+      "commit": "4afd82fc871816eec0fbba16bc594b6ae9f1db1a",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/VIKINGYFY/packages.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/ZqinKing/luci-app-adguardhome.git",
+      "ref": "HEAD",
+      "commit": "36108202f326f65ab6f5a85d15adcba6538f8e8b",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/service_fixes.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/ZqinKing/luci-app-adguardhome.git HEAD"
+    },
+    {
+      "url": "https://github.com/ZqinKing/openwrt-smartdns.git",
+      "ref": "HEAD",
+      "commit": "cdf0de1d3e64984ea2c56ec873f233495ddb1de0",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/ZqinKing/openwrt-smartdns.git HEAD"
+    },
+    {
+      "url": "https://github.com/adminchenyu/eMMC-Health.git",
+      "ref": "main",
+      "commit": "f17cbea85ebcb9071b659ac7bafd2c56a9de7b3c",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/adminchenyu/eMMC-Health.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git",
+      "ref": "25.12",
+      "commit": "03eb30617955519e35845838c6255ebe687eb717",
+      "provenance": "original-release-main-source",
+      "evidence_paths": [
+        "main-source"
+      ],
+      "role": "main-source",
+      "resolution": "original-release-commit-already-verified"
+    },
+    {
+      "url": "https://github.com/dl12345/luci-app-mwan3.git",
+      "ref": "openwrt-25.12",
+      "commit": "1e8513a69cff32da3dd82c342151cdb4a991c2b7",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/dl12345/luci-app-mwan3.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/dl12345/mwan3.git",
+      "ref": "openwrt-25.12",
+      "commit": "cdd4fc56f4de9ccf56d40d6dc04a5b6a4e5a0ae6",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/dl12345/mwan3.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/dqsq2e2/luci-app-tingreader.git",
+      "ref": "main",
+      "commit": "415f48c732d70d3aebe9822b300746a0b4836b1e",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/dqsq2e2/luci-app-tingreader.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/dqsq2e2/luci-app-velo5x0-fan.git",
+      "ref": "main",
+      "commit": "54e90fe61cf52b62e7f3ecfcdb62b9d857f90309",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/dqsq2e2/luci-app-velo5x0-fan.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/eamonxg/luci-app-aurora-config.git",
+      "ref": "master",
+      "commit": "a5299ce0144859f47683ec3bc40805bf616f534f",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/eamonxg/luci-app-aurora-config.git refs/heads/master"
+    },
+    {
+      "url": "https://github.com/eamonxg/luci-theme-aurora.git",
+      "ref": "master",
+      "commit": "84c27b66952e6fc4be60128067a6b88bfd34afb5",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/eamonxg/luci-theme-aurora.git refs/heads/master"
+    },
+    {
+      "url": "https://github.com/gdy666/luci-app-lucky.git",
+      "ref": "HEAD",
+      "commit": "69305fef127259892ba4603e98f730f0330e5caa",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/feed_source_fixes.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/gdy666/luci-app-lucky.git HEAD"
+    },
+    {
+      "url": "https://github.com/immortalwrt/homeproxy.git",
+      "ref": "HEAD",
+      "commit": "fadaa676104f59ff6ace480a780a258d846d0aec",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/feed_source_fixes.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/immortalwrt/homeproxy.git HEAD"
+    },
+    {
+      "url": "https://github.com/immortalwrt/immortalwrt.git",
+      "ref": "HEAD",
+      "commit": "e695009c15c623f4f6a83376b505faaf7a4ae5b5",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/immortalwrt/immortalwrt.git HEAD"
+    },
+    {
+      "url": "https://github.com/immortalwrt/luci.git",
+      "ref": "openwrt-25.12",
+      "commit": "61e876e98f91446fd8968dfede721b98ddf80a32",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "upstream/feeds.conf.default:luci"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/immortalwrt/luci.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/immortalwrt/packages.git",
+      "ref": "openwrt-25.12",
+      "commit": "d200499b31751dc5c72905f37a747712f009f155",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "upstream/feeds.conf.default:packages"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/immortalwrt/packages.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/kenzok8/openwrt-daede.git",
+      "ref": "main",
+      "commit": "57659f63d341b5ce71ca30ba378f4a4d8e5ce779",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/kenzok8/openwrt-daede.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/kenzok8/openwrt-honk.git",
+      "ref": "main",
+      "commit": "e885085ee95ecbe37363244e73ef50acf6a6b15e",
+      "provenance": "reviewed-release-compatible-pin-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "Original wrapper history search selected this recipe for published core eac5e0c5fba5078a7ff4517a3e3851e7fa0f4f8e and Doona 696f4f59; recipe SHA256 5cceb43359e17bf7f6fa6029cab598eb56addfcf7a67f563dfa4dbda07646c57. main HEAD was ahead of its staging assets."
+    },
+    {
+      "url": "https://github.com/kenzok8/small-package.git",
+      "ref": "HEAD",
+      "commit": "a5fb03c51b55e0627c55ef9fe158003119a6f2bc",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/kenzok8/small-package.git HEAD"
+    },
+    {
+      "url": "https://github.com/kenzok8/wall.git",
+      "ref": "main",
+      "commit": "b0ec83476437db4839caff567f90a75cc6f55ece",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/kenzok8/wall.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/linkease/istore.git",
+      "ref": "main",
+      "commit": "a97ace34f2da358a015b094d326bba2697697f2e",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/linkease/istore.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/lisaac/luci-app-dockerman.git",
+      "ref": "HEAD",
+      "commit": "6fd9937954e0b080bf07967182d714ea21fe7eb1",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/lisaac/luci-app-dockerman.git HEAD"
+    },
+    {
+      "url": "https://github.com/lisaac/luci-lib-docker.git",
+      "ref": "HEAD",
+      "commit": "98a663449208b65e68702ad0f3ad61c536bfa40c",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/lisaac/luci-lib-docker.git HEAD"
+    },
+    {
+      "url": "https://github.com/nikkinikki-org/OpenWrt-nikki.git",
+      "ref": "main",
+      "commit": "78e1a751d55ed0762811f054ee699049473da7b8",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/nikkinikki-org/OpenWrt-nikki.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/openwrt/routing.git",
+      "ref": "openwrt-25.12",
+      "commit": "48c808034414a2112cf9d5261a20a320e8d0d170",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "upstream/feeds.conf.default:routing"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/openwrt/routing.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/openwrt/telephony.git",
+      "ref": "openwrt-25.12",
+      "commit": "2618106d5846a4a542fdf5809f0d3ed228ce439b",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "upstream/feeds.conf.default:telephony"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/openwrt/telephony.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/openwrt/video.git",
+      "ref": "openwrt-25.12",
+      "commit": "094bf58da6682f895255a35a84349a79dab4bf95",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "upstream/feeds.conf.default:video"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/openwrt/video.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/pymumu/luci-app-smartdns.git",
+      "ref": "HEAD",
+      "commit": "581e5e816d92d3a663b1b2e331e3f21685968cf1",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/pymumu/luci-app-smartdns.git HEAD"
+    },
+    {
+      "url": "https://github.com/sbwml/luci-app-mosdns.git",
+      "ref": "v5",
+      "commit": "bd40245303cd0ba56804d49eed5dbc4be2a082ca",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/sbwml/luci-app-mosdns.git refs/heads/v5"
+    },
+    {
+      "url": "https://github.com/sbwml/luci-app-quickfile.git",
+      "ref": "HEAD",
+      "commit": "13f1a61d962e3a7790f7ab9898543be2ee5835cb",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/sbwml/luci-app-quickfile.git HEAD"
+    },
+    {
+      "url": "https://github.com/sbwml/luci-theme-argon.git",
+      "ref": "openwrt-25.12",
+      "commit": "4b8b7849551c558ec905c40b0ebb864641c9fa32",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/custom_feed.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/sbwml/luci-theme-argon.git refs/heads/openwrt-25.12"
+    },
+    {
+      "url": "https://github.com/sbwml/packages_lang_golang.git",
+      "ref": "26.x",
+      "commit": "14667de14cbe22e0ed379de8b373dce4f04a4cab",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/update.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/sbwml/packages_lang_golang.git refs/heads/26.x"
+    },
+    {
+      "url": "https://github.com/sirpdboy/luci-app-timecontrol.git",
+      "ref": "HEAD",
+      "commit": "52b82003a9392fb2692662bb702d5610ce9ec505",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/package_source_updates.sh"
+      ],
+      "role": "wrapper-custom-source",
+      "resolution": "git ls-remote https://github.com/sirpdboy/luci-app-timecontrol.git HEAD"
+    },
+    {
+      "url": "https://github.com/timsaya/luci-app-bandix.git",
+      "ref": "main",
+      "commit": "159a6de184b8cbd0694b40f018e737d0a3c82e7e",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/feeds.sh"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/timsaya/luci-app-bandix.git refs/heads/main"
+    },
+    {
+      "url": "https://github.com/timsaya/openwrt-bandix.git",
+      "ref": "main",
+      "commit": "c95b03d40b30c31e89c090aaf134750f05bf3f19",
+      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "evidence_paths": [
+        "wrt_core/modules/feeds.sh"
+      ],
+      "role": "feed",
+      "resolution": "git ls-remote https://github.com/timsaya/openwrt-bandix.git refs/heads/main"
+    }
+  ],
+  "dynamic_non_git_inputs": {
+    "policy": "HTTP assets and package release API updates must be captured by resulting hashes and evaluated by the original-ROM preservation/difference gate before publication. Git locking alone does not freeze these inputs.",
+    "examples": [
+      "Honk staging generated-stage.mk/generated-provenance.json and core/Doona assets",
+      "Lucky release.66666.host version and archives",
+      "v2fly/geoip release data",
+      "tcping Makefile raw branch URL",
+      "gist istore_backend.lua",
+      "update_package latest release API and computed tarball hashes"
+    ]
+  },
+  "original_wrapper": {
+    "repository": "https://github.com/dqsq2e2/wrt_release.git",
+    "commit": "d46704afb327fce99e7d770c08fc46b48d5bb1b7",
+    "source_archive_sha256": "54992fef5456fc69186660ffd3b358c9795ac5d14dde05c9d3b37aba044db816",
+    "note": "Original wrapper is vendored in this repository; this lock is applied after reviewed local changes."
+  },
+  "original_rom_asset_sha256": "11c41d2de8f5524984d0fa26200c6fe63514143bfe91c68823fa5e28423e8b38"
+}

@@ -63,6 +63,9 @@ update_feeds() {
         touch "$BUILD_DIR/include/bpf.mk"
     fi
 
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        python3 "$S20P_LOCK_TOOL" --lock "$S20P_SOURCE_LOCK" pin-feeds "$FEEDS_PATH"
+    fi
     network_retry ./scripts/feeds update -a
 }
 

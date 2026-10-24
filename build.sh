@@ -611,11 +611,27 @@ remove_uhttpd_dependency
 cd "$BASE_PATH/../$BUILD_DIR"
 source "$BASE_PATH/modules/verify.sh"
 verify_expected_kernel_version "$EXPECTED_KERNEL" "target/linux/mediatek/Makefile"
-make defconfig
+run_defconfig_checked
 verify_theme_config
 verify_apk_config
 verify_daed_config .config "$DAED_PACKAGES_ENABLED"
 verify_honk_config .config "$HONK_PACKAGES_ENABLED"
+
+if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+    [[ $Dev == S20P-WIFI-YES && -z ${REMOVE_CONFIG_FRAGMENTS:-} ]] || exit 1
+    mkdir -p "$S20P_CAPTURE_DIR/provenance"
+    python3 "$REPO_ROOT/ci/verify_go_host_deps.py" --config .config \
+        --package-info "$PWD/tmp/.packageinfo" --source-root "$PWD" \
+        --output "$S20P_CAPTURE_DIR/provenance/go-host-dependencies.json"
+    python3 "$REPO_ROOT/ci/preservation.py" config --config .config \
+        --baseline-dir "$REPO_ROOT/ci/baseline" \
+        --optional-packages "$REPO_ROOT/ci/mobile-usb-packages.txt" \
+        --package-info "$PWD/tmp/.packageinfo" \
+        --output "$S20P_CAPTURE_DIR/provenance/config-gate.json"
+    python3 "$REPO_ROOT/ci/provenance.py" "$PWD" \
+        --lock "$S20P_SOURCE_LOCK" --wrapper "$REPO_ROOT" \
+        --output "$S20P_CAPTURE_DIR/provenance/source-lock.json"
+fi
 
 if [[ $Build_Mod == "debug" ]]; then
     exit 0
@@ -638,6 +654,11 @@ preflight_download_sources
 source "$BASE_PATH/modules/image_build.sh"
 enable_ci_rootfs_reclamation
 make -j$(($(nproc) + 1)) || make -j1 V=s
+
+# Capture the complete same-build repository before firmware moves or make clean.
+if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+    "$REPO_ROOT/ci/capture.sh" "$PWD" "$S20P_CAPTURE_DIR"
+fi
 
 FIRMWARE_DIR="$BASE_PATH/../firmware"
 \rm -rf "$FIRMWARE_DIR"

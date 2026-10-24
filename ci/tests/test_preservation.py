@@ -148,6 +148,94 @@ class PreservationFixtures(unittest.TestCase):
         installed.write_text("\n\n".join(
             "P:{name}\nV:{version}\nD:{depends}".format(**p) for p in self.packages) + "\n")
 
+    def signing_evidence(self):
+        key = b"-----BEGIN PUBLIC KEY-----\nfixture-new-build\n-----END PUBLIC KEY-----\n"
+        target = self.rootfs / "etc/apk/keys/public-key.pem"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"-----BEGIN PUBLIC KEY-----\noriginal\n-----END PUBLIC KEY-----\n")
+        target.chmod(0o644)
+        baseline = self.baseline / "full-rootfs-manifest.json"
+        records = json.loads(baseline.read_text())
+        records["files"].append(self.file_record(target))
+        self.write_json(baseline, records)
+        target.write_bytes(key)
+        public = self.base / "public-key.pem"
+        public.write_bytes(key)
+        report = self.base / "signed-feeds.json"
+        self.write_json(report, {
+            "status": "pass", "installed_packages_matched": len(self.packages),
+            "kernel_abi": self.kernel,
+            "image_trust": {"status": "pass", "comparison": "exact-public-key-bytes",
+                            "matching_key_paths": ["/etc/apk/keys/public-key.pem"],
+                            "public_key_sha256": hashlib.sha256(key).hexdigest()},
+            "feeds": [{"signature": "verified", "payload_identity": "native-fetch-verified",
+                       "index_metadata": "matches-all-packages", "packages": len(self.packages)}],
+        })
+        return public, report, target
+
+    def test_generated_key_requires_matching_native_signed_feed_evidence(self):
+        public, report, _ = self.signing_evidence()
+        code, result = self.invoke(extra=("--public-key", str(public), "--signed-feeds", str(report)))
+        self.assertEqual(code, 0, result)
+        changes = [d for d in result["differences"] if d["subject"] == "/etc/apk/keys/public-key.pem"]
+        self.assertEqual([d["disposition"] for d in changes], ["expected"])
+        self.assertEqual(result["checks"]["signing_key"]["status"], "pass")
+
+    def test_generated_key_unverified_feed_does_not_pass(self):
+        public, report, _ = self.signing_evidence()
+        data = json.loads(report.read_text())
+        data["feeds"][0]["signature"] = "not-verified"
+        self.write_json(report, data)
+        code, result = self.invoke(extra=("--public-key", str(public), "--signed-feeds", str(report)))
+        self.assertEqual(code, 1, result)
+        self.assertIn("signing_key", json.dumps(result["errors"]))
+
+    def test_generated_key_mismatch_does_not_pass(self):
+        public, report, target = self.signing_evidence()
+        target.write_bytes(b"-----BEGIN PUBLIC KEY-----\nother-build\n-----END PUBLIC KEY-----\n")
+        code, result = self.invoke(extra=("--public-key", str(public), "--signed-feeds", str(report)))
+        self.assertEqual(code, 1, result)
+        self.assertIn("signing_key", json.dumps(result["errors"]))
+
+    def test_generated_key_without_evidence_still_requires_review(self):
+        self.signing_evidence()
+        code, result = self.invoke()
+        self.assertEqual(code, 2, result)
+        self.assertTrue(any(d["subject"] == "/etc/apk/keys/public-key.pem" and
+                            d["disposition"] == "review_required" for d in result["differences"]))
+
+    def test_generated_key_rejects_incomplete_or_other_build_evidence(self):
+        public, report, _ = self.signing_evidence()
+        original = json.loads(report.read_text())
+        variants = [
+            [], {}, {**original, "image_trust": []},
+            {**original, "status": "fail"},
+            {**original, "kernel_abi": "another-build"},
+            {**original, "installed_packages_matched": len(self.packages) - 1},
+            {**original, "feeds": []},
+            {**original, "feeds": [None]},
+        ]
+        for key, value in (("public_key_sha256", "0" * 64),
+                           ("comparison", "path-only"), ("matching_key_paths", [])):
+            variants.append({**original, "image_trust": {**original["image_trust"], key: value}})
+        for key, value in (("payload_identity", "unchecked"), ("index_metadata", "unchecked"),
+                           ("packages", 0)):
+            variants.append({**original, "feeds": [{**original["feeds"][0], key: value}]})
+        for evidence in variants:
+            with self.subTest(evidence=evidence):
+                self.write_json(report, evidence)
+                code, result = self.invoke(extra=("--public-key", str(public), "--signed-feeds", str(report)))
+                self.assertEqual(code, 1, result)
+                self.assertIn("signing_key", json.dumps(result["errors"]))
+
+    def test_generated_key_requires_both_evidence_inputs(self):
+        public, report, _ = self.signing_evidence()
+        for extra in (("--public-key", str(public)), ("--signed-feeds", str(report))):
+            with self.subTest(extra=extra):
+                code, result = self.invoke(extra=extra)
+                self.assertEqual(code, 1, result)
+                self.assertIn("signing_key", json.dumps(result["errors"]))
+
     def invoke(self, phase="image", extra=()):
         output = self.base / "result.json"
         command = [sys.executable, str(SCRIPT), phase, "--baseline-dir", str(self.baseline),

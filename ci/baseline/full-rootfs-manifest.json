@@ -3,7 +3,7 @@
   "input_sha256": {
     "asset": "11c41d2de8f5524984d0fa26200c6fe63514143bfe91c68823fa5e28423e8b38",
     "root": "19a9c807eeeec95281abea5c40ee95994876cac7c48f195efdf87cb940ce9756",
-    "reader": "4ab0585d0e64ac325b3b20f980b974429017bc9077fdd1c0b358ce12c4c4a97b",
+    "reader": "79c36cef207ceb5c9efc9270b18918c5c1cda155fa3af71398244adce2d9225f",
     "dtb": "560b11119c9f709d5c7d1278427d97fe3fd89df9319be05a9ba3cd0810af0ca8"
   },
   "image_members": {
@@ -22083,10 +22083,10 @@
       "uid": 0,
       "gid": 0,
       "size": 17,
-      "sha256": "86758e2f8cde7959bb7d215dd49197356648c8fb936905a18d7a27f0f06108ec",
+      "sha256": "a45f328e8f8527741de5e5eb29abb79256c4d8580829e68d00b62bffc5a44390",
       "mtime_unix": 1792144831,
       "squashfs_inode": 1973,
-      "target": "\u0000\u0000\u0001\u0000\u0000\u0000\u0011\u0000\u0000\u0000../../b"
+      "target": "../../bin/busybox"
     },
     {
       "path": "/usr/bin/hexdump",

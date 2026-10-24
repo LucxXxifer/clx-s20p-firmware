@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source": "public-original-ROM-only",
+  "original_rom_sha256": "11c41d2de8f5524984d0fa26200c6fe63514143bfe91c68823fa5e28423e8b38",
+  "original_squashfs_sha256": "19a9c807eeeec95281abea5c40ee95994876cac7c48f195efdf87cb940ce9756",
+  "reason": "read_meta offset beyond the current metadata block must subtract that block length; /usr/bin/head target starts across the 8192-byte boundary",
+  "reader_before_sha256": "4ab0585d0e64ac325b3b20f980b974429017bc9077fdd1c0b358ce12c4c4a97b",
+  "reader_after_sha256": "79c36cef207ceb5c9efc9270b18918c5c1cda155fa3af71398244adce2d9225f",
+  "reader_patch": {
+    "before": "  out+=d[off:off+n-len(out)];pos=nxt;off=0\n  if not d:raise ValueError('empty metadata')",
+    "after": "  if not d:raise ValueError('empty metadata')\n  if off>=len(d):\n   off-=len(d);pos=nxt;continue\n  out+=d[off:off+n-len(out)];pos=nxt;off=0"
+  },
+  "original_manifest_before_sha256": "150fbab4d08985b9eeada33a6822ae98a710fbf67bb2859c70c5f1d54bf04268",
+  "original_manifest_after_sha256": "9d2efae060de16ba418185530ac61901f521db5b06418d21fd7eff97db8b6f9f",
+  "symlinks_rechecked": 577,
+  "changed_records": [
+    {
+      "before": {
+        "path": "/usr/bin/head",
+        "type": "symlink",
+        "mode": "0777",
+        "uid": 0,
+        "gid": 0,
+        "size": 17,
+        "sha256": "86758e2f8cde7959bb7d215dd49197356648c8fb936905a18d7a27f0f06108ec",
+        "mtime_unix": 1792144831,
+        "squashfs_inode": 1973,
+        "target": "\u0000\u0000\u0001\u0000\u0000\u0000\u0011\u0000\u0000\u0000../../b"
+      },
+      "after": {
+        "path": "/usr/bin/head",
+        "type": "symlink",
+        "mode": "0777",
+        "uid": 0,
+        "gid": 0,
+        "size": 17,
+        "sha256": "a45f328e8f8527741de5e5eb29abb79256c4d8580829e68d00b62bffc5a44390",
+        "mtime_unix": 1792144831,
+        "squashfs_inode": 1973,
+        "target": "../../bin/busybox"
+      }
+    }
+  ],
+  "independent_readback": {
+    "tool": "Debian squashfs-tools unsquashfs 4.6.1",
+    "command": "unsquashfs -ll root.squashfs usr/bin/head",
+    "target": "../../bin/busybox",
+    "evidence_sha256": "7cf137031daf06067b8a3635ed910cda4af07f952f88aa2d8d60995c25086987"
+  },
+  "metadata_boundary_regressions": "4 pass, old parser fails offset beyond first block",
+  "limitations": "Only parser provenance and the one target/size/hash record corrected; original image and all other baseline records unchanged."
+}

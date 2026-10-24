@@ -1,0 +1,157 @@
+{
+  "cli_execution_result": {
+    "original": {
+      "-h": {
+        "exit": 0,
+        "stdout": null
+      },
+      "-info": {
+        "exit": 0,
+        "stdout": "{\"Name\":\"Lucky\",\"ARCH\":\"arm64\",\"OS\":\"linux\",\"Version\":\"3.2.4\",\"GoVersion\":\"go1.27.2\",\"Date\":\"2026-10-14 18:27:13\",\"MD5\":\"\",\"VersionName\":\"wanji\"}\n"
+      }
+    },
+    "pinned": {
+      "-h": {
+        "exit": 0,
+        "stdout": null
+      },
+      "-info": {
+        "exit": 0,
+        "stdout": "{\"Name\":\"Lucky\",\"ARCH\":\"arm64\",\"OS\":\"linux\",\"Version\":\"3.4.0\",\"GoVersion\":\"go1.27.3\",\"Date\":\"2026-10-23 19:54:16\",\"MD5\":\"\",\"VersionName\":\"wanji\"}\n"
+      }
+    }
+  },
+  "cli_versions": {
+    "original": {
+      "ARCH": "arm64",
+      "Date": "2026-10-14 18:27:13",
+      "GoVersion": "go1.27.2",
+      "MD5": "",
+      "Name": "Lucky",
+      "OS": "linux",
+      "Version": "3.2.4",
+      "VersionName": "wanji"
+    },
+    "pinned": {
+      "ARCH": "arm64",
+      "Date": "2026-10-23 19:54:16",
+      "GoVersion": "go1.27.3",
+      "MD5": "",
+      "Name": "Lucky",
+      "OS": "linux",
+      "Version": "3.4.0",
+      "VersionName": "wanji"
+    }
+  },
+  "compatibility_source_review": [
+    "Pinned r26 app README explicitly supports replacing the Linux core tar.gz without replacing service scripts; preserves service config and Lucky data on upgrade.",
+    "r26 service invokes /usr/bin/lucky -cd with the existing UCI configdir; recovered service/config/scripts exactly match original ROM.",
+    "r26 core maintenance validates ELF architecture, stages/probes the new core, and has low-memory checks and rollback for failed replacement.",
+    "r26 access-rule editor permits ip-allowlist.txt for version >=3.1.0; 3.4.0 meets existing semantic version guard.",
+    "Official release readme describes wanji as full functionality including FileBrowser/CorazaWAF and shared configuration; exact archive name is wanji_docker, not reduced core.",
+    "Official 3.4.0 readme lists Go security fix, WAF optimization, Docker UI grouping fix, cloudflared update and Docker image update features; it lists no mandatory configuration migration.",
+    "Public arm64 archive SHA256 matches official checksums; OpenWrt sstrip -z output exactly matches prior candidate ROM binary."
+  ],
+  "difference": {
+    "actual": "3.4.0-r3",
+    "category": "package_version",
+    "disposition": "review_required",
+    "expected": "3.2.4-r3",
+    "id": "de305f4b59d8d551d9dd0ac9c0c1b6e0920d112b047e4dea4574d0273d26a389",
+    "reason": "source/version delta",
+    "subject": "lucky"
+  },
+  "limitations": [
+    "No comprehensive official 3.2.4-to-3.4.0 migration guarantee was recovered. The generic r26 upgrade README and 3.4.0 notes do not prove every prior configuration feature behaves identically.",
+    "The original 3.2.4 public release URL returns 404; no full source/build reproducibility claim for the closed prebuilt core.",
+    "Runtime startup, API behavior, memory use and user rule compatibility have not been tested on the target; do not auto-enable or migrate real configuration in a background job.",
+    "Temporary default BaseConfigure schema parse and setconf roundtrip",
+    "Reading or migrating3.2.4 encrypted fixture config with3.4.0",
+    "Bounded daemon startup in network-none sandbox",
+    "Actual router OpenWrt runtime, UI/service behavior, existing private config migration"
+  ],
+  "official_3_4_readme_sha256": "44538564188a960c1f2f7289a693ea707e98468cf4a9ce41f7abfbfaae2643f3",
+  "official_checksums_sha256": "3677fe62f587e0b80914079d06d4d6bacb0fc51488f4ad43f230bc600de3e8a0",
+  "official_checksums_url": "https://release.66666.host/v3.4.0/3.4.0_wanji_docker/checksums.txt",
+  "official_readme_urls": [
+    "https://release.66666.host/v3.4.0/readme.md",
+    "https://release.66666.host/readme.md"
+  ],
+  "original_binary_sha256": "9449245bef8a58a5a94dc17c0a2c7f37637ba4825ac870c59c3bcd311ac32019",
+  "public_source": {
+    "architecture": "arm64",
+    "luci_release": "26",
+    "luci_version": "3.0.0",
+    "provenance": "Fixed public wanji_docker release, verified against upstream checksums.txt and the prior build binary after sstrip. This is not original core 3.2.4 recovery; the old public release URL now returns 404. Core version difference still requires preservation review.",
+    "sha256": "44bcbb2fb434a649af65d59cd0ec4e0f4e01b67b9a16c0ec49589b1a5b7fa81a",
+    "source_url": "https://release.66666.host/v3.4.0/3.4.0_wanji_docker",
+    "version": "3.4.0"
+  },
+  "r26_helper_contract": {
+    "base_configuration": [
+      "-baseConfInfo",
+      "-cd",
+      "CONFIG_DIRECTORY"
+    ],
+    "base_response_fields": [
+      "BaseConfigure.AdminWebListenPort integer1..65535",
+      "BaseConfigure.SafeURL string",
+      "BaseConfigure.AllowInternetaccess optional boolean"
+    ],
+    "information": [
+      "-info"
+    ],
+    "ip_allowlist": "r26 helper supports stable Lucky >=3.1.0;3.4.0 satisfies version predicate.",
+    "keys": [
+      "AdminWebListenPort",
+      "SetSafeURL",
+      "AllowInternetaccess",
+      "AdminAccount",
+      "AdminPassword"
+    ],
+    "set_configuration": [
+      "-setconf",
+      "-key",
+      "KEY",
+      "[-value VALUE]",
+      "-cd",
+      "CONFIG_DIRECTORY"
+    ],
+    "startup": [
+      "-cd CONFIG_DIRECTORY"
+    ]
+  },
+  "remaining_acceptance": [
+    "Next build must include recovered Lucky r26 files and zero missing_file errors, plus exact source-lock and archive hash evidence.",
+    "Verify new core APK and ROM /usr/bin/lucky derives from the pinned arm64 archive and the LuCI package/service config remain expected.",
+    "Preserve local Lucky configdir and module export/private backup before any actual upgrade; do not publish user data.",
+    "At user-attended rollout, keep Lucky initially disabled; verify -cd startup, version/date probe, LuCI entry/assets, config/rules read, backup/export, and applicable modules before enabling existing workload.",
+    "Check available memory, OOM/system logs, listener addresses/ports and configdir permission/ownership; retain rollback image/core and copies of pre-upgrade data."
+  ],
+  "required_cli_flags_present_in_both": [
+    "-info",
+    "-baseConfInfo",
+    "-cd",
+    "-setconf",
+    "-key",
+    "-value"
+  ],
+  "review_reason": "Original core public archive is unavailable. Keep recovered r26 UI/config/service code and full wanji feature variant; fix 3.4.0 archive URL/SHA256 instead of latest-version discovery. Both real Linux arm64 binaries retain all r26 helper CLI flags and info fields. The fixed public archive after the upstream strip operation exactly matches the audited cloud binary. Generic r26 upgrade instructions and official 3.4 notes support a candidate compile; service/config migration still needs attended acceptance.",
+  "schema_version": 1,
+  "scope": "Candidate artifact source/version review only; no live service or private configuration compatibility claim.",
+  "source_app_commit": "9449a5250c61f1aa8f16b2d8e04a9da25c26e735",
+  "source_app_url": "https://github.com/gdy666/luci-app-lucky/tree/9449a5250c61f1aa8f16b2d8e04a9da25c26e735",
+  "source_helper_sha256": {
+    "luci-app-lucky/root/usr/lib/lua/luci/lucky_core.lua": "fc79345e918ad5e6c874ec0bfdc0b68e3ed4f0eb6bad5224d0814eeb8763488a",
+    "luci-app-lucky/root/usr/lib/lua/luci/lucky_rules.lua": "f3dcbd6515490f0eda110f4dda774f8154bbaaf5d947f227a3fdbf89cb7e129c",
+    "lucky/files/lucky-call": "b260b71f5ef3745a10dba1f43e93c986ef0a6ff4efb15d885dedc38d3f7b9589",
+    "lucky/files/lucky.init": "371fda345ba6ec716e45f6457104b71d7539b729270cb85f4d68aed5b0a25019"
+  },
+  "sstrip_comparison": {
+    "command": "ELFkickers-3.2/bin/sstrip -z lucky-3.4.0-arm64-after-sstrip",
+    "equal": true,
+    "output_bytes": 28156509,
+    "output_sha256": "bd192cd6867ccb80f8acfc83b7a2aa04ab15cc2acb79406dc430046f6851f3b6",
+    "rom_sha256": "bd192cd6867ccb80f8acfc83b7a2aa04ab15cc2acb79406dc430046f6851f3b6"
+  }
+}

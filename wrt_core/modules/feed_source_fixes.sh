@@ -239,6 +239,7 @@ update_lucky() {
 
     if [ ! -d "$lucky_dir" ] || [ ! -d "$luci_app_lucky_dir" ]; then
         echo "Warning: $lucky_dir 或 $luci_app_lucky_dir 不存在，跳过 lucky 源代码更新。" >&2
+        [[ ${S20P_AUTOBUILD:-0} != 1 ]] || return 1
     else
         local tmp_dir
         tmp_dir=$(mktemp -d)
@@ -248,6 +249,7 @@ update_lucky() {
         if ! git_retry clone --depth 1 --filter=blob:none --no-checkout "$lucky_repo_url" "$tmp_dir"; then
             echo "错误：从 $lucky_repo_url 克隆仓库失败" >&2
             rm -rf "$tmp_dir"
+            [[ ${S20P_AUTOBUILD:-0} != 1 ]] || return 1
             return 0
         fi
 
@@ -257,9 +259,18 @@ update_lucky() {
             echo "错误：稀疏检出 luci-app-lucky 或 lucky 失败" >&2
             popd >/dev/null
             rm -rf "$tmp_dir"
+            [[ ${S20P_AUTOBUILD:-0} != 1 ]] || return 1
             return 0
         }
-        git_retry checkout --quiet
+        if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+            if ! git_retry checkout --quiet; then
+                popd >/dev/null || return
+                rm -rf "$tmp_dir"
+                return 1
+            fi
+        else
+            git_retry checkout --quiet
+        fi
 
         \cp -rf "$tmp_dir/luci-app-lucky/." "$luci_app_lucky_dir/"
         \cp -rf "$tmp_dir/lucky/." "$lucky_dir/"
@@ -278,6 +289,16 @@ update_lucky() {
     local makefile_path="$(get_custom_feed_worktree_dir)/lucky/Makefile"
     if [ ! -f "$makefile_path" ]; then
         echo "Warning: lucky Makefile not found. Skipping." >&2
+        [[ ${S20P_AUTOBUILD:-0} != 1 ]] || return 1
+        return 0
+    fi
+
+    # Preservation builds recover r26 assets and use a reviewed, hashed core;
+    # other wrapper builds retain their existing latest-release behavior.
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        python3 "${S20P_CI_DIR:?}/lucky_release.py" --lock "${S20P_SOURCE_LOCK:?}" \
+            --core "$makefile_path" --luci "$luci_app_lucky_dir/Makefile" || return
+        echo "S20P Lucky 已应用固定来源与 SHA256，未查询最新版本。"
         return 0
     fi
 

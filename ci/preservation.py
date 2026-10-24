@@ -522,7 +522,62 @@ class Gate:
                                "compared_nodes": len(original),
                                "scope": "all nodes/properties; known phandle references normalized, unknown formats exact"}
 
-    def files(self, root, provenance_ok, packages, reachable):
+    def signing_key(self, root, packages, public_key, signed_feeds):
+        """Bind a fresh image key to capture's verified same-build feed evidence."""
+        if public_key is None and signed_feeds is None:
+            return False
+        if public_key is None or signed_feeds is None:
+            self.error("signing_key", "both public key and signed feed evidence are required")
+            return False
+        before = len(self.errors)
+        key = Path(public_key).read_bytes()
+        report = read_json(signed_feeds)
+        if not isinstance(report, dict) or not isinstance(report.get("image_trust"), dict):
+            self.error("signing_key", "signed feeds report/image_trust must be objects")
+            return False
+        trust = report.get("image_trust", {})
+        image_path = "/etc/apk/keys/public-key.pem"
+        path = safe_path(root, image_path)
+        if (not key.startswith(b"-----BEGIN PUBLIC KEY-----\n") or
+                not key.rstrip().endswith(b"-----END PUBLIC KEY-----") or
+                path.is_symlink() or not path.is_file() or path.read_bytes() != key):
+            self.error("signing_key", image_path, "exact same-build public key bytes", "mismatch/invalid")
+        expected_trust = {"status": "pass", "comparison": "exact-public-key-bytes",
+                          "public_key_sha256": digest(key)}
+        for name, expected in expected_trust.items():
+            if trust.get(name) != expected:
+                self.error("signing_key", "image_trust." + name, expected, trust.get(name))
+        paths = trust.get("matching_key_paths")
+        if not isinstance(paths, list) or image_path not in paths:
+            self.error("signing_key", "matching_key_paths", image_path, paths)
+        for name, expected in (("status", "pass"), ("installed_packages_matched", len(packages)),
+                               ("kernel_abi", packages.get("kernel", {}).get("version"))):
+            if report.get(name) != expected:
+                self.error("signing_key", "signed_feeds." + name, expected, report.get(name))
+        feeds = report.get("feeds")
+        if not isinstance(feeds, list) or not feeds:
+            self.error("signing_key", "signed_feeds.feeds", "nonempty verified feeds", feeds)
+        else:
+            for feed in feeds:
+                if not isinstance(feed, dict):
+                    self.error("signing_key", "feed", "verified feed object", feed)
+                    continue
+                for name, expected in (("signature", "verified"),
+                                       ("payload_identity", "native-fetch-verified"),
+                                       ("index_metadata", "matches-all-packages")):
+                    if feed.get(name) != expected:
+                        self.error("signing_key", "feed." + name, expected, feed.get(name))
+                if type(feed.get("packages")) is not int or feed["packages"] < 1:
+                    self.error("signing_key", "feed.packages", "positive package count", feed.get("packages"))
+        passed = before == len(self.errors)
+        self.checks["signing_key"] = {"status": "pass" if passed else "fail",
+                                      "public_key_sha256": digest(key),
+                                      "signed_feeds_sha256": digest(Path(signed_feeds).read_bytes()),
+                                      "image_key_path": image_path,
+                                      "scope": "capture verified native signed feeds, exact rootfs key binding"}
+        return passed
+
+    def files(self, root, provenance_ok, packages, reachable, signing_key_ok=False):
         baseline = file_index(read_json(self.baseline / "full-rootfs-manifest.json")["files"])
         critical = file_index(read_json(self.baseline / "critical-files-manifest.json")["files"])
         if not baseline or not critical or not set(critical).issubset(baseline):
@@ -555,7 +610,9 @@ class Gate:
             is_elf = current["type"] == "file" and read_prefix(path, 4) == b"\x7fELF"
             generated = name.startswith("/lib/apk/") or bool(re.match(r"/lib/modules/[^/]+/modules\.", name))
             disposition, reason = "review_required", policy
-            if policy.startswith("exact-"):
+            if name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
+                disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
+            elif policy.startswith("exact-"):
                 pass
             elif generated and provenance_ok:
                 disposition, reason = "expected", "generated metadata; actual package DB and kernel dependencies checked"
@@ -678,6 +735,8 @@ def main(argv=None):
             command.add_argument("--packages", required=True, type=Path)
             command.add_argument("--dtb", required=True, type=Path)
             command.add_argument("--source-lock", type=Path)
+            command.add_argument("--public-key", type=Path)
+            command.add_argument("--signed-feeds", type=Path)
     args = parser.parse_args(argv)
     gate = None
     try:
@@ -690,7 +749,8 @@ def main(argv=None):
             actual, reachable = gate.packages(root, args.packages)
             gate.kernel_config(args.kernel_config)
             gate.dtb(args.dtb)
-            gate.files(root, provenance_ok, actual, reachable)
+            signing_key_ok = gate.signing_key(root, actual, args.public_key, args.signed_feeds)
+            gate.files(root, provenance_ok, actual, reachable, signing_key_ok)
         report = gate.result()
     except (OSError, ValueError, KeyError, TypeError, struct.error) as error:
         if gate:

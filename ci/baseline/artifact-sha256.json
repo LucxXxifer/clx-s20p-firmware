@@ -2,7 +2,7 @@
   "critical-files-manifest.json": "d7c1cfba05905dc6a1bb1b570f8047d5b0433b667f8446af88ea36e186825b49",
   "critical-original-files.tar.gz": "66a4cd89d3b40b77497d72865011b9992aa6dcb8e3b6a85f9b6abea79f77eeed",
   "dtc-diagnostics.txt": "238e83d293363d6ee559850638afe31c792d31b0f2d320fbfaf27b99fc020508",
-  "full-rootfs-manifest.json": "150fbab4d08985b9eeada33a6822ae98a710fbf67bb2859c70c5f1d54bf04268",
+  "full-rootfs-manifest.json": "9d2efae060de16ba418185530ac61901f521db5b06418d21fd7eff97db8b6f9f",
   "original-board.decompiled.dts": "46b8ce8b94168beb28bca5295a67b68dc6fd8e1bd06a35408876619a20ce44a4",
   "original-board.dtb": "560b11119c9f709d5c7d1278427d97fe3fd89df9319be05a9ba3cd0810af0ca8",
   "original-package-manifest.json": "db9641bd5365413332684356215eef094a4f2d28aeca5d2f12afb39266abe461",

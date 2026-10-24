@@ -1,0 +1,2 @@
+# Exact upstream recipe bytes include mixed CRLF/LF; do not normalize the fixture.
+ci/tests/fixtures/original-recipes/geodata-current.Makefile -text whitespace=trailing-space,space-before-tab,cr-at-eol

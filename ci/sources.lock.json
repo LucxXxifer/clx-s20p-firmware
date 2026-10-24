@@ -171,13 +171,27 @@
     {
       "url": "https://github.com/gdy666/luci-app-lucky.git",
       "ref": "HEAD",
-      "commit": "69305fef127259892ba4603e98f730f0330e5caa",
-      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "commit": "9449a5250c61f1aa8f16b2d8e04a9da25c26e735",
+      "provenance": "verified-original-rom-source-recovery",
       "evidence_paths": [
         "wrt_core/modules/feed_source_fixes.sh"
       ],
       "role": "wrapper-custom-source",
-      "resolution": "git ls-remote https://github.com/gdy666/luci-app-lucky.git HEAD"
+      "resolution": "Recovered upstream luci-app-lucky 3.0.0-r26; six installed entry files and both versioned/minified JavaScript files exactly match the original ROM. Original feed commits as a whole remain unavailable.",
+      "previous_lock": {
+        "commit": "69305fef127259892ba4603e98f730f0330e5caa",
+        "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+        "resolution": "git ls-remote https://github.com/gdy666/luci-app-lucky.git HEAD"
+      },
+      "release": {
+        "version": "3.4.0",
+        "luci_version": "3.0.0",
+        "luci_release": "26",
+        "architecture": "arm64",
+        "source_url": "https://release.66666.host/v3.4.0/3.4.0_wanji_docker",
+        "sha256": "44bcbb2fb434a649af65d59cd0ec4e0f4e01b67b9a16c0ec49589b1a5b7fa81a",
+        "provenance": "Fixed public wanji_docker release, verified against upstream checksums.txt and the prior build binary after sstrip. This is not original core 3.2.4 recovery; the old public release URL now returns 404. Core version difference still requires preservation review."
+      }
     },
     {
       "url": "https://github.com/immortalwrt/homeproxy.git",
@@ -204,13 +218,19 @@
     {
       "url": "https://github.com/immortalwrt/luci.git",
       "ref": "openwrt-25.12",
-      "commit": "61e876e98f91446fd8968dfede721b98ddf80a32",
-      "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+      "commit": "36e3f0d13622f5be6d59d9ba257811914d76e34d",
+      "provenance": "verified-original-rom-source-recovery",
       "evidence_paths": [
         "upstream/feeds.conf.default:luci"
       ],
       "role": "feed",
-      "resolution": "git ls-remote https://github.com/immortalwrt/luci.git refs/heads/openwrt-25.12"
+      "resolution": "Official full commit resolved from original ROM package suffix 36e3f0d; 15 changed LuCI payloads reproduced byte-for-byte with upstream transformations",
+      "previous_lock": {
+        "commit": "61e876e98f91446fd8968dfede721b98ddf80a32",
+        "provenance": "resolved-at-lock-creation-not-original-2026-10-17-feeds",
+        "resolution": "git ls-remote https://github.com/immortalwrt/luci.git refs/heads/openwrt-25.12"
+      },
+      "source_tree": "ac28787e4b215bdec988ac0570101e29155c7a4e"
     },
     {
       "url": "https://github.com/immortalwrt/packages.git",
@@ -450,5 +470,37 @@
     "source_archive_sha256": "54992fef5456fc69186660ffd3b358c9795ac5d14dde05c9d3b37aba044db816",
     "note": "Original wrapper is vendored in this repository; this lock is applied after reviewed local changes."
   },
-  "original_rom_asset_sha256": "11c41d2de8f5524984d0fa26200c6fe63514143bfe91c68823fa5e28423e8b38"
+  "original_rom_asset_sha256": "11c41d2de8f5524984d0fa26200c6fe63514143bfe91c68823fa5e28423e8b38",
+  "original_recipe_pins": {
+    "geosite": {
+      "version": "20261015074526",
+      "sha256": "405ad108a016ae20c4dfa94cf97384c93ed1bd688121acdc2c5a09c77cca2a4f",
+      "source_url": "https://github.com/v2fly/domain-list-community/releases/download/20261015074526/dlc.dat",
+      "size": 2325634,
+      "recipe_sha256_before": "dca7c2d41cef1eab4ecb38c4e7130e71dc566ed6e8bf4aa7e88fbc2a6e99023f",
+      "recipe_sha256_after": "7905b433c395b321b7ad34a997f377b231b18e231ea111794b589a5095b4081a",
+      "recipe_source": "https://github.com/kenzok8/wall/blob/b0ec83476437db4839caff567f90a75cc6f55ece/v2ray-geodata/Makefile",
+      "recipe_transform": "Existing APK -r release and geoip-only-cn-private adjustments retained; only GEOSITE_VER and its download HASH restored to original-ROM release"
+    },
+    "axonhub": {
+      "version": "20261016",
+      "source_commit": "a946fca495c52344ed073abb6c3562b9ff728b12",
+      "source_sha256": "d767de4e917e3f62de6c71d2b37a1e9865ac835b89fa24aeeb714a5282d65524",
+      "source_url": "https://codeload.github.com/looplj/axonhub/tar.gz/a946fca495c52344ed073abb6c3562b9ff728b12?",
+      "recipe_sha256_before": "c412d8e058cf2191f7ad6f97c5fd0b8f63be51efeb47fabebc255f83ad07b144",
+      "recipe_sha256_after": "59261a4b997de317ce9698d405fd1c5bca4858b590f10dc345d04b75d16ebc32",
+      "recipe_source": "https://github.com/VIKINGYFY/packages/blob/3c07374818b4fc69b1cec0d9747144c8285d7c6c/axonhub/Makefile",
+      "patches": {
+        "100-fix-sqlite-wal-reset.patch": "a5cf70607f9aee33cc0ec121c6543709b747b71d9357b08a6b124d79e96a5a1a",
+        "110-fix-project-request-pagination-index.patch": "734153e839116158574efa00b790f0fcfe8ac7b18fc9f596ff2e5acafb538a36",
+        "120-fix-local-storage-atomic-write.patch": "d93fbca531db436070b409aae5a5469daedb8bd1142ea011e01f524a7d9bd145",
+        "130-fix-gc-files-references-and-scheduling.patch": "53afba4b9013cf3c44261b6b80d1ba308948a0b3d765170388a9ccc64c1c06e9",
+        "140-cache-authorized-channel-query-per-operation.patch": "e9eba6c1143ca192562120e0183f4b7464aa07ed4eff96910879554b0b286ced",
+        "150-control-scheduled-gc-and-validate-config.patch": "bfcc7798c7863413ebd7fcb9d97443bf87e390b74d632f52bb9c83a78424ae6f",
+        "160-allow-initial-filesystem-payload-defaults.patch": "87af79a1af94282d937c32e0464467620a2339433f23292e105a386ea25e755f",
+        "170-default-history-cleanup-to-one-day.patch": "f82a4de02555c0e1912360c417e789c9f6bdb05fc779e4467ecbd4a5c0155f2b"
+      },
+      "provenance": "Recovered original package version and embedded Go source commit; all eight patches are byte-identical between recovered and currently locked recipe sources"
+    }
+  }
 }

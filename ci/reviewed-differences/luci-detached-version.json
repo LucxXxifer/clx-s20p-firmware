@@ -1,0 +1,64 @@
+{
+  "files": [
+    {
+      "original": "local pcall, dofile, _G = pcall, dofile, _G\n\nmodule \"luci.version\"\n\nif pcall(dofile, \"/etc/openwrt_release\") and _G.DISTRIB_DESCRIPTION then\n\tdistname    = \"\"\n\tdistversion = _G.DISTRIB_DESCRIPTION\n\tif _G.DISTRIB_REVISION then\n\t\tdistrevision = _G.DISTRIB_REVISION\n\t\tif not distversion:find(distrevision,1,true) then\n\t\t\tdistversion = distversion .. \" \" .. distrevision\n\t\tend\n\tend\nelse\n\tdistname    = \"OpenWrt\"\n\tdistversion = \"Development Snapshot\"\nend\n\nluciname    = \"LuCI openwrt-25.12 branch\"\nluciversion = \"26.289.10016~36e3f0d\"\n",
+      "original_sha256": "d4bb5227200bf7036fdc9081da1ae812330922fb75e67c349774514684e0ef95",
+      "path": "/usr/lib/lua/luci/version.lua",
+      "predicted": "local pcall, dofile, _G = pcall, dofile, _G\n\nmodule \"luci.version\"\n\nif pcall(dofile, \"/etc/openwrt_release\") and _G.DISTRIB_DESCRIPTION then\n\tdistname    = \"\"\n\tdistversion = _G.DISTRIB_DESCRIPTION\n\tif _G.DISTRIB_REVISION then\n\t\tdistrevision = _G.DISTRIB_REVISION\n\t\tif not distversion:find(distrevision,1,true) then\n\t\t\tdistversion = distversion .. \" \" .. distrevision\n\t\tend\n\tend\nelse\n\tdistname    = \"OpenWrt\"\n\tdistversion = \"Development Snapshot\"\nend\n\nluciname    = \"LuCI (HEAD detached at 36e3f0d1) branch\"\nluciversion = \"26.289.10016~36e3f0d\"\n",
+      "predicted_sha256": "9839671ce0ee72987e7747d79c895b4ca73c566a2b587f0f59308ecdd90ce8c0",
+      "reason": "Unmodified upstream build tools record pinned detached HEAD identity; no branch is manufactured",
+      "reviewed_difference": {
+        "actual": "9839671ce0ee72987e7747d79c895b4ca73c566a2b587f0f59308ecdd90ce8c0",
+        "category": "file_sha256",
+        "expected": "d4bb5227200bf7036fdc9081da1ae812330922fb75e67c349774514684e0ef95",
+        "id": "b88af1e896f6842e372e8c499a31b9e8cc1ca53e4fbdd06ec608c5a925c6f870",
+        "reason": "report-all-differences",
+        "subject": "/usr/lib/lua/luci/version.lua"
+      }
+    },
+    {
+      "original": "export const revision = '26.289.10016~36e3f0d', branch = 'LuCI openwrt-25.12 branch';\n",
+      "original_sha256": "4f00db415bdd572a275cec65807e0e0c3e278f11d0e58a408796cdb67fc2c9cf",
+      "path": "/usr/share/ucode/luci/version.uc",
+      "predicted": "export const revision = '26.289.10016~36e3f0d', branch = 'LuCI (HEAD detached at 36e3f0d1) branch';\n",
+      "predicted_sha256": "3ce32eb65c32e795e2e302e56ff354b9d69848d3e807d441390d7e5089f3fa64",
+      "reason": "Unmodified upstream build tools record pinned detached HEAD identity; no branch is manufactured",
+      "reviewed_difference": {
+        "actual": "3ce32eb65c32e795e2e302e56ff354b9d69848d3e807d441390d7e5089f3fa64",
+        "category": "file_sha256",
+        "expected": "4f00db415bdd572a275cec65807e0e0c3e278f11d0e58a408796cdb67fc2c9cf",
+        "id": "5a5ed84e0f7f6158841f2f1b998dc5abae8ec86a15d6b3cc8fcabee24526de19",
+        "reason": "report-all-differences",
+        "subject": "/usr/share/ucode/luci/version.uc"
+      }
+    }
+  ],
+  "generation_evidence": {
+    "files": [
+      {
+        "branch": "LuCI (HEAD detached at 36e3f0d1) branch",
+        "content": "export const revision = '26.289.10016~36e3f0d', branch = 'LuCI (HEAD detached at 36e3f0d1) branch';\n",
+        "date_adapter": "GNU date flag compatibility adapter invokes native /bin/date -u -r, no Git or source output override",
+        "package": "luci-base",
+        "path": "/usr/share/ucode/luci/version.uc",
+        "sha256": "3ce32eb65c32e795e2e302e56ff354b9d69848d3e807d441390d7e5089f3fa64",
+        "source_commit": "36e3f0d13622f5be6d59d9ba257811914d76e34d",
+        "version": "26.289.10016~36e3f0d"
+      },
+      {
+        "branch": "LuCI (HEAD detached at 36e3f0d1) branch",
+        "content": "local pcall, dofile, _G = pcall, dofile, _G\n\nmodule \"luci.version\"\n\nif pcall(dofile, \"/etc/openwrt_release\") and _G.DISTRIB_DESCRIPTION then\n\tdistname    = \"\"\n\tdistversion = _G.DISTRIB_DESCRIPTION\n\tif _G.DISTRIB_REVISION then\n\t\tdistrevision = _G.DISTRIB_REVISION\n\t\tif not distversion:find(distrevision,1,true) then\n\t\t\tdistversion = distversion .. \" \" .. distrevision\n\t\tend\n\tend\nelse\n\tdistname    = \"OpenWrt\"\n\tdistversion = \"Development Snapshot\"\nend\n\nluciname    = \"LuCI (HEAD detached at 36e3f0d1) branch\"\nluciversion = \"26.289.10016~36e3f0d\"\n",
+        "date_adapter": "GNU date flag compatibility adapter invokes native /bin/date -u -r, no Git or source output override",
+        "package": "luci-lua-runtime",
+        "path": "/usr/lib/lua/luci/version.lua",
+        "sha256": "9839671ce0ee72987e7747d79c895b4ca73c566a2b587f0f59308ecdd90ce8c0",
+        "source_commit": "36e3f0d13622f5be6d59d9ba257811914d76e34d",
+        "version": "26.289.10016~36e3f0d"
+      }
+    ],
+    "method": "Real pinned upstream scripts/feeds init_commit sequence: clone default depth1, fetch locked commit depth1, checkout full SHA; execute unmodified luci.mk revision/branch generation and version templates. GNU date flag adapter used only on macOS.",
+    "source_report_sha256": "ae63007d2f9a019dfc3e7326d0a0944f2c93fef3706f82a250ed55a0b2dc6d66"
+  },
+  "scope": "Only the two exact SHA256 content differences; no UI/ACL/script bypass",
+  "source_url": "https://github.com/immortalwrt/luci/tree/36e3f0d13622f5be6d59d9ba257811914d76e34d"
+}

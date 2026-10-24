@@ -62,6 +62,8 @@ fi
     --packages output/inspection/rootfs/lib/apk/db/installed \
     --dtb output/inspection/board.dtb \
     --source-lock output/provenance/source-lock.json \
+    --public-key output/public-keys/public-key.pem \
+    --signed-feeds output/reports/signed-feeds.json \
     --baseline-dir "$S20P_BASELINE_DIR" \
     --output output/reports/preservation-image.json
 gate_status=$?

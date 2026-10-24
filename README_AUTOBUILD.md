@@ -1,4 +1,4 @@
-# S20P 每日自動編譯
+# CLX-S20P 每日自動編譯
 
 本分支基於 dqsq2e2 的 `26.10.17_15.32.58_S20P-WIFI-YES`，固定原 wrapper `d46704afb327fce99e7d770c08fc46b48d5bb1b7` 的流程，以及 chasey `03eb30617955519e35845838c6255ebe687eb717`／Linux 6.12.112。原作者 README、全部 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置保留。
 

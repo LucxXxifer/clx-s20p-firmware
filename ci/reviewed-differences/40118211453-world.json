@@ -1,0 +1,451 @@
+{
+  "A_run_id": "40095658212",
+  "A_sha256": "b120a9a8c96f0e9e1885ed07e2c96de699961a650d09accfe741319a22d40899",
+  "A_to_B_exact_line_change": {
+    "added": [
+      "base-files=1~9f39797"
+    ],
+    "all_other_bytes_equal": true,
+    "removed": [
+      "base-files=1~03eb306"
+    ]
+  },
+  "A_world": "apk-openssl\nattr\nautocore\nautomount\navahi-dbus-daemon\naxonhub\nbase-files=1~03eb306\nbash\nblkid\nblock-mount\nblockdev\nbtrfs-progs\nbusybox\nbzip2\nca-bundle\nca-certificates\ncgi-io\ncloudflared\ncontainerd\ncoremark\ncoreutils\ncoreutils-stat\ncoreutils-stty\ncurl\ndatconf\ndbus\ndefault-settings\ndefault-settings-chn\ndnsmasq-full\ndocker\ndocker-compose\ndockerd\ndropbear\ne2fsprogs\neasytier\neip197-mini-firmware\netherwake\nf2fsck\nfdisk\nfirewall4\nfit-check-sign\nfitblk\nfstools\nfuse-overlayfs\nfuse-utils\nfwtool\ngetrandom\nhnat-detect\nhonk\nhostapd-common\nhtop\nip-full\nip6tables-nft\nipset\niptables-mod-extra\niptables-nft\niwinfo-ucode\njansson4\njshn\njsonfilter\nkernel=6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1\nkmod-bonding\nkmod-br-netfilter\nkmod-conninfra\nkmod-crypto-acompress\nkmod-crypto-aead\nkmod-crypto-arc4\nkmod-crypto-authenc\nkmod-crypto-blake2b\nkmod-crypto-crc32c\nkmod-crypto-des\nkmod-crypto-ecb\nkmod-crypto-hash\nkmod-crypto-hmac\nkmod-crypto-hw-safexcel\nkmod-crypto-kpp\nkmod-crypto-lib-chacha20\nkmod-crypto-lib-chacha20poly1305\nkmod-crypto-lib-curve25519\nkmod-crypto-lib-poly1305\nkmod-crypto-manager\nkmod-crypto-md5\nkmod-crypto-null\nkmod-crypto-rng\nkmod-crypto-sha1\nkmod-crypto-sha256\nkmod-crypto-sha3\nkmod-crypto-sha512\nkmod-crypto-user\nkmod-crypto-xxhash\nkmod-dummy\nkmod-fs-btrfs\nkmod-fs-exfat\nkmod-fs-ext4\nkmod-fs-f2fs\nkmod-fs-msdos\nkmod-fs-ntfs3\nkmod-fs-vfat\nkmod-fuse\nkmod-gpio-button-hotplug\nkmod-ifb\nkmod-inet-diag\nkmod-ip6tables\nkmod-ipt-conntrack\nkmod-ipt-core\nkmod-ipt-extra\nkmod-ipt-ipset\nkmod-ipt-nat\nkmod-ipt-nat6\nkmod-ipt-physdev\nkmod-leds-gpio\nkmod-lib-crc-ccitt\nkmod-lib-crc32c\nkmod-lib-lzo\nkmod-lib-raid6\nkmod-lib-xor\nkmod-lib-xxhash\nkmod-lib-zlib-deflate\nkmod-lib-zlib-inflate\nkmod-lib-zstd\nkmod-macvlan\nkmod-md-mod\nkmod-mediatek_hnat\nkmod-mii\nkmod-mmc\nkmod-mppe\nkmod-mt_wifi\nkmod-nf-conntrack\nkmod-nf-conntrack-netlink\nkmod-nf-conntrack6\nkmod-nf-flow\nkmod-nf-ipt\nkmod-nf-ipt6\nkmod-nf-ipvs\nkmod-nf-log\nkmod-nf-log6\nkmod-nf-nat\nkmod-nf-nat6\nkmod-nf-reject\nkmod-nf-reject6\nkmod-nf-tproxy\nkmod-nfnetlink\nkmod-nfnetlink-queue\nkmod-nft-compat\nkmod-nft-core\nkmod-nft-fib\nkmod-nft-fullcone\nkmod-nft-nat\nkmod-nft-netdev\nkmod-nft-offload\nkmod-nft-queue\nkmod-nft-tproxy\nkmod-nls-base\nkmod-nls-cp437\nkmod-nls-cp932\nkmod-nls-cp936\nkmod-nls-cp950\nkmod-nls-iso8859-1\nkmod-nls-utf8\nkmod-nvme\nkmod-ppp\nkmod-pppoe\nkmod-pppox\nkmod-sched-bpf\nkmod-sched-core\nkmod-slhc\nkmod-tcp-bbr\nkmod-tun\nkmod-udptunnel4\nkmod-udptunnel6\nkmod-usb-common\nkmod-usb-core\nkmod-usb-net\nkmod-usb-net-cdc-ether\nkmod-usb3\nkmod-veth\nkmod-warp\nkmod-wireguard\nkmod-xdp-sockets-diag\nkvcedit\nl1util\nlibacl\nlibatomic1\nlibattr\nlibavahi-client\nlibavahi-dbus-support\nlibblkid1\nlibblobmsg-json20260213\nlibbpf1\nlibbz2-1.0\nlibc=1.2.5-r5\nlibcap\nlibcap-ng\nlibcurl4\nlibdaemon\nlibdbus\nlibelf1\nlibexpat\nlibfdisk1\nlibfuse1\nlibfuse3-3\nlibgcc1\nlibgmp10\nlibgnutls\nlibipset13\nlibiptext-nft0\nlibiptext0\nlibiptext6-0\nlibiwinfo-data\nlibiwinfo20230701\nlibjson-c5\nlibjson-script20260213\nlibkvcutil\nlibl1parser\nliblua5.1.5\nliblucihttp-lua\nliblucihttp-ucode\nliblucihttp0\nliblzma\nliblzo2\nlibmnl0\nlibmount1\nlibncurses6\nlibnetfilter-conntrack3\nlibnettle8\nlibnfnetlink0\nlibnftnl11\nlibnghttp2-14\nlibnl-tiny1\nlibopenssl-conf\nlibopenssl-legacy\nlibopenssl3\nlibparted\nlibpcap1\nlibpopt0\nlibpthread\nlibpython3-3.13\nlibqrencode\nlibreadline8\nlibrt\nlibruby3.4\nlibseccomp\nlibsmartcols1\nlibsqlite3-0\nlibstdcpp6\nlibtasn1\nlibtirpc\nlibubox20260213\nlibubus-lua\nlibubus20251202\nlibuci-lua\nlibuci20250120\nlibuclient20201210\nlibucode20230711\nlibudebug\nliburing\nlibustream-openssl20201210\nlibuuid1\nlibuv1\nlibwebsockets-full\nlibxtables12\nlibyaml\nlibzstd\nlogd\nlosetup\nlsblk\nlua\nluci\nluci-app-argon-config\nluci-app-aurora-config\nluci-app-autoreboot\nluci-app-axonhub\nluci-app-cloudflared\nluci-app-dockerman\nluci-app-easytier\nluci-app-eqos-mtk\nluci-app-firewall\nluci-app-honk\nluci-app-lucky\nluci-app-mini-diskmanager\nluci-app-mtwifi-cfg\nluci-app-openclash\nluci-app-package-manager\nluci-app-quickstart\nluci-app-samba4\nluci-app-store\nluci-app-tingreader\nluci-app-ttyd\nluci-app-turboacc-mtk\nluci-app-upnp\nluci-app-vlmcsd\nluci-app-wolultra\nluci-base\nluci-compat\nluci-i18n-argon-config-zh-cn\nluci-i18n-aurora-config-zh-cn\nluci-i18n-autoreboot-zh-cn\nluci-i18n-axonhub-zh-cn\nluci-i18n-base-zh-cn\nluci-i18n-cloudflared-zh-cn\nluci-i18n-dockerman-zh-cn\nluci-i18n-easytier-zh-cn\nluci-i18n-eqos-mtk-zh-cn\nluci-i18n-firewall-zh-cn\nluci-i18n-lucky-zh-cn\nluci-i18n-mini-diskmanager-zh-cn\nluci-i18n-mtwifi-cfg-zh-cn\nluci-i18n-package-manager-zh-cn\nluci-i18n-quickstart-zh-cn\nluci-i18n-samba4-zh-cn\nluci-i18n-tingreader-zh-cn\nluci-i18n-ttyd-zh-cn\nluci-i18n-turboacc-mtk-zh-cn\nluci-i18n-upnp-zh-cn\nluci-i18n-vlmcsd-zh-cn\nluci-i18n-wolultra-zh-cn\nluci-lib-base\nluci-lib-docker\nluci-lib-ip\nluci-lib-jsonc\nluci-lib-nixio\nluci-lib-taskd\nluci-lib-uqr\nluci-lib-xterm\nluci-light\nluci-lua-runtime\nluci-mod-admin-full\nluci-mod-network\nluci-mod-status\nluci-mod-system\nluci-proto-ipv6\nluci-proto-ppp\nluci-proto-relay\nluci-proto-wireguard\nluci-theme-argon\nluci-theme-aurora\nluci-theme-bootstrap\nlucky\nmii_mgr\nminiupnpd-nftables\nmkf2fs\nmmc-utils\nmount-utils\nmtd\nmtk-smp\nmtkhqos_util\nmtwifi-cfg-ucode\nnetifd\nnftables-json\nodhcp6c\nodhcpd-ipv6only\nopenssh-sftp-server\nopenssl-util\nopenwrt-keyring\nparted\nppp\nppp-mod-pppoe\nprocd\nprocd-seccomp\nprocd-ujail\nproto-bonding\npython3-base\npython3-email\npython3-light\npython3-openssl\npython3-urllib\nqrencode\nquickstart\nregs\nrelayd\nresolveip\nrpcd\nrpcd-mod-file\nrpcd-mod-iwinfo\nrpcd-mod-luci\nrpcd-mod-rrdns\nrpcd-mod-ucode\nruby\nruby-bigdecimal\nruby-date\nruby-digest\nruby-enc\nruby-pstore\nruby-psych\nruby-stringio\nruby-yaml\nrunc\nsamba4-libs\nsamba4-server\nscript-utils\nsgdisk\nshadow\nshadow-chage\nshadow-chfn\nshadow-chgpasswd\nshadow-chpasswd\nshadow-chsh\nshadow-common\nshadow-expiry\nshadow-faillog\nshadow-gpasswd\nshadow-groupadd\nshadow-groupdel\nshadow-groupmems\nshadow-groupmod\nshadow-grpck\nshadow-grpconv\nshadow-grpunconv\nshadow-login\nshadow-logoutd\nshadow-newgidmap\nshadow-newgrp\nshadow-newuidmap\nshadow-newusers\nshadow-nologin\nshadow-passwd\nshadow-pwck\nshadow-pwconv\nshadow-pwunconv\nshadow-su\nshadow-useradd\nshadow-userdel\nshadow-usermod\nshadow-utils\nshadow-vipw\nshellsync\nsmartd\nsqlite3-cli\nswitch\ntar\ntaskd\ntc-tiny\ntcpdump\nterminfo\ntini\nttyd\nubi-utils\nuboot-envtools\nubox\nubus\nubusd\nuci\nuclient-fetch\nucode\nucode-mod-datconf\nucode-mod-digest\nucode-mod-fs\nucode-mod-html\nucode-mod-iwinfo\nucode-mod-l1parser\nucode-mod-log\nucode-mod-lua\nucode-mod-math\nucode-mod-nl80211\nucode-mod-rtnl\nucode-mod-ubus\nucode-mod-uci\nucode-mod-uloop\nuhttpd\nuhttpd-mod-ubus\nunzip\nurandom-seed\nurngd\nusign\nv2ray-geoip\nv2ray-geosite\nvlmcsd\nwifi-dats\nwifi-scripts\nwireguard-tools\nwireless-tools\nwpad-openssl\nwsdd2\nxtables-nft\nxz\nxz-utils\nzlib\nzoneinfo-asia\nzoneinfo-core\n",
+  "all_added_roots_within_requested_actual_DB_dependency_closure": true,
+  "artifact": {
+    "API_digest_verified": true,
+    "ZIP_CRC_verified": true,
+    "all_regular_files_covered": true,
+    "archive_sha256": "a3237c87e7cfdb3452c380486d0896e58bee7d79e33f93a201e8a7634e472dcd",
+    "evidence": "Downloaded immutable Actions artifact, run/head identity and all bundle checksums verified before this review.",
+    "github_digest": "sha256:a3237c87e7cfdb3452c380486d0896e58bee7d79e33f93a201e8a7634e472dcd",
+    "id": 12578550651,
+    "inner_files_SHA256_verified": 607,
+    "name": "s20p-evidence-40118211453-1",
+    "size_in_bytes": 655657376
+  },
+  "base_files_identity_substitution": {
+    "actual_installed_version_exact": true,
+    "after": "1~9f39797",
+    "before": "1~03eb306",
+    "previous_source_bound_approval": "97741797d296ee96f75af2c5e88735cd55edeb227a346ff408cb9025d3511fdc",
+    "source_proof": "ci/reviewed-differences/source-transition-b.json"
+  },
+  "candidate_sha256": "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64",
+  "candidate_world": "apk-openssl\nattr\nautocore\nautomount\navahi-dbus-daemon\naxonhub\nbase-files=1~9f39797\nbash\nblkid\nblock-mount\nblockdev\nbtrfs-progs\nbusybox\nbzip2\nca-bundle\nca-certificates\ncgi-io\ncloudflared\ncontainerd\ncoremark\ncoreutils\ncoreutils-stat\ncoreutils-stty\ncurl\ndatconf\ndbus\ndefault-settings\ndefault-settings-chn\ndnsmasq-full\ndocker\ndocker-compose\ndockerd\ndropbear\ne2fsprogs\neasytier\neip197-mini-firmware\netherwake\nf2fsck\nfdisk\nfirewall4\nfit-check-sign\nfitblk\nfstools\nfuse-overlayfs\nfuse-utils\nfwtool\ngetrandom\nhnat-detect\nhonk\nhostapd-common\nhtop\nip-full\nip6tables-nft\nipset\niptables-mod-extra\niptables-nft\niwinfo-ucode\njansson4\njshn\njsonfilter\nkernel=6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1\nkmod-bonding\nkmod-br-netfilter\nkmod-conninfra\nkmod-crypto-acompress\nkmod-crypto-aead\nkmod-crypto-arc4\nkmod-crypto-authenc\nkmod-crypto-blake2b\nkmod-crypto-crc32c\nkmod-crypto-des\nkmod-crypto-ecb\nkmod-crypto-hash\nkmod-crypto-hmac\nkmod-crypto-hw-safexcel\nkmod-crypto-kpp\nkmod-crypto-lib-chacha20\nkmod-crypto-lib-chacha20poly1305\nkmod-crypto-lib-curve25519\nkmod-crypto-lib-poly1305\nkmod-crypto-manager\nkmod-crypto-md5\nkmod-crypto-null\nkmod-crypto-rng\nkmod-crypto-sha1\nkmod-crypto-sha256\nkmod-crypto-sha3\nkmod-crypto-sha512\nkmod-crypto-user\nkmod-crypto-xxhash\nkmod-dummy\nkmod-fs-btrfs\nkmod-fs-exfat\nkmod-fs-ext4\nkmod-fs-f2fs\nkmod-fs-msdos\nkmod-fs-ntfs3\nkmod-fs-vfat\nkmod-fuse\nkmod-gpio-button-hotplug\nkmod-ifb\nkmod-inet-diag\nkmod-ip6tables\nkmod-ipt-conntrack\nkmod-ipt-core\nkmod-ipt-extra\nkmod-ipt-ipset\nkmod-ipt-nat\nkmod-ipt-nat6\nkmod-ipt-physdev\nkmod-leds-gpio\nkmod-lib-crc-ccitt\nkmod-lib-crc32c\nkmod-lib-lzo\nkmod-lib-raid6\nkmod-lib-xor\nkmod-lib-xxhash\nkmod-lib-zlib-deflate\nkmod-lib-zlib-inflate\nkmod-lib-zstd\nkmod-macvlan\nkmod-md-mod\nkmod-mediatek_hnat\nkmod-mii\nkmod-mmc\nkmod-mppe\nkmod-mt_wifi\nkmod-nf-conntrack\nkmod-nf-conntrack-netlink\nkmod-nf-conntrack6\nkmod-nf-flow\nkmod-nf-ipt\nkmod-nf-ipt6\nkmod-nf-ipvs\nkmod-nf-log\nkmod-nf-log6\nkmod-nf-nat\nkmod-nf-nat6\nkmod-nf-reject\nkmod-nf-reject6\nkmod-nf-tproxy\nkmod-nfnetlink\nkmod-nfnetlink-queue\nkmod-nft-compat\nkmod-nft-core\nkmod-nft-fib\nkmod-nft-fullcone\nkmod-nft-nat\nkmod-nft-netdev\nkmod-nft-offload\nkmod-nft-queue\nkmod-nft-tproxy\nkmod-nls-base\nkmod-nls-cp437\nkmod-nls-cp932\nkmod-nls-cp936\nkmod-nls-cp950\nkmod-nls-iso8859-1\nkmod-nls-utf8\nkmod-nvme\nkmod-ppp\nkmod-pppoe\nkmod-pppox\nkmod-sched-bpf\nkmod-sched-core\nkmod-slhc\nkmod-tcp-bbr\nkmod-tun\nkmod-udptunnel4\nkmod-udptunnel6\nkmod-usb-common\nkmod-usb-core\nkmod-usb-net\nkmod-usb-net-cdc-ether\nkmod-usb3\nkmod-veth\nkmod-warp\nkmod-wireguard\nkmod-xdp-sockets-diag\nkvcedit\nl1util\nlibacl\nlibatomic1\nlibattr\nlibavahi-client\nlibavahi-dbus-support\nlibblkid1\nlibblobmsg-json20260213\nlibbpf1\nlibbz2-1.0\nlibc=1.2.5-r5\nlibcap\nlibcap-ng\nlibcurl4\nlibdaemon\nlibdbus\nlibelf1\nlibexpat\nlibfdisk1\nlibfuse1\nlibfuse3-3\nlibgcc1\nlibgmp10\nlibgnutls\nlibipset13\nlibiptext-nft0\nlibiptext0\nlibiptext6-0\nlibiwinfo-data\nlibiwinfo20230701\nlibjson-c5\nlibjson-script20260213\nlibkvcutil\nlibl1parser\nliblua5.1.5\nliblucihttp-lua\nliblucihttp-ucode\nliblucihttp0\nliblzma\nliblzo2\nlibmnl0\nlibmount1\nlibncurses6\nlibnetfilter-conntrack3\nlibnettle8\nlibnfnetlink0\nlibnftnl11\nlibnghttp2-14\nlibnl-tiny1\nlibopenssl-conf\nlibopenssl-legacy\nlibopenssl3\nlibparted\nlibpcap1\nlibpopt0\nlibpthread\nlibpython3-3.13\nlibqrencode\nlibreadline8\nlibrt\nlibruby3.4\nlibseccomp\nlibsmartcols1\nlibsqlite3-0\nlibstdcpp6\nlibtasn1\nlibtirpc\nlibubox20260213\nlibubus-lua\nlibubus20251202\nlibuci-lua\nlibuci20250120\nlibuclient20201210\nlibucode20230711\nlibudebug\nliburing\nlibustream-openssl20201210\nlibuuid1\nlibuv1\nlibwebsockets-full\nlibxtables12\nlibyaml\nlibzstd\nlogd\nlosetup\nlsblk\nlua\nluci\nluci-app-argon-config\nluci-app-aurora-config\nluci-app-autoreboot\nluci-app-axonhub\nluci-app-cloudflared\nluci-app-dockerman\nluci-app-easytier\nluci-app-eqos-mtk\nluci-app-firewall\nluci-app-honk\nluci-app-lucky\nluci-app-mini-diskmanager\nluci-app-mtwifi-cfg\nluci-app-openclash\nluci-app-package-manager\nluci-app-quickstart\nluci-app-samba4\nluci-app-store\nluci-app-tingreader\nluci-app-ttyd\nluci-app-turboacc-mtk\nluci-app-upnp\nluci-app-vlmcsd\nluci-app-wolultra\nluci-base\nluci-compat\nluci-i18n-argon-config-zh-cn\nluci-i18n-aurora-config-zh-cn\nluci-i18n-autoreboot-zh-cn\nluci-i18n-axonhub-zh-cn\nluci-i18n-base-zh-cn\nluci-i18n-cloudflared-zh-cn\nluci-i18n-dockerman-zh-cn\nluci-i18n-easytier-zh-cn\nluci-i18n-eqos-mtk-zh-cn\nluci-i18n-firewall-zh-cn\nluci-i18n-lucky-zh-cn\nluci-i18n-mini-diskmanager-zh-cn\nluci-i18n-mtwifi-cfg-zh-cn\nluci-i18n-package-manager-zh-cn\nluci-i18n-quickstart-zh-cn\nluci-i18n-samba4-zh-cn\nluci-i18n-tingreader-zh-cn\nluci-i18n-ttyd-zh-cn\nluci-i18n-turboacc-mtk-zh-cn\nluci-i18n-upnp-zh-cn\nluci-i18n-vlmcsd-zh-cn\nluci-i18n-wolultra-zh-cn\nluci-lib-base\nluci-lib-docker\nluci-lib-ip\nluci-lib-jsonc\nluci-lib-nixio\nluci-lib-taskd\nluci-lib-uqr\nluci-lib-xterm\nluci-light\nluci-lua-runtime\nluci-mod-admin-full\nluci-mod-network\nluci-mod-status\nluci-mod-system\nluci-proto-ipv6\nluci-proto-ppp\nluci-proto-relay\nluci-proto-wireguard\nluci-theme-argon\nluci-theme-aurora\nluci-theme-bootstrap\nlucky\nmii_mgr\nminiupnpd-nftables\nmkf2fs\nmmc-utils\nmount-utils\nmtd\nmtk-smp\nmtkhqos_util\nmtwifi-cfg-ucode\nnetifd\nnftables-json\nodhcp6c\nodhcpd-ipv6only\nopenssh-sftp-server\nopenssl-util\nopenwrt-keyring\nparted\nppp\nppp-mod-pppoe\nprocd\nprocd-seccomp\nprocd-ujail\nproto-bonding\npython3-base\npython3-email\npython3-light\npython3-openssl\npython3-urllib\nqrencode\nquickstart\nregs\nrelayd\nresolveip\nrpcd\nrpcd-mod-file\nrpcd-mod-iwinfo\nrpcd-mod-luci\nrpcd-mod-rrdns\nrpcd-mod-ucode\nruby\nruby-bigdecimal\nruby-date\nruby-digest\nruby-enc\nruby-pstore\nruby-psych\nruby-stringio\nruby-yaml\nrunc\nsamba4-libs\nsamba4-server\nscript-utils\nsgdisk\nshadow\nshadow-chage\nshadow-chfn\nshadow-chgpasswd\nshadow-chpasswd\nshadow-chsh\nshadow-common\nshadow-expiry\nshadow-faillog\nshadow-gpasswd\nshadow-groupadd\nshadow-groupdel\nshadow-groupmems\nshadow-groupmod\nshadow-grpck\nshadow-grpconv\nshadow-grpunconv\nshadow-login\nshadow-logoutd\nshadow-newgidmap\nshadow-newgrp\nshadow-newuidmap\nshadow-newusers\nshadow-nologin\nshadow-passwd\nshadow-pwck\nshadow-pwconv\nshadow-pwunconv\nshadow-su\nshadow-useradd\nshadow-userdel\nshadow-usermod\nshadow-utils\nshadow-vipw\nshellsync\nsmartd\nsqlite3-cli\nswitch\ntar\ntaskd\ntc-tiny\ntcpdump\nterminfo\ntini\nttyd\nubi-utils\nuboot-envtools\nubox\nubus\nubusd\nuci\nuclient-fetch\nucode\nucode-mod-datconf\nucode-mod-digest\nucode-mod-fs\nucode-mod-html\nucode-mod-iwinfo\nucode-mod-l1parser\nucode-mod-log\nucode-mod-lua\nucode-mod-math\nucode-mod-nl80211\nucode-mod-rtnl\nucode-mod-ubus\nucode-mod-uci\nucode-mod-uloop\nuhttpd\nuhttpd-mod-ubus\nunzip\nurandom-seed\nurngd\nusign\nv2ray-geoip\nv2ray-geosite\nvlmcsd\nwifi-dats\nwifi-scripts\nwireguard-tools\nwireless-tools\nwpad-openssl\nwsdd2\nxtables-nft\nxz\nxz-utils\nzlib\nzoneinfo-asia\nzoneinfo-core\n",
+  "canonical_id_recomputed_with_current_Gate": "731e6813c858f4b78db7e564e9957bda7adeff8a08fbe4e09581d45454502b84",
+  "dependency_closure": [
+    "ca-bundle",
+    "ca-certificates",
+    "ipset",
+    "kernel",
+    "kmod-ipt-core",
+    "kmod-ipt-ipset",
+    "kmod-mii",
+    "kmod-nf-ipt",
+    "kmod-nf-log",
+    "kmod-nf-reject",
+    "kmod-nfnetlink",
+    "kmod-nls-base",
+    "kmod-usb-common",
+    "kmod-usb-core",
+    "kmod-usb-net",
+    "kmod-usb-net-cdc-ether",
+    "libatomic1",
+    "libbz2-1.0",
+    "libc",
+    "libgcc1",
+    "libipset13",
+    "libmnl0",
+    "libopenssl3",
+    "libpthread",
+    "libpython3-3.13",
+    "python3-base",
+    "python3-email",
+    "python3-light",
+    "python3-openssl",
+    "python3-urllib",
+    "zlib"
+  ],
+  "dependency_closure_derivation": {
+    "all_14_added_world_roots_in_closure": true,
+    "installed_database_sha256": "1a9a86fcb96317c963f73e0a1dda06b6cb1fcde5f54da867bf4b5201e83e3087",
+    "matched_versioned_dependencies": {
+      "kernel=6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1": [
+        "kernel"
+      ]
+    },
+    "package_count": 31,
+    "semantics": "Conservative transitive closure of the five requested increments over actual installed APK DB D: dependencies, including every matching installed p: provider for each virtual dependency. This does not infer which provider an APK solver would select.",
+    "unresolved_dependencies": [],
+    "version_constraints": "Every encountered versioned dependency is exact equality and was matched against the installed package V: or the provider advertised version. The ca-certs virtual dependency is unversioned, so both installed providers match.",
+    "virtual_dependency_evidence": {
+      "consumer": {
+        "D": "ca-certs libc libopenssl3 python3-light",
+        "package": "python3-openssl",
+        "version": "3.13.15-r1"
+      },
+      "providers": [
+        {
+          "D": "libc",
+          "p": "ca-bundle-any ca-certificates-any ca-certs",
+          "package": "ca-bundle",
+          "version": "20260816-r2"
+        },
+        {
+          "D": "libc",
+          "p": "ca-certificates-any ca-certs",
+          "package": "ca-certificates",
+          "version": "20260816-r2"
+        }
+      ]
+    }
+  },
+  "difference": {
+    "actual": "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64",
+    "category": "file_sha256",
+    "disposition": "review_required",
+    "expected": "77b920efb829bda17718a91825d229300bf9bf08b908f44015dd34693fbdaae2",
+    "id": "731e6813c858f4b78db7e564e9957bda7adeff8a08fbe4e09581d45454502b84",
+    "reason": "world roots changed; package closure checked but root selection needs explicit review",
+    "subject": "/etc/apk/world"
+  },
+  "installed_database_sha256": "1a9a86fcb96317c963f73e0a1dda06b6cb1fcde5f54da867bf4b5201e83e3087",
+  "kernel_identity_substitution": {
+    "after": "6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1",
+    "before": "6.12.112~61387475456bc43b27290a665572950c-r1"
+  },
+  "limitations": [
+    "This approves only one exact hash-addressed world record; all future bytes/constraints/root changes require new review.",
+    "Source, original files/packages, kernel ABI, native signature/payload and private-data checks remain independently mandatory.",
+    "The original Actions run remains failure/review_required. A later offline preservation pass does not create a successful Actions run or publish a candidate.",
+    "No B boot/hardware, USB/Wi-Fi throughput, service behavior or private configuration migration acceptance is implied."
+  ],
+  "native_local_signed_feed_reverification": {
+    "installed_packages_matched": 495,
+    "kmod_packages_kernel_checked": 153,
+    "no_install_or_package_scripts": true,
+    "no_network": true,
+    "no_untrusted_or_force_dependency_flags": true,
+    "optional_mobile_packages_count": 28,
+    "public_key_sha256": "5b230ff987b94448581ee9b585911a2be744ea9ebd6f92f00d86e4bfaf65e847",
+    "report_sha256": "76cdd75f68b13a1c668017f72dfe53d8df3a6cf5ff6646f8cc2b346c8e1ebf8a",
+    "status": "pass"
+  },
+  "new_roots": [
+    "ipset",
+    "kmod-ipt-ipset",
+    "kmod-mii",
+    "kmod-usb-common",
+    "kmod-usb-core",
+    "kmod-usb-net",
+    "kmod-usb-net-cdc-ether",
+    "libipset13",
+    "libpython3-3.13",
+    "python3-base",
+    "python3-email",
+    "python3-light",
+    "python3-openssl",
+    "python3-urllib"
+  ],
+  "original_actions_result": {
+    "candidate_release_published": false,
+    "compiler_and_checksum_completed": true,
+    "conclusion": "failure",
+    "exit_code": 2,
+    "note": "Offline review does not relabel the original Actions result.",
+    "preservation": "review_required"
+  },
+  "original_sha256": "77b920efb829bda17718a91825d229300bf9bf08b908f44015dd34693fbdaae2",
+  "original_world": "apk-openssl\nattr\nautocore\nautomount\navahi-dbus-daemon\naxonhub\nbase-files=1~03eb306\nbash\nblkid\nblock-mount\nblockdev\nbtrfs-progs\nbusybox\nbzip2\nca-bundle\nca-certificates\ncgi-io\ncloudflared\ncontainerd\ncoremark\ncoreutils\ncoreutils-stat\ncoreutils-stty\ncurl\ndatconf\ndbus\ndefault-settings\ndefault-settings-chn\ndnsmasq-full\ndocker\ndocker-compose\ndockerd\ndropbear\ne2fsprogs\neasytier\neip197-mini-firmware\netherwake\nf2fsck\nfdisk\nfirewall4\nfit-check-sign\nfitblk\nfstools\nfuse-overlayfs\nfuse-utils\nfwtool\ngetrandom\nhnat-detect\nhonk\nhostapd-common\nhtop\nip-full\nip6tables-nft\niptables-mod-extra\niptables-nft\niwinfo-ucode\njansson4\njshn\njsonfilter\nkernel=6.12.112~61387475456bc43b27290a665572950c-r1\nkmod-bonding\nkmod-br-netfilter\nkmod-conninfra\nkmod-crypto-acompress\nkmod-crypto-aead\nkmod-crypto-arc4\nkmod-crypto-authenc\nkmod-crypto-blake2b\nkmod-crypto-crc32c\nkmod-crypto-des\nkmod-crypto-ecb\nkmod-crypto-hash\nkmod-crypto-hmac\nkmod-crypto-hw-safexcel\nkmod-crypto-kpp\nkmod-crypto-lib-chacha20\nkmod-crypto-lib-chacha20poly1305\nkmod-crypto-lib-curve25519\nkmod-crypto-lib-poly1305\nkmod-crypto-manager\nkmod-crypto-md5\nkmod-crypto-null\nkmod-crypto-rng\nkmod-crypto-sha1\nkmod-crypto-sha256\nkmod-crypto-sha3\nkmod-crypto-sha512\nkmod-crypto-user\nkmod-crypto-xxhash\nkmod-dummy\nkmod-fs-btrfs\nkmod-fs-exfat\nkmod-fs-ext4\nkmod-fs-f2fs\nkmod-fs-msdos\nkmod-fs-ntfs3\nkmod-fs-vfat\nkmod-fuse\nkmod-gpio-button-hotplug\nkmod-ifb\nkmod-inet-diag\nkmod-ip6tables\nkmod-ipt-conntrack\nkmod-ipt-core\nkmod-ipt-extra\nkmod-ipt-nat\nkmod-ipt-nat6\nkmod-ipt-physdev\nkmod-leds-gpio\nkmod-lib-crc-ccitt\nkmod-lib-crc32c\nkmod-lib-lzo\nkmod-lib-raid6\nkmod-lib-xor\nkmod-lib-xxhash\nkmod-lib-zlib-deflate\nkmod-lib-zlib-inflate\nkmod-lib-zstd\nkmod-macvlan\nkmod-md-mod\nkmod-mediatek_hnat\nkmod-mmc\nkmod-mppe\nkmod-mt_wifi\nkmod-nf-conntrack\nkmod-nf-conntrack-netlink\nkmod-nf-conntrack6\nkmod-nf-flow\nkmod-nf-ipt\nkmod-nf-ipt6\nkmod-nf-ipvs\nkmod-nf-log\nkmod-nf-log6\nkmod-nf-nat\nkmod-nf-nat6\nkmod-nf-reject\nkmod-nf-reject6\nkmod-nf-tproxy\nkmod-nfnetlink\nkmod-nfnetlink-queue\nkmod-nft-compat\nkmod-nft-core\nkmod-nft-fib\nkmod-nft-fullcone\nkmod-nft-nat\nkmod-nft-netdev\nkmod-nft-offload\nkmod-nft-queue\nkmod-nft-tproxy\nkmod-nls-base\nkmod-nls-cp437\nkmod-nls-cp932\nkmod-nls-cp936\nkmod-nls-cp950\nkmod-nls-iso8859-1\nkmod-nls-utf8\nkmod-nvme\nkmod-ppp\nkmod-pppoe\nkmod-pppox\nkmod-sched-bpf\nkmod-sched-core\nkmod-slhc\nkmod-tcp-bbr\nkmod-tun\nkmod-udptunnel4\nkmod-udptunnel6\nkmod-usb3\nkmod-veth\nkmod-warp\nkmod-wireguard\nkmod-xdp-sockets-diag\nkvcedit\nl1util\nlibacl\nlibatomic1\nlibattr\nlibavahi-client\nlibavahi-dbus-support\nlibblkid1\nlibblobmsg-json20260213\nlibbpf1\nlibbz2-1.0\nlibc=1.2.5-r5\nlibcap\nlibcap-ng\nlibcurl4\nlibdaemon\nlibdbus\nlibelf1\nlibexpat\nlibfdisk1\nlibfuse1\nlibfuse3-3\nlibgcc1\nlibgmp10\nlibgnutls\nlibiptext-nft0\nlibiptext0\nlibiptext6-0\nlibiwinfo-data\nlibiwinfo20230701\nlibjson-c5\nlibjson-script20260213\nlibkvcutil\nlibl1parser\nliblua5.1.5\nliblucihttp-lua\nliblucihttp-ucode\nliblucihttp0\nliblzma\nliblzo2\nlibmnl0\nlibmount1\nlibncurses6\nlibnetfilter-conntrack3\nlibnettle8\nlibnfnetlink0\nlibnftnl11\nlibnghttp2-14\nlibnl-tiny1\nlibopenssl-conf\nlibopenssl-legacy\nlibopenssl3\nlibparted\nlibpcap1\nlibpopt0\nlibpthread\nlibqrencode\nlibreadline8\nlibrt\nlibruby3.4\nlibseccomp\nlibsmartcols1\nlibsqlite3-0\nlibstdcpp6\nlibtasn1\nlibtirpc\nlibubox20260213\nlibubus-lua\nlibubus20251202\nlibuci-lua\nlibuci20250120\nlibuclient20201210\nlibucode20230711\nlibudebug\nliburing\nlibustream-openssl20201210\nlibuuid1\nlibuv1\nlibwebsockets-full\nlibxtables12\nlibyaml\nlibzstd\nlogd\nlosetup\nlsblk\nlua\nluci\nluci-app-argon-config\nluci-app-aurora-config\nluci-app-autoreboot\nluci-app-axonhub\nluci-app-cloudflared\nluci-app-dockerman\nluci-app-easytier\nluci-app-eqos-mtk\nluci-app-firewall\nluci-app-honk\nluci-app-lucky\nluci-app-mini-diskmanager\nluci-app-mtwifi-cfg\nluci-app-openclash\nluci-app-package-manager\nluci-app-quickstart\nluci-app-samba4\nluci-app-store\nluci-app-tingreader\nluci-app-ttyd\nluci-app-turboacc-mtk\nluci-app-upnp\nluci-app-vlmcsd\nluci-app-wolultra\nluci-base\nluci-compat\nluci-i18n-argon-config-zh-cn\nluci-i18n-aurora-config-zh-cn\nluci-i18n-autoreboot-zh-cn\nluci-i18n-axonhub-zh-cn\nluci-i18n-base-zh-cn\nluci-i18n-cloudflared-zh-cn\nluci-i18n-dockerman-zh-cn\nluci-i18n-easytier-zh-cn\nluci-i18n-eqos-mtk-zh-cn\nluci-i18n-firewall-zh-cn\nluci-i18n-lucky-zh-cn\nluci-i18n-mini-diskmanager-zh-cn\nluci-i18n-mtwifi-cfg-zh-cn\nluci-i18n-package-manager-zh-cn\nluci-i18n-quickstart-zh-cn\nluci-i18n-samba4-zh-cn\nluci-i18n-tingreader-zh-cn\nluci-i18n-ttyd-zh-cn\nluci-i18n-turboacc-mtk-zh-cn\nluci-i18n-upnp-zh-cn\nluci-i18n-vlmcsd-zh-cn\nluci-i18n-wolultra-zh-cn\nluci-lib-base\nluci-lib-docker\nluci-lib-ip\nluci-lib-jsonc\nluci-lib-nixio\nluci-lib-taskd\nluci-lib-uqr\nluci-lib-xterm\nluci-light\nluci-lua-runtime\nluci-mod-admin-full\nluci-mod-network\nluci-mod-status\nluci-mod-system\nluci-proto-ipv6\nluci-proto-ppp\nluci-proto-relay\nluci-proto-wireguard\nluci-theme-argon\nluci-theme-aurora\nluci-theme-bootstrap\nlucky\nmii_mgr\nminiupnpd-nftables\nmkf2fs\nmmc-utils\nmount-utils\nmtd\nmtk-smp\nmtkhqos_util\nmtwifi-cfg-ucode\nnetifd\nnftables-json\nodhcp6c\nodhcpd-ipv6only\nopenssh-sftp-server\nopenssl-util\nopenwrt-keyring\nparted\nppp\nppp-mod-pppoe\nprocd\nprocd-seccomp\nprocd-ujail\nproto-bonding\nqrencode\nquickstart\nregs\nrelayd\nresolveip\nrpcd\nrpcd-mod-file\nrpcd-mod-iwinfo\nrpcd-mod-luci\nrpcd-mod-rrdns\nrpcd-mod-ucode\nruby\nruby-bigdecimal\nruby-date\nruby-digest\nruby-enc\nruby-pstore\nruby-psych\nruby-stringio\nruby-yaml\nrunc\nsamba4-libs\nsamba4-server\nscript-utils\nsgdisk\nshadow\nshadow-chage\nshadow-chfn\nshadow-chgpasswd\nshadow-chpasswd\nshadow-chsh\nshadow-common\nshadow-expiry\nshadow-faillog\nshadow-gpasswd\nshadow-groupadd\nshadow-groupdel\nshadow-groupmems\nshadow-groupmod\nshadow-grpck\nshadow-grpconv\nshadow-grpunconv\nshadow-login\nshadow-logoutd\nshadow-newgidmap\nshadow-newgrp\nshadow-newuidmap\nshadow-newusers\nshadow-nologin\nshadow-passwd\nshadow-pwck\nshadow-pwconv\nshadow-pwunconv\nshadow-su\nshadow-useradd\nshadow-userdel\nshadow-usermod\nshadow-utils\nshadow-vipw\nshellsync\nsmartd\nsqlite3-cli\nswitch\ntar\ntaskd\ntc-tiny\ntcpdump\nterminfo\ntini\nttyd\nubi-utils\nuboot-envtools\nubox\nubus\nubusd\nuci\nuclient-fetch\nucode\nucode-mod-datconf\nucode-mod-digest\nucode-mod-fs\nucode-mod-html\nucode-mod-iwinfo\nucode-mod-l1parser\nucode-mod-log\nucode-mod-lua\nucode-mod-math\nucode-mod-nl80211\nucode-mod-rtnl\nucode-mod-ubus\nucode-mod-uci\nucode-mod-uloop\nuhttpd\nuhttpd-mod-ubus\nunzip\nurandom-seed\nurngd\nusign\nv2ray-geoip\nv2ray-geosite\nvlmcsd\nwifi-dats\nwifi-scripts\nwireguard-tools\nwireless-tools\nwpad-openssl\nwsdd2\nxtables-nft\nxz\nxz-utils\nzlib\nzoneinfo-asia\nzoneinfo-core\n",
+  "package_inventory": {
+    "actual": 495,
+    "actual_kmods": 128,
+    "additional": [
+      "ipset",
+      "kmod-ipt-ipset",
+      "kmod-mii",
+      "kmod-usb-net",
+      "kmod-usb-net-cdc-ether",
+      "libipset13",
+      "libpython3-3.13",
+      "python3-base",
+      "python3-email",
+      "python3-light",
+      "python3-openssl",
+      "python3-urllib"
+    ],
+    "all_actual_kmods_exact_kernel_dependency": true,
+    "kernel_abi": "6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1",
+    "luci_apps": 24,
+    "original_kmods_preserved": 124,
+    "original_preserved": 483
+  },
+  "removed_original_roots_after_kernel_and_base_files_substitution": [],
+  "requested_increment_roots": [
+    "kmod-usb-net-cdc-ether",
+    "ipset",
+    "python3-base",
+    "python3-urllib",
+    "python3-openssl"
+  ],
+  "root_inventory": {
+    "A_explicit_roots": 479,
+    "B_explicit_roots": 479,
+    "all_roots_are_actual_installed_packages": true,
+    "original_explicit_roots": 465,
+    "root_names_match_cloud_report": true,
+    "version_constraints_match_actual_DB": {
+      "base-files": "1~9f39797",
+      "kernel": "6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1",
+      "libc": "1.2.5-r5"
+    }
+  },
+  "run_attempt": 1,
+  "run_id": "40118211453",
+  "schema_version": 1,
+  "scope": "Only the exact B /etc/apk/world content delta; no general permission to change or remove explicit package roots.",
+  "signed_feeds_sha256": "ce6e2a430b7e970305f24c1fa2025766d1688e4a41274a9fb8d8610c20d3b105",
+  "source_binding": {
+    "actual_main_source": {
+      "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
+      "tree": "32cfde7e4644113871fe4fa00dc7cb2fc8efa4ec",
+      "tree_hash": "82c30f415614bb0f5aafab016250c04b1b7cac3520166dc4ba4e7f99a070da4a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+    },
+    "actual_prepared_base_files_recipe": {
+      "mode": "0o644",
+      "path": "package/base-files/Makefile",
+      "sha256": "1bb4653fd85b1dc9aaa4890b416fca28fd80ff4d74931abb4bcf5597bfa80985",
+      "size": 9356
+    },
+    "all_provenance_identities_recomputed": true,
+    "base_files_source_version_context": {
+      "base_files_commitcount": 1,
+      "base_files_package_version": "1~9f39797",
+      "git_log_ct_abbrev7": "1792762495 9f39797",
+      "luci_findrev": {
+        "luci-app-eqos-mtk": {
+          "PO": "26.296.48895~9f39797",
+          "SRC": "26.296.48895~9f39797"
+        },
+        "luci-app-mtwifi-cfg": {
+          "PO": "26.296.48895~9f39797",
+          "SRC": "26.296.48895~9f39797"
+        },
+        "luci-app-turboacc-mtk": {
+          "PO": "26.296.48895~9f39797",
+          "SRC": "26.296.48895~9f39797"
+        }
+      },
+      "revision": "r0-9f39797",
+      "source_date_epoch": 1792762495
+    },
+    "build_fingerprint": "f9d2ffb4f46e8b65876aa7b05b58db18fb679ce636647157f9f468a220ffeca9",
+    "embedded_main_source": {
+      "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "role": "main-source",
+      "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git"
+    },
+    "prepared_source_files_sha256": "0065e24d3666f3b5c8636e7665774a9493adae9a58b15d3ada9eae11312f9772",
+    "prepared_tree_hash": "c4ec2143932761b163cb28e9ed5572172f40a32256fd26e2122806e91a2fe24f",
+    "requested_sources_lock_sha256": "a07b8be6a558224abb3c877284f8c1568e78b65c109510935eb600e5cce4c87a",
+    "source_lock_sha256": "a51cd2b200327c382b7103276b5ec4e36a1b1f73e5814aabaeaeace7ff288ded",
+    "wrapper_source_files_sha256": "d8bc3fd4437b72a5148653c79fa6fd1ec9f885c35478eac45584989a32558527",
+    "wrapper_tree_hash": "883bf548c898ad6d47da51e2a85e56b6d415506bb6e03c15f91e4f7a4d901609"
+  },
+  "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+  "validation": {
+    "existing_targeted_regressions": {
+      "commands": [
+        "python3 -m unittest discover -s ci/tests -p test_preservation.py -k approval -v",
+        "python3 -m unittest discover -s ci/tests -p test_preservation.py -k missing_critical -v"
+      ],
+      "coverage": [
+        "exact hash approval",
+        "stale approval cannot match another hash",
+        "missing critical file remains hard failure"
+      ],
+      "status": "pass",
+      "tests": 3
+    },
+    "full_ci_regressions": {
+      "command": "python3 -m unittest discover -s ci/tests",
+      "duration_seconds": 72.885,
+      "report": "approval-regression-tests.log",
+      "report_sha256": "f47edacac8699fd3adc2991f0ba87f8e12379faa601b771381c4252d78e4e0f8",
+      "scope": "Existing full CI tests; no production code or test framework changes were made for this approval.",
+      "status": "pass",
+      "tests": 190
+    },
+    "independent_approval_review": {
+      "final_repository_diff_review": {
+        "must_fix": [],
+        "report": "independent-approval-review.json",
+        "report_sha256": "586ce1183b3a857a2904c8b631285b4ed885b73621c185c15d0182232d6153da",
+        "review_inputs": [
+          {
+            "path": "ci/approved-differences.json",
+            "sha256": "a86211cab536baabd29b7dc3640fa2d3769d186c62e56ae2c70ebed1d06eedb0"
+          },
+          {
+            "path": "ci/reviewed-differences/40118211453-world.json",
+            "sha256": "75daadd05b9c6488057cbf0fada7c2bca10ac275b5960fba3d388cbb6db79b86"
+          },
+          {
+            "path": "docs/PRESERVATION-REVIEW-40118211453.md",
+            "sha256": "26d8365d26c20033a8674d7766a52fb4dd5def47c8438e94d0e6cf8bc384e473"
+          }
+        ],
+        "scope": "Independent review of the exact +1 world approval, public source/closure evidence and final native replay; only the expressly allowed final-review result fields and documentation statement were updated afterwards.",
+        "status": "pass"
+      },
+      "host_review": {
+        "must_fix": [],
+        "report": "independent-host-review.json",
+        "report_sha256": "88bd6979036183a2cca5ba0275a74a4736d0e2a86a5cb819bd80ab9d0de99058",
+        "scope": "Independent archive, image FWx0 CRC/metadata/tar/FIT/partition-capacity and source-metadata checks; native feed signatures are separately verified.",
+        "status": "pass_static_host_review_local_exact_world_approval"
+      },
+      "limits": [
+        "The original Actions conclusion remains failure/review_required.",
+        "These reports do not establish B boot, hardware, services or private configuration migration acceptance."
+      ],
+      "native_inventory_review": {
+        "added_payload_owner_version_type_mode_hash_evidence_checked": 485,
+        "all_actual_changes_exact_report_bound": true,
+        "full_kernel_dependencies_checked": 128,
+        "module_files_checked": 212,
+        "must_fix": [],
+        "original_metadata_retained": 4332,
+        "original_paths": 4334,
+        "original_present_symlinks_checked": 576,
+        "report": "independent-native-review.json",
+        "report_sha256": "2df82fddf7365ee143fadf00903b6f764fddf158b0fadf6255d132c09d24559d",
+        "scope": "Fresh independent unsquashfs extraction; original metadata, exact CA removals, module ownership/vermagic/dependencies and added payload ownership evidence.",
+        "source_image_sha256": "e787260f85f960284b2f8ee13a1f482ea6e5a88c044e5803d357b41d9306db40",
+        "source_squashfs_sha256": "1b2e1c0bf9d46a15ed8a2594614393663472221856817e82bfed31c9ff9290a5",
+        "status": "pass_native_independent_inventory_with_exact_cloud_world_pending",
+        "status_suffix_note": "The pending suffix describes the original cloud world review, not a failed independent inventory check."
+      },
+      "status": "pass-static-artifact-and-final-diff-review"
+    },
+    "negative_replay": {
+      "exact_record_approved": true,
+      "full_mutated_image_replay": {
+        "different_id": "033c97be9e9ec043ce89e9feb56bf3ce863ebce5e4661f0e503520062ba8d655",
+        "exit_code": 2,
+        "pending_review_count": 1,
+        "status": "review_required"
+      },
+      "negative_cases": [
+        {
+          "id": "bc003eae4a76f3d22406df6ad4bef9507cb5ceb5f4e158e75d04758e3f1c303e",
+          "mutation": "canonical_category",
+          "status": "blocked"
+        },
+        {
+          "id": "45295f5a9f78ca74eabe87ae09a265b0867231a62011f80fcf081b1a46b6157e",
+          "mutation": "canonical_subject",
+          "status": "blocked"
+        },
+        {
+          "id": "8906c91a7dc120ccf60cc3c967d0b4a2d3722d555e5dfd628e279edc3d54ca11",
+          "mutation": "canonical_expected",
+          "status": "blocked"
+        },
+        {
+          "id": "85040313103f3c06897ce66d239cf329f6cd485e60226e631cda1ee42d61b7b1",
+          "mutation": "canonical_actual",
+          "status": "blocked"
+        },
+        {
+          "id": "9372fc0ec9e5a9c80e5af30c58b309541f6aaafd86990aa9294a86d0ba09feaf",
+          "mutation": "canonical_reason",
+          "status": "blocked"
+        },
+        {
+          "id": "033c97be9e9ec043ce89e9feb56bf3ce863ebce5e4661f0e503520062ba8d655",
+          "mutation": "added_root",
+          "status": "blocked"
+        },
+        {
+          "id": "94dd3cbd5cfc0fbef9a5087ba236bd1ff545806f3cafae7f905eda863fbef1ec",
+          "mutation": "deleted_root",
+          "status": "blocked"
+        },
+        {
+          "id": "4462de3f4515015ea16cf7d2a5fdc0d29d8a7c6090aa2b6d67b07975ed2ed87d",
+          "mutation": "changed_constraint",
+          "status": "blocked"
+        },
+        {
+          "id": "9ed573f3587c64bc120b6b6d2cbdb1ca26907e69e85fc85c47c97bc89a574696",
+          "mutation": "reordered_roots",
+          "status": "blocked"
+        }
+      ],
+      "original_artifact_unchanged": true,
+      "publication_audit_bundle_and_true_rootfs": "pass",
+      "report": "audit-and-negative-verification.json",
+      "report_sha256": "617a7de12bf798d852d47e5498ea9e23602755282716620d671f6a7af4f9148f",
+      "status": "pass",
+      "world_restored_sha256": "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64"
+    },
+    "original_507_native_replay": {
+      "errors": [],
+      "exactly_matches_original_cloud_report": true,
+      "exit_code": 2,
+      "only_pending_id": "731e6813c858f4b78db7e564e9957bda7adeff8a08fbe4e09581d45454502b84",
+      "pending_review_count": 1,
+      "report_sha256": "6f4663598fc78489b0acaf70a330a5f77f7083688bdb9878938b7009d45892d3",
+      "status": "review_required"
+    },
+    "with_exact_508_native_replay": {
+      "approval_overlay_sha256": "5b1450b153aaf061b2805f109b60702bf5ced0e90772c89c0a87418c29e6edf7",
+      "errors": [],
+      "exit_code": 0,
+      "final_repository_ledger_replay": {
+        "all_used_approval_explanations_exact_repository_ledger": true,
+        "errors": [],
+        "exit_code": 0,
+        "ledger_sha256": "a86211cab536baabd29b7dc3640fa2d3769d186c62e56ae2c70ebed1d06eedb0",
+        "log": "native-replay-final-ledger.log",
+        "log_sha256": "80903371ca552863a4bc16666b7c3d64dc3ce6acbca126ac85b216ba75c02eb9",
+        "pending_review_count": 0,
+        "phase": "image",
+        "report": "preservation-final-508.json",
+        "report_sha256": "7572cc57a98383be0230104dd0601efb5a6f0c4487e18f65bf7302a22f5ee0bb",
+        "scope": "Native full replay of the same downloaded artifact against the exact final repository ledger file, including its explanation text. This is not a new cloud build or a claim about a committed ledger revision.",
+        "status": "pass",
+        "unique_approval_ids": 508
+      },
+      "overlay_and_repository_approval_id_sets_equal": true,
+      "pending_review_count": 0,
+      "phase": "image",
+      "report": "preservation-revalidated-508.json",
+      "report_sha256": "6bb0bc5e814694b313d82e5f57ada20c9de4dbb59b8df54ebdb754867a938833",
+      "scope": "The same downloaded B artifact with an overlay containing exactly the repository ledger IDs; approval explanation text can differ.",
+      "status": "pass-overlay-and-final-repository-ledger",
+      "unique_approval_ids": 508
+    }
+  },
+  "virtual_dependency_resolutions": {
+    "ca-certs": [
+      "ca-bundle",
+      "ca-certificates"
+    ]
+  },
+  "world_record": {
+    "gid": 0,
+    "mode": "0644",
+    "path": "/etc/apk/world",
+    "sha256": "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64",
+    "size": 6649,
+    "type": "file",
+    "uid": 0
+  },
+  "wrapper_head": "172f3dfc8dd99b09f7e5c2e4849c4ee4656ca038"
+}

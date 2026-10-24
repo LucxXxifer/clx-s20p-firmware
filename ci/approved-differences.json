@@ -2027,6 +2027,10 @@
     {
       "id": "7ebd429e3018ecfcd0800067893daeef63ffb86c8d1692c770269c5148f31445",
       "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
+    },
+    {
+      "id": "731e6813c858f4b78db7e564e9957bda7adeff8a08fbe4e09581d45454502b84",
+      "reason": "Exact B world bytes retain every original explicit root after checked kernel/base-files identity substitutions, with the same 14 requested dependency-closure roots as accepted A. Actual B world differs from A only by base-files=1~03eb306 to base-files=1~9f39797. See ci/reviewed-differences/40118211453-world.json. Only this exact hash-addressed world record is approved; source, native signed feeds, package/ABI and missing-file gates remain required."
     }
   ],
   "schema_version": 1

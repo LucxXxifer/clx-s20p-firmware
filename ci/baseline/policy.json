@@ -10,6 +10,7 @@
   "kernel_version": "6.12.112",
   "original_fingerprint": "727865e67094ef2b7e9872f025e010b49c16eefe0e2f69f84c2392f60521766d",
   "original_kernel": "6.12.112~61387475456bc43b27290a665572950c-r1",
+  "original_upstream_commit": "03eb30617955519e35845838c6255ebe687eb717",
   "release": "26.10.17_15.32.58_S20P-WIFI-YES",
   "required_config": {
     "CONFIG_BPF_TOOLCHAIN_HOST": "y",
@@ -219,6 +220,6 @@
       "source": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase/tree/03eb30617955519e35845838c6255ebe687eb717/package/mtk/applications/luci-app-turboacc-mtk"
     }
   },
-  "upstream_commit": "03eb30617955519e35845838c6255ebe687eb717",
+  "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
   "wrapper_commit": "d46704afb327fce99e7d770c08fc46b48d5bb1b7"
 }

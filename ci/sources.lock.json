@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_utc": "2026-10-23T20:45:02.309108+00:00",
-  "provenance_notice": "Main source is the original release commit; all other refs were resolved when this lock was created. Original 2026-10-17 feed commits are unavailable. This is not a bit-reproducibility claim.",
+  "provenance_notice": "B uses the user-approved fixed chasey 25.12 commit; previous main-source identity is retained. All 38 other Git sources retain accepted A pins. Original 2026-10-17 feed commits are not all recoverable. This is not a bit-reproducibility claim.",
   "sources": [
     {
       "url": "https://github.com/4IceG/luci-app-mini-diskmanager.git",
@@ -94,13 +94,18 @@
     {
       "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git",
       "ref": "25.12",
-      "commit": "03eb30617955519e35845838c6255ebe687eb717",
-      "provenance": "original-release-main-source",
+      "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "provenance": "approved-fixed-main-source-transition-b",
       "evidence_paths": [
         "main-source"
       ],
       "role": "main-source",
-      "resolution": "original-release-commit-already-verified"
+      "resolution": "User-approved B source transition from 03eb30617955519e35845838c6255ebe687eb717 to 9f397975c7b47ce6986a6e39529d2f72fd5c729d on 25.12; 17 commits/18 changed paths reviewed. The other 38 Git sources retain accepted A pins. See docs/SOURCE-TRANSITION-B.md.",
+      "previous_lock": {
+        "commit": "03eb30617955519e35845838c6255ebe687eb717",
+        "provenance": "original-release-main-source",
+        "resolution": "original-release-commit-already-verified"
+      }
     },
     {
       "url": "https://github.com/dl12345/luci-app-mwan3.git",

@@ -1,0 +1,91 @@
+{
+  "bundle": {
+    "alias_path": "/etc/ssl/cert.pem",
+    "alias_target": "/etc/ssl/certs/ca-certificates.crt",
+    "original_sha256": "5a88c31547f4676417351019576c7e8eaf8f724ff21105a9ee586ffa83866c88",
+    "path": "/etc/ssl/certs/ca-certificates.crt",
+    "sha256": "64e7c24b0536b525fb19b145768bd5e6e12ced0df3db837c34553ea789acd143",
+    "size": 180744
+  },
+  "limitations": [
+    "Fixed source reproduction is not a B cloud artifact or hardware acceptance.",
+    "No other CA or path removal is authorized; bundle bytes and package-version differences retain their own explicit review."
+  ],
+  "original_manifest_sha256": "9d2efae060de16ba418185530ac61901f521db5b06418d21fd7eff97db8b6f9f",
+  "removed_records": [
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/etc/ssl/certs/emSign_ECC_Root_CA_-_G3.crt",
+      "sha256": "36e68e205b53c67c7a013894e0d5c8583063468118d1ce78ecbc2200d1dd185c",
+      "size": 859,
+      "squashfs_inode": 772,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0777",
+      "mtime_unix": 1792144831,
+      "path": "/etc/ssl/certs/14bc7599.0",
+      "sha256": "6f1f56580e1b1ca79e73dd3821d746d64319e07331aad61ed06b641bcb359719",
+      "size": 27,
+      "squashfs_inode": 559,
+      "target": "emSign_ECC_Root_CA_-_G3.crt",
+      "type": "symlink",
+      "uid": 0
+    }
+  ],
+  "reproduction": {
+    "candidate_certs": 120,
+    "comodo_aaa_original_occurrences": 0,
+    "evidence_file": "source-reproduction.json",
+    "original_certs": 121,
+    "other_cert_changes": 0,
+    "sha256": "d3401cedab18b4039321302cfbbc69a4b2e4670e2143a527219096140e9615e1"
+  },
+  "required_packages": {
+    "ca-bundle": "20260816-r2",
+    "ca-certificates": "20260816-r2"
+  },
+  "revoked_certificate": {
+    "der_sha256": "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b",
+    "name": "emSign ECC Root CA - G3",
+    "pem_sha256": "36e68e205b53c67c7a013894e0d5c8583063468118d1ce78ecbc2200d1dd185c"
+  },
+  "schema_version": 1,
+  "scope": "Only two original emSign G3 paths at fixed B source; exact differences require separate approval; never a generic missing-file exemption.",
+  "source": {
+    "archive": {
+      "sha256": "d939bcdd0cb058712cf4175bac76997676eb8b68fe9473765e1b40fb3d5b186a",
+      "size": 271796,
+      "url": "https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_20260816.tar.xz"
+    },
+    "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+    "prepared_files": [
+      {
+        "evidence_file": "Makefile",
+        "mode": "0o644",
+        "path": "package/system/ca-certificates/Makefile",
+        "sha256": "7aad14c2b0b0237fd03671b5ca06ecd92d81c62fc611b7397953adb814b7f550",
+        "size": 2032
+      },
+      {
+        "evidence_file": "0001-ca-certificates-fix-python3-cryptography-woes-in-cer.patch",
+        "mode": "0o644",
+        "path": "package/system/ca-certificates/patches/0001-ca-certificates-fix-python3-cryptography-woes-in-cer.patch",
+        "sha256": "8d932921d72b9a24690cecc0cd853ba2a85deacc328ea9750edf5fcd94077e09",
+        "size": 1728
+      },
+      {
+        "evidence_file": "0002-blacklist-certs.patch",
+        "mode": "0o644",
+        "path": "package/system/ca-certificates/patches/0002-blacklist-certs.patch",
+        "sha256": "9a323f0fb873240c0cebf19d876d57f3c1885feb49a3044f8c7575c8a6d3cd21",
+        "size": 831
+      }
+    ],
+    "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+  }
+}

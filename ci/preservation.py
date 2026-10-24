@@ -7,16 +7,25 @@ build artifacts, not boot, hardware behavior, or bit-identical reproduction.
 """
 
 import argparse
+import base64
 import csv
 import hashlib
 import io
 import json
 import os
 from pathlib import Path, PurePosixPath
+import posixpath
 import re
 import stat
 import struct
 import sys
+
+
+# This is a one-source security transition, not an extensible missing-path list.
+# Updating the review requires a code review of this independent digest anchor.
+SECURITY_REMOVAL_REVIEW = Path(__file__).with_name("reviewed-security-removals") / "chasey-9f397975.json"
+SECURITY_REMOVAL_REVIEW_SHA256 = "0dc44aff92ac7662334e3a1dc9f562e2704149767b54b26cdb984626bbc1fc8b"
+SECURITY_REMOVAL_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
 
 
 def digest(value):
@@ -279,6 +288,7 @@ class Gate:
         self.phase = phase
         self.baseline = Path(baseline)
         self.errors, self.differences, self.checks = [], [], {}
+        self._source_evidence = None
         self.approvals = {}
         if approval:
             for item in read_json(approval)["approved"]:
@@ -388,6 +398,7 @@ class Gate:
                                  "scope": "required symbols only; original expanded config is unavailable"}
 
     def source_lock(self, path):
+        self._source_evidence = None
         if not path:
             self.error("source_lock_missing", "source-lock.json")
             return False
@@ -435,7 +446,210 @@ class Gate:
                 self.difference("resolved_source", source.get("name", "MISSING"),
                                 "original resolved revision unknown", source, "expected",
                                 "new build lock; not evidence of original feed/asset equality")
-        return count == len(self.errors)
+        passed = count == len(self.errors)
+        if passed:
+            self._source_evidence = (Path(path), lock)
+        return passed
+
+    def security_removals(self, root, provenance_ok, packages, baseline):
+        """Permit two reviewed absences only after fixed B source/output proof.
+
+        Successful guards still produce exact review_required differences. All
+        other missing paths remain hard errors in files(); restoring the revoked
+        CA is itself a hard error, even if it would match the original baseline.
+        """
+        if self.policy["upstream_commit"] != SECURITY_REMOVAL_COMMIT:
+            return {}
+        check = {"status": "fail", "scope": "two fixed emSign G3 records at fixed B source",
+                 "review_sha256": SECURITY_REMOVAL_REVIEW_SHA256}
+        self.checks["security_removals"] = check
+
+        def require(condition, message):
+            if not condition:
+                raise ValueError(message)
+
+        def regular_bytes(path):
+            require(path.is_file() and not path.is_symlink(), "regular evidence required: " + str(path))
+            return path.read_bytes()
+
+        def repository(url):
+            return url.removesuffix(".git") if isinstance(url, str) else None
+
+        def strict_json(raw):
+            def unique(pairs):
+                result = {}
+                for key, value in pairs:
+                    require(key not in result, "duplicate JSON key: " + key)
+                    result[key] = value
+                return result
+            return json.loads(raw, object_pairs_hook=unique)
+
+        def manifest(path):
+            rows = strict_json(regular_bytes(path))
+            require(isinstance(rows, list) and bool(rows), "nonempty prepared/wrapper manifest required")
+            seen = set()
+            for row in rows:
+                require(isinstance(row, dict), "invalid source manifest row")
+                name = row.get("path")
+                require(isinstance(name, str) and name and not name.startswith("/") and
+                        "\\" not in name and "\0" not in name and
+                        ".." not in PurePosixPath(name).parts and
+                        str(PurePosixPath(name)) == name and name != "." and name not in seen,
+                        "duplicate/unsafe source manifest path: " + str(name))
+                seen.add(name)
+                mode = row.get("mode")
+                require(isinstance(mode, str) and re.fullmatch(r"0o[0-7]{1,4}", mode) is not None and
+                        oct(int(mode, 8)) == mode, "invalid source manifest mode: " + name)
+                if "target" in row:
+                    require(set(row) == {"path", "mode", "target"} and
+                            isinstance(row["target"], str) and bool(row["target"]) and "\0" not in row["target"],
+                            "invalid source symlink row: " + name)
+                else:
+                    require(set(row) == {"path", "mode", "size", "sha256"} and
+                            type(row["size"]) is int and row["size"] >= 0 and
+                            re.fullmatch(r"[0-9a-f]{64}", str(row["sha256"])) is not None,
+                            "invalid regular source row: " + name)
+            require(not any(str(parent) in seen for name in seen for parent in PurePosixPath(name).parents),
+                    "source file/symlink cannot be an ancestor of another input")
+            return rows
+
+        try:
+            review_bytes = regular_bytes(SECURITY_REMOVAL_REVIEW)
+            require(digest(review_bytes) == SECURITY_REMOVAL_REVIEW_SHA256, "security-removal review digest mismatch")
+            review = strict_json(review_bytes)
+            original = regular_bytes(self.baseline / "full-rootfs-manifest.json")
+            require(digest(original) == review["original_manifest_sha256"], "original full manifest digest mismatch")
+            require(not any(e["category"] in {"baseline_checksum", "missing_baseline_checksum", "baseline_count"}
+                            for e in self.errors), "baseline integrity failed")
+            for record in review["removed_records"]:
+                require(baseline.get(record["path"]) == record, "original security-removal record mismatch: " + record["path"])
+            require(provenance_ok and self._source_evidence is not None, "validated source-lock evidence required")
+            path, lock = self._source_evidence
+            require(strict_json(regular_bytes(path)) == lock, "source-lock changed after validation")
+            source = review["source"]
+            require(lock.get("upstream_commit") == source["commit"] == SECURITY_REMOVAL_COMMIT,
+                    "fixed B upstream commit required")
+            actual_main = [row for row in lock["sources"] if repository(row.get("url")) == source["repository"]]
+            require(len(actual_main) == 1 and actual_main[0].get("commit") == source["commit"],
+                    "unique actual fixed B source required")
+            requested_bytes = regular_bytes(path.with_name("requested-sources.lock.json"))
+            requested = strict_json(requested_bytes)
+            require(requested == lock.get("source_lock") and digest(requested_bytes) == lock.get("source_lock_sha256"),
+                    "requested/embedded source lock mismatch")
+            require(isinstance(requested.get("sources"), list) and
+                    all(isinstance(row, dict) for row in requested["sources"]), "invalid requested sources")
+            main = [row for row in requested["sources"] if row.get("role") == "main-source"]
+            urls = [repository(row.get("url")) for row in requested["sources"]]
+            require(None not in urls and len(urls) == len(set(urls)), "duplicate requested source repository")
+            require(len(main) == 1 and repository(main[0].get("url")) == source["repository"] and
+                    main[0].get("commit") == source["commit"], "unique embedded fixed B main-source required")
+            prepared = manifest(path.with_name("prepared-source-files.json"))
+            wrapper = manifest(path.with_name("wrapper-source-files.json"))
+            # These are provenance.py identities, deliberately not canonical().
+            prepared_hash = digest(json.dumps(prepared, sort_keys=True).encode())
+            wrapper_hash = digest(json.dumps(wrapper, sort_keys=True).encode())
+            fingerprint = digest(json.dumps({"prepared": prepared, "wrapper": wrapper,
+                                             "lock": requested}, sort_keys=True).encode())
+            require(prepared_hash == lock.get("prepared_tree_hash") and
+                    wrapper_hash == lock.get("wrapper_tree_hash") and fingerprint == lock.get("build_fingerprint"),
+                    "prepared/wrapper/build fingerprint mismatch")
+            expected_rows = []
+            for row in source["prepared_files"]:
+                evidence = regular_bytes(SECURITY_REMOVAL_REVIEW.parent / row["evidence_file"])
+                require(len(evidence) == row["size"] and digest(evidence) == row["sha256"],
+                        "reviewed source evidence mismatch: " + row["path"])
+                expected_rows.append({key: value for key, value in row.items() if key != "evidence_file"})
+            subtree = [row for row in prepared if row["path"] == "package/system/ca-certificates" or
+                       row["path"].startswith("package/system/ca-certificates/")]
+            require(sorted(subtree, key=lambda row: row["path"]) == sorted(expected_rows, key=lambda row: row["path"]),
+                    "CA prepared recipe/patch set differs from exact reviewed source")
+            reproduction = regular_bytes(SECURITY_REMOVAL_REVIEW.parent / review["reproduction"]["evidence_file"])
+            require(digest(reproduction) == review["reproduction"]["sha256"], "source reproduction evidence mismatch")
+            for name, version in review["required_packages"].items():
+                require(packages.get(name, {}).get("version") == version, "fixed CA package version required: " + name)
+            for record in review["removed_records"]:
+                removed = safe_path(root, record["path"])
+                require(not os.path.lexists(removed), "revoked path restored: " + record["path"])
+            bundle = review["bundle"]
+            bundle_path = safe_path(root, bundle["path"])
+            bundle_bytes = regular_bytes(bundle_path)
+            require(len(bundle_bytes) == bundle["size"] and digest(bundle_bytes) == bundle["sha256"],
+                    "exact fixed B CA bundle required")
+            alias = safe_path(root, bundle["alias_path"])
+            require(alias.is_symlink() and os.readlink(alias) == bundle["alias_target"], "CA bundle alias target changed")
+            self.revoked_ca_absent(root, review["revoked_certificate"]["der_sha256"])
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            check["failure"] = str(error)
+            self.error("security_removal_guard", "fixed B CA security removal", "all fixed-source/output guards", str(error))
+            return {}
+
+        check.update(status="pass", original_manifest_sha256=digest(original), source_commit=source["commit"],
+                     prepared_tree_hash=prepared_hash, wrapper_tree_hash=wrapper_hash,
+                     build_fingerprint=fingerprint, source_lock_sha256=digest(requested_bytes),
+                     bundle_sha256=digest(bundle_bytes), removed_paths=[row["path"] for row in review["removed_records"]])
+        for record in review["removed_records"]:
+            self.difference("security_removal", record["path"], record,
+                            {"absent": True, "source_repository": source["repository"], "source_commit": source["commit"],
+                             "review_sha256": SECURITY_REMOVAL_REVIEW_SHA256,
+                             "blacklist_patch_sha256": source["prepared_files"][2]["sha256"],
+                             "revoked_der_sha256": review["revoked_certificate"]["der_sha256"]},
+                            reason="fixed-source emSign G3 trust revocation; exact two-record security removal requires independent approval")
+        return {record["path"]: record for record in review["removed_records"]}
+
+    @staticmethod
+    def revoked_ca_absent(root, revoked_der_sha256):
+        """Check PEM DER identity, including rewrapping, aliases and other bundles."""
+        def exact_der_certificate(data, label):
+            # OpenSSL accepts trailing bytes after one certificate. Hashing that
+            # entire decoded buffer would let a revoked DER gain a new identity.
+            if len(data) < 2 or data[0] != 0x30:
+                raise ValueError("certificate DER outer SEQUENCE required: " + label)
+            size, start = data[1], 2
+            if size & 0x80:
+                count = size & 0x7f
+                if not 1 <= count <= 4 or len(data) < 2 + count or data[2] == 0:
+                    raise ValueError("invalid/nonminimal certificate DER length: " + label)
+                size, start = int.from_bytes(data[2:2 + count], "big"), 2 + count
+                if size < 128:
+                    raise ValueError("nonminimal certificate DER length: " + label)
+            if size != len(data) - start:
+                raise ValueError("certificate DER trailing/truncated data: " + label)
+            if digest(data) == revoked_der_sha256:
+                raise ValueError("revoked CA DER restored: " + label)
+
+        trust = safe_path(root, "/etc/ssl/certs")
+        if not trust.is_dir() or trust.is_symlink():
+            raise ValueError("regular CA trust directory required")
+        for parent, dirs, files in os.walk(trust, followlinks=False):
+            for name in dirs + files:
+                path = Path(parent) / name
+                label = "/" + path.relative_to(root).as_posix()
+                if path.is_symlink():
+                    target = os.readlink(path)
+                    resolved = posixpath.normpath(target if target.startswith("/") else
+                                                  str(PurePosixPath(label).parent / target))
+                    if not resolved.startswith("/etc/ssl/certs/"):
+                        raise ValueError("external CA trust alias: " + label)
+                    destination = safe_path(root, resolved)
+                    if not destination.is_file() or destination.is_symlink():
+                        raise ValueError("non-regular/dangling CA trust alias: " + label)
+                    continue  # The regular destination is scanned independently.
+                if path.is_dir():
+                    continue
+                if not stat.S_ISREG(path.lstat().st_mode):
+                    raise ValueError("non-regular CA trust entry: " + label)
+                content = path.read_bytes()
+                if content.startswith(b"\x30"):
+                    exact_der_certificate(content, label)
+                labels = re.findall(rb"-----BEGIN ([A-Z0-9 ]*CERTIFICATE)-----", content)
+                if any(value != b"CERTIFICATE" for value in labels):
+                    raise ValueError("unsupported certificate PEM label: " + label)
+                blocks = re.findall(rb"-----BEGIN CERTIFICATE-----\s*(.*?)\s*-----END CERTIFICATE-----", content, re.S)
+                if len(labels) != len(blocks) or content.count(b"-----END CERTIFICATE-----") != len(blocks):
+                    raise ValueError("malformed certificate PEM: " + label)
+                for block in blocks:
+                    der = base64.b64decode(re.sub(rb"\s+", b"", block), validate=True)
+                    exact_der_certificate(der, label)
 
     def packages(self, root, inventory):
         installed = safe_path(root, "/lib/apk/db/installed")
@@ -588,12 +802,15 @@ class Gate:
         if self.policy.get("critical_entries") and len(critical) != self.policy["critical_entries"]:
             self.error("baseline_count", "critical_entries", self.policy["critical_entries"], len(critical))
         actual = walk_files(root)
+        removed = self.security_removals(root, provenance_ok, packages, baseline)
         for name, expected in baseline.items():
             # Reject redirected parent directories even when walk() correctly
             # avoided following the link and the descendant appears missing.
             safe_path(root, name)
             current = actual.get(name)
             if current is None:
+                if name in removed:
+                    continue
                 self.error("missing_file", name)
                 continue
             if current["type"] != expected["type"]:

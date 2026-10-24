@@ -1,0 +1,35 @@
+{
+  "source_archive_sha256": "d939bcdd0cb058712cf4175bac76997676eb8b68fe9473765e1b40fb3d5b186a",
+  "patches": [
+    {
+      "path": "B-0001-ca-certificates-fix-python3-cryptography-woes-in-cer.patch",
+      "sha256": "8d932921d72b9a24690cecc0cd853ba2a85deacc328ea9750edf5fcd94077e09"
+    },
+    {
+      "path": "B-0002-blacklist-certs.patch",
+      "sha256": "9a323f0fb873240c0cebf19d876d57f3c1885feb49a3044f8c7575c8a6d3cd21"
+    }
+  ],
+  "A_certificate_count": 121,
+  "B_certificate_count": 120,
+  "removed_files": [
+    {
+      "path": "emSign_ECC_Root_CA_-_G3.crt",
+      "sha256": "36e68e205b53c67c7a013894e0d5c8583063468118d1ce78ecbc2200d1dd185c",
+      "size": 859
+    }
+  ],
+  "added_files": [],
+  "changed_files": [],
+  "A_bundle": {
+    "sha256": "5a88c31547f4676417351019576c7e8eaf8f724ff21105a9ee586ffa83866c88",
+    "size": 181603,
+    "matches_original_rom": true
+  },
+  "B_bundle": {
+    "sha256": "64e7c24b0536b525fb19b145768bd5e6e12ced0df3db837c34553ea789acd143",
+    "size": 180744
+  },
+  "source_label_Comodo_AAA_Services_root_count": 2,
+  "scope": "Exact Debian source archive and full fixed upstream patch set; no network, router, build container, or private data."
+}

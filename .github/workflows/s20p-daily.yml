@@ -1,5 +1,5 @@
-name: S20P locked daily candidate
-run-name: S20P 10-17 baseline · ${{ github.run_number }}
+name: S20P locked B 25.12 candidate
+run-name: S20P B 9f397975 · 10-17 baseline · ${{ github.run_number }}
 
 on:
   schedule:
@@ -98,7 +98,8 @@ jobs:
           (cd candidate && sha256sum -c SHA256SUMS)
           tag="s20p-candidate-${RUN_ID}-${RUN_ATTEMPT}"
           cat > release-notes.md <<'NOTES'
-          Dedicated S20P candidate based on the locked 2026-10-17 upstream.
+          Dedicated S20P B candidate on chasey 25.12 commit 9f397975c7b47ce6986a6e39529d2f72fd5c729d.
+          The original 2026-10-17 preservation baseline and A's other 38 Git source pins remain required.
           Image preservation and signed same-build APK feed checks passed.
           Original historical feeds were unavailable; this is not a bit-identical rebuild.
           Live hardware acceptance and migration acceptance have not run. This is not stable.

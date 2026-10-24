@@ -1,0 +1,89 @@
+{
+  "scope": "Source-bound preflight review only; A-rootfs planning projection is not a B cloud artifact. Only these five exact deltas are reviewed. Fixed B CA source/output guards must also pass on actual B.",
+  "B_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+  "source_reproduction": "../reviewed-security-removals/source-reproduction.json",
+  "review_sha256": "0dc44aff92ac7662334e3a1dc9f562e2704149767b54b26cdb984626bbc1fc8b",
+  "differences": [
+    {
+      "category": "package_version",
+      "subject": "ca-bundle",
+      "expected": "20260816-r1",
+      "actual": "20260816-r2",
+      "reason": "source/version delta",
+      "id": "f02901413a6e11a8ad62d3ffcbe283b8ab837b2018f9093efa9300ed12e14077",
+      "disposition": "review_required"
+    },
+    {
+      "category": "package_version",
+      "subject": "ca-certificates",
+      "expected": "20260816-r1",
+      "actual": "20260816-r2",
+      "reason": "source/version delta",
+      "id": "0c18d9ec9983fba0d2e86ba85d47ea07ead05683eb3ec61008a20d6f6693b805",
+      "disposition": "review_required"
+    },
+    {
+      "category": "security_removal",
+      "subject": "/etc/ssl/certs/emSign_ECC_Root_CA_-_G3.crt",
+      "expected": {
+        "gid": 0,
+        "mode": "0644",
+        "mtime_unix": 1792144831,
+        "path": "/etc/ssl/certs/emSign_ECC_Root_CA_-_G3.crt",
+        "sha256": "36e68e205b53c67c7a013894e0d5c8583063468118d1ce78ecbc2200d1dd185c",
+        "size": 859,
+        "squashfs_inode": 772,
+        "type": "file",
+        "uid": 0
+      },
+      "actual": {
+        "absent": true,
+        "source_repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+        "source_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "review_sha256": "0dc44aff92ac7662334e3a1dc9f562e2704149767b54b26cdb984626bbc1fc8b",
+        "blacklist_patch_sha256": "9a323f0fb873240c0cebf19d876d57f3c1885feb49a3044f8c7575c8a6d3cd21",
+        "revoked_der_sha256": "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b"
+      },
+      "reason": "fixed-source emSign G3 trust revocation; exact two-record security removal requires independent approval",
+      "id": "44a1d129fc6ea9f2243585b2657a74dc044e4dcfc3f11c5d049dc4f848212d64",
+      "disposition": "review_required"
+    },
+    {
+      "category": "security_removal",
+      "subject": "/etc/ssl/certs/14bc7599.0",
+      "expected": {
+        "gid": 0,
+        "mode": "0777",
+        "mtime_unix": 1792144831,
+        "path": "/etc/ssl/certs/14bc7599.0",
+        "sha256": "6f1f56580e1b1ca79e73dd3821d746d64319e07331aad61ed06b641bcb359719",
+        "size": 27,
+        "squashfs_inode": 559,
+        "target": "emSign_ECC_Root_CA_-_G3.crt",
+        "type": "symlink",
+        "uid": 0
+      },
+      "actual": {
+        "absent": true,
+        "source_repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+        "source_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "review_sha256": "0dc44aff92ac7662334e3a1dc9f562e2704149767b54b26cdb984626bbc1fc8b",
+        "blacklist_patch_sha256": "9a323f0fb873240c0cebf19d876d57f3c1885feb49a3044f8c7575c8a6d3cd21",
+        "revoked_der_sha256": "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b"
+      },
+      "reason": "fixed-source emSign G3 trust revocation; exact two-record security removal requires independent approval",
+      "id": "74648bc7ab1be8d32391d85d7dd91c760ae10594529aab3b3c868c43febc20f0",
+      "disposition": "review_required"
+    },
+    {
+      "category": "file_sha256",
+      "subject": "/etc/ssl/certs/ca-certificates.crt",
+      "expected": "5a88c31547f4676417351019576c7e8eaf8f724ff21105a9ee586ffa83866c88",
+      "actual": "64e7c24b0536b525fb19b145768bd5e6e12ced0df3db837c34553ea789acd143",
+      "reason": "report-all-differences",
+      "id": "7ebd429e3018ecfcd0800067893daeef63ffb86c8d1692c770269c5148f31445",
+      "disposition": "review_required"
+    }
+  ],
+  "independent_design": "docs/SECURITY-REMOVALS-B.md"
+}

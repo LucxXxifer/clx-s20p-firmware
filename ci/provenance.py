@@ -12,7 +12,7 @@ from pathlib import Path
 import subprocess
 import source_lock
 
-UPSTREAM = "03eb30617955519e35845838c6255ebe687eb717"
+UPSTREAM = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
 WRAPPER = "d46704afb327fce99e7d770c08fc46b48d5bb1b7"
 ROOT_EXCLUDE = {"bin", "build_dir", "staging_dir", "tmp", "logs", "dl", ".ccache", "output", "action_build", "immortalwrt", ".tools"}
 

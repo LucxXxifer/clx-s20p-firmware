@@ -1,0 +1,1212 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-25T01:19:25.494435+08:00",
+  "status": "offline-exact-source-preflight-complete",
+  "A_run": "40095658212",
+  "A_commit": "03eb30617955519e35845838c6255ebe687eb717",
+  "B_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+  "source_compare": {
+    "total_commits": 17,
+    "changed_paths": 18,
+    "compare_url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase/compare/03eb30617955519e35845838c6255ebe687eb717...9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+  },
+  "scope": "wpad/hostapd versions; main commit version stamps; A rootfs text scan. No build, approval mutation, live device change, push or dispatch.",
+  "artifact_probe": {
+    "rootfs_container": "s20p-preservation-replay-40081936381",
+    "rootfs_path": "/tmp/s20p-a-40095658212/bundle/inspection/rootfs",
+    "regular_files_scanned": 3937,
+    "text_match_count": 6,
+    "text_matches": [
+      {
+        "path": "/etc/banner",
+        "size": 471,
+        "sha256": "43af2e67b2663b5a0c3457dcd9e89469fd063a1073ef1bbef2ae0ee5777579c3"
+      },
+      {
+        "path": "/etc/openwrt_release",
+        "size": 248,
+        "sha256": "3c98d5443c39110d55a560e90eefa5aa1e15454daa744986ea65b715a19dd97a"
+      },
+      {
+        "path": "/etc/openwrt_version",
+        "size": 11,
+        "sha256": "afe1d521624d5fb093199188aae603da93bf25c7c086b2b89f7533fba2d76037"
+      },
+      {
+        "path": "/etc/apk/world",
+        "size": 6649,
+        "sha256": "b120a9a8c96f0e9e1885ed07e2c96de699961a650d09accfe741319a22d40899"
+      },
+      {
+        "path": "/lib/apk/db/installed",
+        "size": 468953,
+        "sha256": "5f4452142809fe4a86f07a5952c1b8280bd6c68bec2ff7f61fca0815e0d9dab1"
+      },
+      {
+        "path": "/usr/lib/os-release",
+        "size": 740,
+        "sha256": "0f1e5dab2887a2c275cec5087d3f4eb3855ebc3b9e2eac28b288164572c7caf8"
+      }
+    ],
+    "binary_match_count": 190,
+    "binary_policy": "Not predicted; normal provenance/config/ABI gates still apply."
+  },
+  "version_context": {
+    "03eb30617955519e35845838c6255ebe687eb717": {
+      "revision": "r0-03eb306",
+      "source_date_epoch": 1792144831,
+      "git_log_ct_abbrev7": "1792144831 03eb306",
+      "base_files_commitcount": 1,
+      "base_files_package_version": "1~03eb306",
+      "luci_findrev": {
+        "luci-app-eqos-mtk": {
+          "SRC": "26.289.36031~03eb306",
+          "PO": "26.289.36031~03eb306"
+        },
+        "luci-app-turboacc-mtk": {
+          "SRC": "26.289.36031~03eb306",
+          "PO": "26.289.36031~03eb306"
+        },
+        "luci-app-mtwifi-cfg": {
+          "SRC": "26.289.36031~03eb306",
+          "PO": "26.289.36031~03eb306"
+        }
+      }
+    },
+    "9f397975c7b47ce6986a6e39529d2f72fd5c729d": {
+      "revision": "r0-9f39797",
+      "source_date_epoch": 1792762495,
+      "git_log_ct_abbrev7": "1792762495 9f39797",
+      "base_files_commitcount": 1,
+      "base_files_package_version": "1~9f39797",
+      "luci_findrev": {
+        "luci-app-eqos-mtk": {
+          "SRC": "26.296.48895~9f39797",
+          "PO": "26.296.48895~9f39797"
+        },
+        "luci-app-turboacc-mtk": {
+          "SRC": "26.296.48895~9f39797",
+          "PO": "26.296.48895~9f39797"
+        },
+        "luci-app-mtwifi-cfg": {
+          "SRC": "26.296.48895~9f39797",
+          "PO": "26.296.48895~9f39797"
+        }
+      }
+    }
+  },
+  "execution_proof": {
+    "03eb30617955519e35845838c6255ebe687eb717": {
+      "actual_fetched_commit": "03eb30617955519e35845838c6255ebe687eb717",
+      "fetch_filter": "tree:0",
+      "fetch_depth": 1,
+      "is_shallow_repository": true,
+      "verified_tree_metadata": [
+        {
+          "sha1": "0067c3f0ea5d4b0be38d6c265dfe0a0dc18fba41",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0067c3f0ea5d4b0be38d6c265dfe0a0dc18fba41",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "08b06ec9901f52b2be558fe26f06732bc9410800",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/08b06ec9901f52b2be558fe26f06732bc9410800",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "0a09e034dc1d909c9a4ffbba5ef81bf594759746",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0a09e034dc1d909c9a4ffbba5ef81bf594759746",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "0e7404fe092c1a06ab39b95396ffb6fee095c3e4",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0e7404fe092c1a06ab39b95396ffb6fee095c3e4",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "133732e1e42c2fb7afa19ec7186612b6e16f5198",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/133732e1e42c2fb7afa19ec7186612b6e16f5198",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "15e8f88cea2dd3c649acdad882ddc5b99bb0e074",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/15e8f88cea2dd3c649acdad882ddc5b99bb0e074",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "15f6d574af1901efb90293d8871ea0b5e43228e5",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/15f6d574af1901efb90293d8871ea0b5e43228e5",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "1c6413436fd71fdc84be8cba0921cd65953a7f96",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/1c6413436fd71fdc84be8cba0921cd65953a7f96",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "30eab0e4f29b8a744f4e5ed49dd4a1162f2cc17f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/30eab0e4f29b8a744f4e5ed49dd4a1162f2cc17f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3a5e004cec921c39b24882ac9c4424dbb4e009a0",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3a5e004cec921c39b24882ac9c4424dbb4e009a0",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3c170817f12bddfe32bb0ba0fc1c0cb98fbd5682",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3c170817f12bddfe32bb0ba0fc1c0cb98fbd5682",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3cc7e3e02e7ca436b6a8bc27840aa555d75c122b",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3cc7e3e02e7ca436b6a8bc27840aa555d75c122b",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3d00800e4998ee42c0fdde8de85a49067744ead2",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3d00800e4998ee42c0fdde8de85a49067744ead2",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "43d3eb9297113e4fe6eaee49c26941b2173633ed",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/43d3eb9297113e4fe6eaee49c26941b2173633ed",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "46d10403cc16e325085f03849f9611c77f212b52",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/46d10403cc16e325085f03849f9611c77f212b52",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "476eb15ca112de8e7dcdefd7490d5e9510add5e4",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/476eb15ca112de8e7dcdefd7490d5e9510add5e4",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "48fe01aad4fc2bb2964ab16a1433995ab44c4038",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/48fe01aad4fc2bb2964ab16a1433995ab44c4038",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "494cfb7ee2d825a2396528e8a8e3288cf20c0ef2",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/494cfb7ee2d825a2396528e8a8e3288cf20c0ef2",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "538eb54e6210abe0ff1150c43851598594701727",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/538eb54e6210abe0ff1150c43851598594701727",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "560beccc569b1033c5100eb9c01680c1100b635f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/560beccc569b1033c5100eb9c01680c1100b635f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "599370b1290b5e8ceba3426cb04def1382b43625",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/599370b1290b5e8ceba3426cb04def1382b43625",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "5a19c42ebcd065c4c2e2af07e282df7181b61977",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/5a19c42ebcd065c4c2e2af07e282df7181b61977",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "5d93617a6811be766a2ee907be128ba5ce616869",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/5d93617a6811be766a2ee907be128ba5ce616869",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "5fb0fc43a04947929da7f03eb8fda78957626d81",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/5fb0fc43a04947929da7f03eb8fda78957626d81",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "61242badf4294f9b901bf67fd0dc45579c0425fa",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/61242badf4294f9b901bf67fd0dc45579c0425fa",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6435891762407f224ec30bd913afa027f176d31d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6435891762407f224ec30bd913afa027f176d31d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "651c542e0c2b17129d5814205ca01e6a15aed5e8",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/651c542e0c2b17129d5814205ca01e6a15aed5e8",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6851302b57189dca275b59a1628caec8b7230dc5",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6851302b57189dca275b59a1628caec8b7230dc5",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "696848ddf02aca18975b9d1bed9059fa86dbafda",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/696848ddf02aca18975b9d1bed9059fa86dbafda",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "696e0abba2e120c2f51306fa662c0d89a064fb63",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/696e0abba2e120c2f51306fa662c0d89a064fb63",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6ed70bdaadcde2786c8c56cd3490225b2924b56e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6ed70bdaadcde2786c8c56cd3490225b2924b56e",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "7c7ab289b1f2eac666402fe6767b4ae4eb9daf36",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/7c7ab289b1f2eac666402fe6767b4ae4eb9daf36",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "7db4f230ce21ffefdfe0d4172bf47af6e4570eb7",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/7db4f230ce21ffefdfe0d4172bf47af6e4570eb7",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "912b8d81a52e8ac7fb42adecf94f7868b74d1d67",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/912b8d81a52e8ac7fb42adecf94f7868b74d1d67",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "91d1e315563b402773a24715683264ccd627069f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/91d1e315563b402773a24715683264ccd627069f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "9239798bc081d82737abd80e73934dff499a627d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/9239798bc081d82737abd80e73934dff499a627d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "92ce85bdfaad3ef9ef995be00dd914b114b60856",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/92ce85bdfaad3ef9ef995be00dd914b114b60856",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "943c8f1e1c0f16c889e292583f2d35f4e9475fcc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/943c8f1e1c0f16c889e292583f2d35f4e9475fcc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "99b6d632ab7719878a263f5cac23b05d0aa82727",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/99b6d632ab7719878a263f5cac23b05d0aa82727",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a42ab88f4e90ce6f08b62d2504d530bf309303dc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a42ab88f4e90ce6f08b62d2504d530bf309303dc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a5af62ed0af327b34312c42e4d9365b0fb7b2e25",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a5af62ed0af327b34312c42e4d9365b0fb7b2e25",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a7a33d7da814af0bfc7c5b8e9f44cbfd3d3c8d2c",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a7a33d7da814af0bfc7c5b8e9f44cbfd3d3c8d2c",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "b7f5c6212dff7af44a6d1442acb89c034554a865",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/b7f5c6212dff7af44a6d1442acb89c034554a865",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "bc9218e1c3eed29aea876aca3f0454dd27e412d3",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/bc9218e1c3eed29aea876aca3f0454dd27e412d3",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "c134e44e8c929754ebed3c303a18dffa13d6d128",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/c134e44e8c929754ebed3c303a18dffa13d6d128",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d29e2c270b185e78d07de698af52b4fae8c1c52d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d29e2c270b185e78d07de698af52b4fae8c1c52d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d5e8446bd13b72bd4fd0dbf7d71a6c8981248ccc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d5e8446bd13b72bd4fd0dbf7d71a6c8981248ccc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d788864d01a721a77e7eda3416c213da43a50912",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d788864d01a721a77e7eda3416c213da43a50912",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d87d2c869aced4aebf729df6b99e295c30c85faf",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d87d2c869aced4aebf729df6b99e295c30c85faf",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d8d9522ed7d71b674a653b5924f408641a466440",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d8d9522ed7d71b674a653b5924f408641a466440",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "dabef7f22009b0bd4a680517b8dfe5c810929c50",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/dabef7f22009b0bd4a680517b8dfe5c810929c50",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "dd35b7b0bc91428ca7a927ab3537cfdfda77297e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/dd35b7b0bc91428ca7a927ab3537cfdfda77297e",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "de9acd5b29bf1405fccf70119b729eb35cf7579b",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/de9acd5b29bf1405fccf70119b729eb35cf7579b",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "eae91cd941bea31021c52b697090227564a40bbb",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/eae91cd941bea31021c52b697090227564a40bbb",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "eb3e5c2f246624ae81c0de23eabd5c4313a8b469",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/eb3e5c2f246624ae81c0de23eabd5c4313a8b469",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "fa4a552a6e98a41a8664d4600b82192fc3da347e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/fa4a552a6e98a41a8664d4600b82192fc3da347e",
+          "exact_Git_tree_hash_verified": true
+        }
+      ],
+      "getver_script_executed": "original script under netshoot Bash5/Git, read-only checkout, no network",
+      "get_source_date_epoch_script_executed": true,
+      "original_luci_findrev_executed": true,
+      "original_VERSION_SED_SCRIPT_executed": true,
+      "GNU_date_and_sed_container": "s20p-preservation-replay-40081936381",
+      "A_four_generated_files_byte_equal_artifact": true,
+      "all_five_MTK_luci_versions_match_actual_A_versions": true
+    },
+    "9f397975c7b47ce6986a6e39529d2f72fd5c729d": {
+      "actual_fetched_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "fetch_filter": "tree:0",
+      "fetch_depth": 1,
+      "is_shallow_repository": true,
+      "verified_tree_metadata": [
+        {
+          "sha1": "0067c3f0ea5d4b0be38d6c265dfe0a0dc18fba41",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0067c3f0ea5d4b0be38d6c265dfe0a0dc18fba41",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "08b06ec9901f52b2be558fe26f06732bc9410800",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/08b06ec9901f52b2be558fe26f06732bc9410800",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "0a09e034dc1d909c9a4ffbba5ef81bf594759746",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0a09e034dc1d909c9a4ffbba5ef81bf594759746",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "0e7404fe092c1a06ab39b95396ffb6fee095c3e4",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/0e7404fe092c1a06ab39b95396ffb6fee095c3e4",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "133732e1e42c2fb7afa19ec7186612b6e16f5198",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/133732e1e42c2fb7afa19ec7186612b6e16f5198",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "15e8f88cea2dd3c649acdad882ddc5b99bb0e074",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/15e8f88cea2dd3c649acdad882ddc5b99bb0e074",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "15f6d574af1901efb90293d8871ea0b5e43228e5",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/15f6d574af1901efb90293d8871ea0b5e43228e5",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "30eab0e4f29b8a744f4e5ed49dd4a1162f2cc17f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/30eab0e4f29b8a744f4e5ed49dd4a1162f2cc17f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "32cfde7e4644113871fe4fa00dc7cb2fc8efa4ec",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/32cfde7e4644113871fe4fa00dc7cb2fc8efa4ec",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3a5e004cec921c39b24882ac9c4424dbb4e009a0",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3a5e004cec921c39b24882ac9c4424dbb4e009a0",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3c170817f12bddfe32bb0ba0fc1c0cb98fbd5682",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3c170817f12bddfe32bb0ba0fc1c0cb98fbd5682",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3cc7e3e02e7ca436b6a8bc27840aa555d75c122b",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3cc7e3e02e7ca436b6a8bc27840aa555d75c122b",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "3d00800e4998ee42c0fdde8de85a49067744ead2",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/3d00800e4998ee42c0fdde8de85a49067744ead2",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "43d3eb9297113e4fe6eaee49c26941b2173633ed",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/43d3eb9297113e4fe6eaee49c26941b2173633ed",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "46d10403cc16e325085f03849f9611c77f212b52",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/46d10403cc16e325085f03849f9611c77f212b52",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "476eb15ca112de8e7dcdefd7490d5e9510add5e4",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/476eb15ca112de8e7dcdefd7490d5e9510add5e4",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "48fe01aad4fc2bb2964ab16a1433995ab44c4038",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/48fe01aad4fc2bb2964ab16a1433995ab44c4038",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "494cfb7ee2d825a2396528e8a8e3288cf20c0ef2",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/494cfb7ee2d825a2396528e8a8e3288cf20c0ef2",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "538eb54e6210abe0ff1150c43851598594701727",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/538eb54e6210abe0ff1150c43851598594701727",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "560beccc569b1033c5100eb9c01680c1100b635f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/560beccc569b1033c5100eb9c01680c1100b635f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "599370b1290b5e8ceba3426cb04def1382b43625",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/599370b1290b5e8ceba3426cb04def1382b43625",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "5d93617a6811be766a2ee907be128ba5ce616869",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/5d93617a6811be766a2ee907be128ba5ce616869",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "5fb0fc43a04947929da7f03eb8fda78957626d81",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/5fb0fc43a04947929da7f03eb8fda78957626d81",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "61242badf4294f9b901bf67fd0dc45579c0425fa",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/61242badf4294f9b901bf67fd0dc45579c0425fa",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6435891762407f224ec30bd913afa027f176d31d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6435891762407f224ec30bd913afa027f176d31d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "651c542e0c2b17129d5814205ca01e6a15aed5e8",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/651c542e0c2b17129d5814205ca01e6a15aed5e8",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6851302b57189dca275b59a1628caec8b7230dc5",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6851302b57189dca275b59a1628caec8b7230dc5",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "696848ddf02aca18975b9d1bed9059fa86dbafda",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/696848ddf02aca18975b9d1bed9059fa86dbafda",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "696e0abba2e120c2f51306fa662c0d89a064fb63",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/696e0abba2e120c2f51306fa662c0d89a064fb63",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "6ed70bdaadcde2786c8c56cd3490225b2924b56e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/6ed70bdaadcde2786c8c56cd3490225b2924b56e",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "7c7ab289b1f2eac666402fe6767b4ae4eb9daf36",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/7c7ab289b1f2eac666402fe6767b4ae4eb9daf36",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "7db4f230ce21ffefdfe0d4172bf47af6e4570eb7",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/7db4f230ce21ffefdfe0d4172bf47af6e4570eb7",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "912b8d81a52e8ac7fb42adecf94f7868b74d1d67",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/912b8d81a52e8ac7fb42adecf94f7868b74d1d67",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "91d1e315563b402773a24715683264ccd627069f",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/91d1e315563b402773a24715683264ccd627069f",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "9239798bc081d82737abd80e73934dff499a627d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/9239798bc081d82737abd80e73934dff499a627d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "92ce85bdfaad3ef9ef995be00dd914b114b60856",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/92ce85bdfaad3ef9ef995be00dd914b114b60856",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "943c8f1e1c0f16c889e292583f2d35f4e9475fcc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/943c8f1e1c0f16c889e292583f2d35f4e9475fcc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "96c9da3390e2eab681c630808bf3dc4a479f94a0",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/96c9da3390e2eab681c630808bf3dc4a479f94a0",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "99b6d632ab7719878a263f5cac23b05d0aa82727",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/99b6d632ab7719878a263f5cac23b05d0aa82727",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a42ab88f4e90ce6f08b62d2504d530bf309303dc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a42ab88f4e90ce6f08b62d2504d530bf309303dc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a5af62ed0af327b34312c42e4d9365b0fb7b2e25",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a5af62ed0af327b34312c42e4d9365b0fb7b2e25",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "a7a33d7da814af0bfc7c5b8e9f44cbfd3d3c8d2c",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/a7a33d7da814af0bfc7c5b8e9f44cbfd3d3c8d2c",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "b7f5c6212dff7af44a6d1442acb89c034554a865",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/b7f5c6212dff7af44a6d1442acb89c034554a865",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "bc9218e1c3eed29aea876aca3f0454dd27e412d3",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/bc9218e1c3eed29aea876aca3f0454dd27e412d3",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "c134e44e8c929754ebed3c303a18dffa13d6d128",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/c134e44e8c929754ebed3c303a18dffa13d6d128",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d29e2c270b185e78d07de698af52b4fae8c1c52d",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d29e2c270b185e78d07de698af52b4fae8c1c52d",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d5e8446bd13b72bd4fd0dbf7d71a6c8981248ccc",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d5e8446bd13b72bd4fd0dbf7d71a6c8981248ccc",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d788864d01a721a77e7eda3416c213da43a50912",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d788864d01a721a77e7eda3416c213da43a50912",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d87d2c869aced4aebf729df6b99e295c30c85faf",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d87d2c869aced4aebf729df6b99e295c30c85faf",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "d8d9522ed7d71b674a653b5924f408641a466440",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/d8d9522ed7d71b674a653b5924f408641a466440",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "dabef7f22009b0bd4a680517b8dfe5c810929c50",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/dabef7f22009b0bd4a680517b8dfe5c810929c50",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "dd35b7b0bc91428ca7a927ab3537cfdfda77297e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/dd35b7b0bc91428ca7a927ab3537cfdfda77297e",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "de9acd5b29bf1405fccf70119b729eb35cf7579b",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/de9acd5b29bf1405fccf70119b729eb35cf7579b",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "eae91cd941bea31021c52b697090227564a40bbb",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/eae91cd941bea31021c52b697090227564a40bbb",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "eb3e5c2f246624ae81c0de23eabd5c4313a8b469",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/eb3e5c2f246624ae81c0de23eabd5c4313a8b469",
+          "exact_Git_tree_hash_verified": true
+        },
+        {
+          "sha1": "fa4a552a6e98a41a8664d4600b82192fc3da347e",
+          "url": "https://api.github.com/repos/chasey-dev/immortalwrt-mt798x-rebase/git/trees/fa4a552a6e98a41a8664d4600b82192fc3da347e",
+          "exact_Git_tree_hash_verified": true
+        }
+      ],
+      "getver_script_executed": "original script under netshoot Bash5/Git, read-only checkout, no network",
+      "get_source_date_epoch_script_executed": true,
+      "original_luci_findrev_executed": true,
+      "original_VERSION_SED_SCRIPT_executed": true,
+      "GNU_date_and_sed_container": "s20p-preservation-replay-40081936381",
+      "A_four_generated_files_byte_equal_artifact": null,
+      "hostapd_recipe_only_release_change_verified": true
+    }
+  },
+  "generated_B_text_files": {
+    "/etc/banner": {
+      "content": ".___                               __         .__\n|   | _____   _____   ____________/  |______  |  |\n|   |/     \\ /     \\ /  _ \\_  __ \\   __\\__  \\ |  |\n|   |  Y Y  \\  Y Y  (  <_> )  | \\/|  |  / __ \\|  |__\n|___|__|_|  /__|_|  /\\____/|__|   |__| (____  /____/\n          \\/      \\/  BE FREE AND UNAFRAID  \\/\n ------------------------------------------------------\n ImmortalWrt 25.12-SNAPSHOT, r0-9f39797 Dave's Guitar\n ------------------------------------------------------\n",
+      "sha256": "35810c2709ae3209cf6a6ba75999d1d13daba2512c06f2c7ce73b260e2970fd8",
+      "size_bytes": 471
+    },
+    "/etc/openwrt_release": {
+      "content": "DISTRIB_ID='ImmortalWrt'\nDISTRIB_RELEASE='25.12-SNAPSHOT'\nDISTRIB_REVISION='r0-9f39797'\nDISTRIB_TARGET='mediatek/filogic'\nDISTRIB_ARCH='aarch64_cortex-a53'\nDISTRIB_DESCRIPTION='ImmortalWrt 25.12-SNAPSHOT r0-9f39797'\nDISTRIB_TAINTS='no-all busybox'\n",
+      "sha256": "f6ecdb328baf768cdbb4e3526a69460411adba106e65ec9d866c3b633eb43aa5",
+      "size_bytes": 248
+    },
+    "/etc/openwrt_version": {
+      "content": "r0-9f39797\n",
+      "sha256": "060cca9b4c45490a8b512d9126c8d790090c36f0b11cf9c0da0214805b1d4e5b",
+      "size_bytes": 11
+    },
+    "/usr/lib/os-release": {
+      "content": "NAME=\"ImmortalWrt\"\nVERSION=\"25.12-SNAPSHOT\"\nID=\"immortalwrt\"\nID_LIKE=\"lede openwrt\"\nPRETTY_NAME=\"ImmortalWrt 25.12-SNAPSHOT\"\nVERSION_ID=\"25.12-snapshot\"\nHOME_URL=\"https://immortalwrt.org/\"\nBUG_URL=\"https://github.com/immortalwrt/immortalwrt/issues\"\nSUPPORT_URL=\"https://github.com/immortalwrt/immortalwrt/discussions\"\nFIRMWARE_URL=\"https://downloads.immortalwrt.org/\"\nBUILD_ID=\"r0-9f39797\"\nOPENWRT_BOARD=\"mediatek/filogic\"\nOPENWRT_ARCH=\"aarch64_cortex-a53\"\nOPENWRT_TAINTS=\"no-all busybox\"\nOPENWRT_DEVICE_MANUFACTURER=\"ImmortalWrt\"\nOPENWRT_DEVICE_MANUFACTURER_URL=\"https://immortalwrt.org/\"\nOPENWRT_DEVICE_PRODUCT=\"Generic\"\nOPENWRT_DEVICE_REVISION=\"v0\"\nOPENWRT_RELEASE=\"ImmortalWrt 25.12-SNAPSHOT r0-9f39797\"\nOPENWRT_BUILD_DATE=\"1792762495\"\n",
+      "sha256": "f9843f923039ad8bba4ae0425d00e9193527f70586f2f9caa1aa087cbc5ea8a4",
+      "size_bytes": 740
+    }
+  },
+  "precomputed_differences": [
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "hostapd-common",
+        "expected": "2025.08.26~ca266cc2-r5",
+        "actual": "2025.08.26~ca266cc2-r6",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "3950a936dcd23a1de4f47c7e342f212e50379203ce416097f220fa563420beb0",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "fixed hostapd recipe A/B blobs plus include/download.mk/package-defaults.mk rules",
+        "A installed-package version equals reproduced original version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "wpad-openssl",
+        "expected": "2025.08.26~ca266cc2-r5",
+        "actual": "2025.08.26~ca266cc2-r6",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "b3a0f2cbc4d4d5b69dbb7df601ba2ce17bfdb9836e2f0ed4a354bd5b4f2ad607",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "fixed hostapd recipe A/B blobs plus include/download.mk/package-defaults.mk rules",
+        "A installed-package version equals reproduced original version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "base-files",
+        "expected": "1~03eb306",
+        "actual": "1~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "97741797d296ee96f75af2c5e88735cd55edeb227a346ff408cb9025d3511fdc",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "luci-app-eqos-mtk",
+        "expected": "26.289.36031~03eb306",
+        "actual": "26.296.48895~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "98263ff6bc8f79e480f9bd28c1f0a9e4d038b6e3bbb05205a020f984aaf1085e",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "luci-app-turboacc-mtk",
+        "expected": "26.289.36031~03eb306",
+        "actual": "26.296.48895~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "12a340af86276cccd4f3ef577d3adac7c94c806cc363fdd87622a2d1b692d394",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "luci-i18n-eqos-mtk-zh-cn",
+        "expected": "26.289.36031~03eb306",
+        "actual": "26.296.48895~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "249a23f91d8a8d21933cd400e154fc49d7fab5653b9d39b32e28444c0d2374c7",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "luci-i18n-mtwifi-cfg-zh-cn",
+        "expected": "26.289.36031~03eb306",
+        "actual": "26.296.48895~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "315c9b3185ac9690d071a11e1857b05208cfaf2b2941640231ac9424d2d2877c",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_version",
+        "subject": "luci-i18n-turboacc-mtk-zh-cn",
+        "expected": "26.289.36031~03eb306",
+        "actual": "26.296.48895~9f39797",
+        "reason": "source/version delta"
+      },
+      "canonical_id": "f9177952f6ee2b47a8f30cf8e5611725535dcca2d9b3024746f08e63258bc81a",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual shallow Git plus original getver/epoch/COMMITCOUNT or fixed LuCI findrev execution",
+        "A replay version equals actual A installed version"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "file_sha256",
+        "subject": "/etc/banner",
+        "expected": "43af2e67b2663b5a0c3457dcd9e89469fd063a1073ef1bbef2ae0ee5777579c3",
+        "actual": "35810c2709ae3209cf6a6ba75999d1d13daba2512c06f2c7ce73b260e2970fd8",
+        "reason": "report-all-differences"
+      },
+      "canonical_id": "1562b335e6dd0b46be822f67df70acb78446eafe870799a212fc758424ee4e42",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual original VERSION_SED_SCRIPT and fixed templates executed with source-derived revision/epoch",
+        "A output bytes exactly equal A artifact; B output is offline generation, not B artifact extraction"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "file_sha256",
+        "subject": "/etc/openwrt_release",
+        "expected": "3c98d5443c39110d55a560e90eefa5aa1e15454daa744986ea65b715a19dd97a",
+        "actual": "f6ecdb328baf768cdbb4e3526a69460411adba106e65ec9d866c3b633eb43aa5",
+        "reason": "rebuild-provenance-may-change-original-base-version-must-remain"
+      },
+      "canonical_id": "a91aabda6b515cb892f800bafe51a65e278f7ef28cc5c7bc21dc6c5ce8994884",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual original VERSION_SED_SCRIPT and fixed templates executed with source-derived revision/epoch",
+        "A output bytes exactly equal A artifact; B output is offline generation, not B artifact extraction"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "file_sha256",
+        "subject": "/etc/openwrt_version",
+        "expected": "afe1d521624d5fb093199188aae603da93bf25c7c086b2b89f7533fba2d76037",
+        "actual": "060cca9b4c45490a8b512d9126c8d790090c36f0b11cf9c0da0214805b1d4e5b",
+        "reason": "rebuild-provenance-may-change-original-base-version-must-remain"
+      },
+      "canonical_id": "314e91018bb56a16b52f4ab66efb0a3906bb5e37d074429f888d68c4cf1de3df",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual original VERSION_SED_SCRIPT and fixed templates executed with source-derived revision/epoch",
+        "A output bytes exactly equal A artifact; B output is offline generation, not B artifact extraction"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "file_sha256",
+        "subject": "/usr/lib/os-release",
+        "expected": "0f1e5dab2887a2c275cec5087d3f4eb3855ebc3b9e2eac28b288164572c7caf8",
+        "actual": "f9843f923039ad8bba4ae0425d00e9193527f70586f2f9caa1aa087cbc5ea8a4",
+        "reason": "report-all-differences"
+      },
+      "canonical_id": "d075ddb8b86cda39d359cb443ef7b73c986e502059a5ccaa065102764b980bf9",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "actual original VERSION_SED_SCRIPT and fixed templates executed with source-derived revision/epoch",
+        "A output bytes exactly equal A artifact; B output is offline generation, not B artifact extraction"
+      ],
+      "approved": false
+    },
+    {
+      "canonical_record": {
+        "category": "package_dependencies",
+        "subject": "wpad-openssl",
+        "expected": "hostapd-common=2025.08.26~ca266cc2-r5 libblobmsg-json20260213 libc libnl-tiny1 libopenssl-legacy libopenssl3 libubus20251202 libucode20230711 libudebug ucode ucode-mod-fs ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uloop",
+        "actual": "hostapd-common=2025.08.26~ca266cc2-r6 libblobmsg-json20260213 libc libnl-tiny1 libopenssl-legacy libopenssl3 libubus20251202 libucode20230711 libudebug ucode ucode-mod-fs ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uloop",
+        "reason": ""
+      },
+      "canonical_id": "2822387a3fbbec8e7e3e0be331e04ebfdb17b5955fae5fc5219427b20c4eb1fd",
+      "scope": "precomputed-source-derived-B-difference-not-B-artifact",
+      "evidence": [
+        "Exact A native installed DB D field matches original baseline dependencies",
+        "A/B fixed hostapd Makefile differs only PKG_RELEASE5->6; EXTRA_DEPENDS is hostapd-common (=$(PKG_VERSION)-r$(PKG_RELEASE))",
+        "Other dependency recipes/pins and required current wpad-openssl variant remain unchanged; actual B dependency record must still match after build"
+      ],
+      "approved": false
+    }
+  ],
+  "counts": {
+    "package_version": 8,
+    "file_sha256": 4,
+    "canonical_ids": 13,
+    "package_dependencies": 1
+  },
+  "source_chain": {
+    "fixed_sources": [
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "scripts/getver.sh",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/scripts/getver.sh",
+        "sha256": "469db74898be468154b493ba21fa67424a27acf6eccd522775f5ad50181b9bd9",
+        "size_bytes": 1701
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "scripts/get_source_date_epoch.sh",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/scripts/get_source_date_epoch.sh",
+        "sha256": "699d593daa432bc031eb0dc7f25ccd22982f9aafc06c19b558e6da95f7d0f516",
+        "size_bytes": 777
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "include/toplevel.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/include/toplevel.mk",
+        "sha256": "256788f3059518b42c35826589c78bf2ef337cc2b8582c7c1a57c01c064509c2",
+        "size_bytes": 9131
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "include/version.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/include/version.mk",
+        "sha256": "ded1440d4bdfd6e6f60f8adbcd0d4c45b16d1f6495064b0f9fcdfb544bf12dd5",
+        "size_bytes": 4524
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "rules.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/rules.mk",
+        "sha256": "11a51c7597da4d013e24b3e670e6760f2392e258b90951bba2db2b91154edef5",
+        "size_bytes": 17647
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "include/download.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/include/download.mk",
+        "sha256": "d06a7ba7746d65121bd6d374dcad1e4fca359b675f23fe5b89522849fe99077f",
+        "size_bytes": 12637
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "include/package-defaults.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/include/package-defaults.mk",
+        "sha256": "cdb9a02ff1f3fe6e867fb9dcdc109ee93632b72be92e02e7b70f542e400ff710",
+        "size_bytes": 4161
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/base-files/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/base-files/Makefile",
+        "sha256": "1bb4653fd85b1dc9aaa4890b416fca28fd80ff4d74931abb4bcf5597bfa80985",
+        "size_bytes": 9356
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/base-files/files/etc/banner",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/base-files/files/etc/banner",
+        "sha256": "d6b931179820ef94a56b8b6487859ae44963a00bfce9bd2154f52429cd413267",
+        "size_bytes": 442
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/base-files/files/etc/openwrt_release",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/base-files/files/etc/openwrt_release",
+        "sha256": "7d7aca6cd9c60a7a6aa5f1ba9b3a0989c3011b6e75198b72769ade7db7ba7e58",
+        "size_bytes": 148
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/base-files/files/etc/openwrt_version",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/base-files/files/etc/openwrt_version",
+        "sha256": "06a5df811b7a2c06c83b7fd4984153cd1c06bec5c6bda9f5a0b184ee8a6c5fc9",
+        "size_bytes": 3
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/base-files/files/usr/lib/os-release",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/base-files/files/usr/lib/os-release",
+        "sha256": "5d48d0ed85af7dd7132988ef8170cd210ab2c9a737bc5e711787f987e4ef60f6",
+        "size_bytes": 401
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/network/services/hostapd/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/network/services/hostapd/Makefile",
+        "sha256": "52c868151a31a2fa7fed06c0fc7feadd700b39b255071f42b01ccb4d4e931757",
+        "size_bytes": 26263
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/mtk/applications/luci-app-eqos-mtk/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/mtk/applications/luci-app-eqos-mtk/Makefile",
+        "sha256": "9e04e6df8812e2a68eee69e030b568e1b1cdb103400ef8f03e356a6ad4455a8d",
+        "size_bytes": 339
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/mtk/applications/luci-app-turboacc-mtk/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/mtk/applications/luci-app-turboacc-mtk/Makefile",
+        "sha256": "235f1d627efe799baf2f82c308e749db9b11ba8c73e1c9a4ad34cc87fbb599a9",
+        "size_bytes": 392
+      },
+      {
+        "ref": "03eb30617955519e35845838c6255ebe687eb717",
+        "path": "package/mtk/applications/luci-app-mtwifi-cfg/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/03eb30617955519e35845838c6255ebe687eb717/package/mtk/applications/luci-app-mtwifi-cfg/Makefile",
+        "sha256": "1dc93acd6bf75f9f6c20b302ec171af59b64254c3689cea5d2acbb685f2d697a",
+        "size_bytes": 350
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "scripts/getver.sh",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/scripts/getver.sh",
+        "sha256": "469db74898be468154b493ba21fa67424a27acf6eccd522775f5ad50181b9bd9",
+        "size_bytes": 1701
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "scripts/get_source_date_epoch.sh",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/scripts/get_source_date_epoch.sh",
+        "sha256": "699d593daa432bc031eb0dc7f25ccd22982f9aafc06c19b558e6da95f7d0f516",
+        "size_bytes": 777
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "include/toplevel.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/include/toplevel.mk",
+        "sha256": "256788f3059518b42c35826589c78bf2ef337cc2b8582c7c1a57c01c064509c2",
+        "size_bytes": 9131
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "include/version.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/include/version.mk",
+        "sha256": "ded1440d4bdfd6e6f60f8adbcd0d4c45b16d1f6495064b0f9fcdfb544bf12dd5",
+        "size_bytes": 4524
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "rules.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/rules.mk",
+        "sha256": "11a51c7597da4d013e24b3e670e6760f2392e258b90951bba2db2b91154edef5",
+        "size_bytes": 17647
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "include/download.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/include/download.mk",
+        "sha256": "d06a7ba7746d65121bd6d374dcad1e4fca359b675f23fe5b89522849fe99077f",
+        "size_bytes": 12637
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "include/package-defaults.mk",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/include/package-defaults.mk",
+        "sha256": "cdb9a02ff1f3fe6e867fb9dcdc109ee93632b72be92e02e7b70f542e400ff710",
+        "size_bytes": 4161
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/base-files/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/base-files/Makefile",
+        "sha256": "1bb4653fd85b1dc9aaa4890b416fca28fd80ff4d74931abb4bcf5597bfa80985",
+        "size_bytes": 9356
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/base-files/files/etc/banner",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/base-files/files/etc/banner",
+        "sha256": "d6b931179820ef94a56b8b6487859ae44963a00bfce9bd2154f52429cd413267",
+        "size_bytes": 442
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/base-files/files/etc/openwrt_release",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/base-files/files/etc/openwrt_release",
+        "sha256": "7d7aca6cd9c60a7a6aa5f1ba9b3a0989c3011b6e75198b72769ade7db7ba7e58",
+        "size_bytes": 148
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/base-files/files/etc/openwrt_version",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/base-files/files/etc/openwrt_version",
+        "sha256": "06a5df811b7a2c06c83b7fd4984153cd1c06bec5c6bda9f5a0b184ee8a6c5fc9",
+        "size_bytes": 3
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/base-files/files/usr/lib/os-release",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/base-files/files/usr/lib/os-release",
+        "sha256": "5d48d0ed85af7dd7132988ef8170cd210ab2c9a737bc5e711787f987e4ef60f6",
+        "size_bytes": 401
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/network/services/hostapd/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/network/services/hostapd/Makefile",
+        "sha256": "6dc3c9ec4b8b974e67fbdde57a413db722dce50873e17413b975c26f4986bc06",
+        "size_bytes": 26263
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/mtk/applications/luci-app-eqos-mtk/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/mtk/applications/luci-app-eqos-mtk/Makefile",
+        "sha256": "9e04e6df8812e2a68eee69e030b568e1b1cdb103400ef8f03e356a6ad4455a8d",
+        "size_bytes": 339
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/mtk/applications/luci-app-turboacc-mtk/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/mtk/applications/luci-app-turboacc-mtk/Makefile",
+        "sha256": "235f1d627efe799baf2f82c308e749db9b11ba8c73e1c9a4ad34cc87fbb599a9",
+        "size_bytes": 392
+      },
+      {
+        "ref": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+        "path": "package/mtk/applications/luci-app-mtwifi-cfg/Makefile",
+        "url": "https://raw.githubusercontent.com/chasey-dev/immortalwrt-mt798x-rebase/9f397975c7b47ce6986a6e39529d2f72fd5c729d/package/mtk/applications/luci-app-mtwifi-cfg/Makefile",
+        "sha256": "1dc93acd6bf75f9f6c20b302ec171af59b64254c3689cea5d2acbb685f2d697a",
+        "size_bytes": 350
+      }
+    ],
+    "luci_findrev": {
+      "repository": "https://github.com/immortalwrt/luci.git",
+      "commit": "36e3f0d13622f5be6d59d9ba257811914d76e34d",
+      "path": "luci.mk",
+      "sha256": "9716c9a7a1c276b867df5887558e2b63b78f7d3695915adb7fcd0a7f0182ed0d",
+      "byte_equal_git_HEAD_blob": true
+    },
+    "wrapper": [
+      {
+        "path": "wrt_core/modules/repo.sh",
+        "sha256": "51021767aa7eda5765646aed6c9f8b8f784fa5e3434be5f2e439081355332572"
+      },
+      {
+        "path": "wrt_core/modules/network.sh",
+        "sha256": "9e1236550a4546ca23c4a488c062c0e66216b4cb10b1482cc55f68b942448d78"
+      },
+      {
+        "path": "ci/preservation.py",
+        "sha256": "9bfdb02355ee5cea9df5b3b0a3453e5450ec1a8259f357ed4d15b2e6f29e52ab"
+      }
+    ]
+  },
+  "delegated_CA_review": {
+    "owner": "upstream_image_availability",
+    "proof_path": "ca-removal-evidence/source-reproduction.json",
+    "not_recomputed_here": true
+  },
+  "deferred": [
+    {
+      "subject": "/etc/apk/world",
+      "reason": "base-files root necessarily changes; whole world can also reflect new kernel ABI/package graph. No guessed full hash or ID."
+    },
+    {
+      "subject": "/lib/apk/db/installed",
+      "reason": "Generated DB includes actual package size/hash/dependencies; revision replacement is insufficient."
+    },
+    {
+      "subject": "hostapd/wpad binary and runtime; LuCI payloads",
+      "reason": "Only recipe-derived versions are precomputed; fresh payload/build/feed/runtime verification remains required."
+    },
+    {
+      "subject": "kernel ABI/build fingerprint/signing key/dynamic HTTP/environment",
+      "reason": "Must come from actual B; no transplantation of A values."
+    }
+  ],
+  "new_B_artifact_verified": false,
+  "approval_file_modified": false,
+  "repo_modified": false,
+  "build_dispatched": false,
+  "canonical_id_verification": {
+    "method": "All records replayed through current unmodified Gate.difference with empty approvals",
+    "records": 13,
+    "all_ids_match": true,
+    "all_remain_review_required": true,
+    "preservation_script_sha256": "9bfdb02355ee5cea9df5b3b0a3453e5450ec1a8259f357ed4d15b2e6f29e52ab"
+  }
+}

@@ -1,8 +1,10 @@
 # CLX-S20P 每日自動編譯
 
-本分支基於 dqsq2e2 的 `26.10.17_15.32.58_S20P-WIFI-YES`，固定原 wrapper `d46704afb327fce99e7d770c08fc46b48d5bb1b7` 的流程，以及 chasey `03eb30617955519e35845838c6255ebe687eb717`／Linux 6.12.112。原作者 README、全部 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置保留。
+本分支是 B 候選建置配置：保留 dqsq2e2 `26.10.17_15.32.58_S20P-WIFI-YES` 的原功能基準及 wrapper `d46704afb327fce99e7d770c08fc46b48d5bb1b7` 流程，只將主 source 固定到 chasey 25.12 `9f397975c7b47ce6986a6e39529d2f72fd5c729d`。Linux 6.12.112、其餘38個 Git source pins、原 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置保持原要求。
 
-原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 記錄本次重新解析的固定來源，不能還原10/17版本的完整輸入。新 kernel ABI、build fingerprint 及 repository signing key 正常重建，絕不套用舊 hash。
+A 候選的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。A 的成品與來源證據獨立保留；B 必須重新建置、驗收並審查新差異。兩者均未經本機硬體／遷移驗收，不宣稱 stable。來源差異、CA 安全移除門檻及驗證要求見 [B source transition](docs/SOURCE-TRANSITION-B.md)。
+
+原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保留已恢復的來源與其餘固定來源及 B 的明確主 source 更新紀錄，不能還原10/17版本的完整輸入。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用 A 或原 ROM 的 hash。
 
 ## 觸發方式
 

@@ -40,7 +40,7 @@ class SourceLockTests(unittest.TestCase):
         actual = json.loads(SCRIPT.with_name('sources.lock.json').read_text())
         self.assertEqual(sum(row.get('role') == 'feed' for row in actual['sources']), 7)
         self.assertEqual(lockmod.lookup(actual, 'https://github.com/chasey-dev/immortalwrt-mt798x-rebase'),
-                         '03eb30617955519e35845838c6255ebe687eb717')
+                         '9f397975c7b47ce6986a6e39529d2f72fd5c729d')
         import re
         for path in (SCRIPT.parents[1] / 'wrt_core/modules').glob('*.sh'):
             for url in re.findall(r'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\.git', path.read_text()):

@@ -1955,6 +1955,78 @@
     {
       "id": "de305f4b59d8d551d9dd0ac9c0c1b6e0920d112b047e4dea4574d0273d26a389",
       "reason": "Exact 3.2.4-r3 to 3.4.0-r3 candidate version delta: fixed full wanji arm64 archive SHA256 verified and binary reproduced with upstream sstrip, r26 CLI/source contracts checked. No live config migration claim; ci/reviewed-differences/lucky-core-3.4.0.json."
+    },
+    {
+      "id": "3950a936dcd23a1de4f47c7e342f212e50379203ce416097f220fa563420beb0",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "b3a0f2cbc4d4d5b69dbb7df601ba2ce17bfdb9836e2f0ed4a354bd5b4f2ad607",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "97741797d296ee96f75af2c5e88735cd55edeb227a346ff408cb9025d3511fdc",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "98263ff6bc8f79e480f9bd28c1f0a9e4d038b6e3bbb05205a020f984aaf1085e",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "12a340af86276cccd4f3ef577d3adac7c94c806cc363fdd87622a2d1b692d394",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "249a23f91d8a8d21933cd400e154fc49d7fab5653b9d39b32e28444c0d2374c7",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "315c9b3185ac9690d071a11e1857b05208cfaf2b2941640231ac9424d2d2877c",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "f9177952f6ee2b47a8f30cf8e5611725535dcca2d9b3024746f08e63258bc81a",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "1562b335e6dd0b46be822f67df70acb78446eafe870799a212fc758424ee4e42",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "a91aabda6b515cb892f800bafe51a65e278f7ef28cc5c7bc21dc6c5ce8994884",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "314e91018bb56a16b52f4ab66efb0a3906bb5e37d074429f888d68c4cf1de3df",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "d075ddb8b86cda39d359cb443ef7b73c986e502059a5ccaa065102764b980bf9",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "2822387a3fbbec8e7e3e0be331e04ebfdb17b5955fae5fc5219427b20c4eb1fd",
+      "reason": "Fixed B source output reproduced from exact Git metadata and generation rules; A byte replay matched. See ci/reviewed-differences/source-transition-b.json. Approval covers only this exact source-derived delta; real B image/feed/ABI gates remain required."
+    },
+    {
+      "id": "f02901413a6e11a8ad62d3ffcbe283b8ab837b2018f9093efa9300ed12e14077",
+      "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
+    },
+    {
+      "id": "0c18d9ec9983fba0d2e86ba85d47ea07ead05683eb3ec61008a20d6f6693b805",
+      "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
+    },
+    {
+      "id": "44a1d129fc6ea9f2243585b2657a74dc044e4dcfc3f11c5d049dc4f848212d64",
+      "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
+    },
+    {
+      "id": "74648bc7ab1be8d32391d85d7dd91c760ae10594529aab3b3c868c43febc20f0",
+      "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
+    },
+    {
+      "id": "7ebd429e3018ecfcd0800067893daeef63ffb86c8d1692c770269c5148f31445",
+      "reason": "Exact fixed B emSign G3 security transition independently reproduced from pinned Debian archive and full patch set. See ci/reviewed-security-removals/chasey-9f397975.json and ci/reviewed-differences/ca-transition-b.json. All unknown missing paths still hard-fail; this is not B artifact or hardware acceptance."
     }
   ],
   "schema_version": 1

@@ -101,6 +101,46 @@ class OptionalPackagePolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "review digest"):
             self.load(review=path)
 
+    def test_lucky_world_omission_approval_is_bound_to_exact_root_delta(self):
+        prior = json.loads((CI / "reviewed-differences/40118211453-world.json").read_text())
+        old_world = prior["candidate_world"]
+        removed_roots = {"lucky", "luci-app-lucky", "luci-i18n-lucky-zh-cn"}
+        current_world = "".join(
+            line for line in old_world.splitlines(keepends=True)
+            if line.strip().split("=", 1)[0] not in removed_roots
+        )
+
+        self.assertEqual(hashlib.sha256(old_world.encode()).hexdigest(),
+                         "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64")
+        self.assertEqual(hashlib.sha256(current_world.encode()).hexdigest(),
+                         "2bbd7462e0a5bdc03f606afbbf0475f6694f9569e87dad7eed1efe85dc398b88")
+        self.assertEqual(set(old_world.splitlines()) - set(current_world.splitlines()), removed_roots)
+        self.assertEqual(set(current_world.splitlines()) - set(old_world.splitlines()), set())
+
+        original_world = next(
+            item for item in json.loads((self.baseline / "full-rootfs-manifest.json").read_text())["files"]
+            if item["path"] == "/etc/apk/world"
+        )
+        difference = {
+            "category": "file_sha256",
+            "subject": "/etc/apk/world",
+            "expected": original_world["sha256"],
+            "actual": hashlib.sha256(current_world.encode()).hexdigest(),
+            "reason": "world roots changed; package closure checked but root selection needs explicit review",
+        }
+        identifier = preservation.digest(preservation.canonical(difference))
+        approvals = json.loads((CI / "approved-differences.json").read_text())["approved"]
+        matching = [item for item in approvals if item["id"] == identifier]
+        self.assertEqual(identifier, "da06c767088a9e921960526cd699392e28b23f47046f8728a4903fd522e06ac6")
+        self.assertEqual(len(matching), 1)
+        self.assertIn("40347118325", matching[0]["reason"])
+        evidence = json.loads((CI / "reviewed-differences/40347118325-world.json").read_text())
+        self.assertEqual(evidence["world_delta"]["difference_id"], identifier)
+        self.assertEqual(sorted(evidence["world_delta"]["removed_roots"]), sorted(removed_roots))
+        self.assertEqual(evidence["world_delta"]["added_roots"], [])
+        self.assertEqual(evidence["source_run"]["evidence_artifact_digest"],
+                         "sha256:6c0ec07b006d646f2579d75cd53e98c0e3a6f85c6f49163f1a58dbf1b930b7b1")
+
     def test_package_omission_allows_only_the_exact_absent_set(self):
         review = self.load()
         manifest = json.loads((self.baseline / "original-package-manifest.json").read_text())

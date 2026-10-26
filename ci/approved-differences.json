@@ -2031,6 +2031,10 @@
     {
       "id": "731e6813c858f4b78db7e564e9957bda7adeff8a08fbe4e09581d45454502b84",
       "reason": "Exact B world bytes retain every original explicit root after checked kernel/base-files identity substitutions, with the same 14 requested dependency-closure roots as accepted A. Actual B world differs from A only by base-files=1~03eb306 to base-files=1~9f39797. See ci/reviewed-differences/40118211453-world.json. Only this exact hash-addressed world record is approved; source, native signed feeds, package/ABI and missing-file gates remain required."
+    },
+    {
+      "id": "da06c767088a9e921960526cd699392e28b23f47046f8728a4903fd522e06ac6",
+      "reason": "Exact B run 40347118325 world delta after the approved Lucky-only image omission: prior B world SHA256 a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64 (6649 bytes) has exactly three removed roots (lucky, luci-app-lucky, luci-i18n-lucky-zh-cn), no additions, producing current SHA256 2bbd7462e0a5bdc03f606afbbf0475f6694f9569e87dad7eed1efe85dc398b88 (6606 bytes). The immutable evidence artifact digest is sha256:6c0ec07b006d646f2579d75cd53e98c0e3a6f85c6f49163f1a58dbf1b930b7b1. This approval covers only this exact /etc/apk/world hash; package, source, signed-feed, ABI, security, and rootfs missing-file gates remain required. See ci/reviewed-differences/lucky-image-omission-b.json and the run preservation-image report."
     }
   ],
   "schema_version": 1

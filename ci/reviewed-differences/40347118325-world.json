@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "title": "Only the exact B Lucky omission /etc/apk/world delta from run 40347118325",
+  "scope": "A hash-bound approval for the B-only removal of three unavailable Lucky image roots; all other preservation gates remain mandatory.",
+  "source_run": {
+    "run_id": "40347118325",
+    "run_attempt": 1,
+    "wrapper_head": "4e7353b781ec001d75b8b21361587be1fd90382b",
+    "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+    "evidence_artifact": "s20p-evidence-40347118325-1",
+    "evidence_artifact_digest": "sha256:6c0ec07b006d646f2579d75cd53e98c0e3a6f85c6f49163f1a58dbf1b930b7b1",
+    "preservation_report_sha256": "5266a224338dd92b733046baebe1da40549c299fd384e73e53126a4d2b7bc302",
+    "rootfs_squashfs_sha256": "17de703493faa41452afe4836662e84ef83875ba3c9b6a3aa02f97fa959c43a8"
+  },
+  "world_delta": {
+    "prior_b_world_sha256": "a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64",
+    "prior_b_world_bytes": 6649,
+    "current_b_world_sha256": "2bbd7462e0a5bdc03f606afbbf0475f6694f9569e87dad7eed1efe85dc398b88",
+    "current_b_world_bytes": 6606,
+    "removed_roots": [
+      "lucky",
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "added_roots": [],
+    "difference_id": "da06c767088a9e921960526cd699392e28b23f47046f8728a4903fd522e06ac6",
+    "difference_reason": "world roots changed; package closure checked but root selection needs explicit review"
+  },
+  "gate_evidence": {
+    "preservation_status_before_exact_approval": "review_required",
+    "pending_review_count_before_exact_approval": 1,
+    "errors": [],
+    "reviewed_optional_absent": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "package_actual_count": 492,
+    "package_additional_count": 12,
+    "kmod_count": 128,
+    "luci_app_count": 23,
+    "signed_feeds_status": "pass",
+    "image_safety_status": "pass",
+    "all_other_difference_approvals": "unchanged"
+  },
+  "review": {
+    "method": "Recomputed current world bytes by removing exactly the three reviewed Lucky roots from the previously reviewed B world; SHA256 and byte count match the immutable run report.",
+    "independent_review": "The only pending difference was /etc/apk/world; package, source, signed-feed, ABI, security, and rootfs missing-file checks remained active.",
+    "limitations": [
+      "This does not establish B boot, hardware, services, or private configuration migration acceptance.",
+      "Lucky runtime compatibility and configuration migration remain unverified; the package is intentionally install-later only."
+    ]
+  }
+}

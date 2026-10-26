@@ -611,6 +611,9 @@ else:
         self.assertIn("needs.build.result == 'success'", source)
         self.assertIn("github.event_name == 'workflow_dispatch'", source)
         self.assertIn("github.ref == 'refs/heads/codex/s20p-b-25-12'", source)
+        self.assertIn('expected_digest="${GH_EXPECTED_ARTIFACT_DIGEST#sha256:}"', source)
+        self.assertIn('[[ $expected_digest =~ ^[0-9a-f]{64}$ ]]', source)
+        self.assertIn('[[ $api_digest == "sha256:$expected_digest" ]]', source)
 
 
 class BuildPolicyTests(unittest.TestCase):

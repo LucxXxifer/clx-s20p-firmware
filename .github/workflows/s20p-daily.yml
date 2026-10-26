@@ -109,7 +109,9 @@ jobs:
           artifact_id=$(jq -er '.[0].id' <<<"$matches")
           api_digest=$(jq -er '.[0].digest' <<<"$matches")
           [[ $api_digest =~ ^sha256:[0-9a-f]{64}$ ]]
-          [[ $api_digest == "$GH_EXPECTED_ARTIFACT_DIGEST" ]]
+          expected_digest="${GH_EXPECTED_ARTIFACT_DIGEST#sha256:}"
+          [[ $expected_digest =~ ^[0-9a-f]{64}$ ]]
+          [[ $api_digest == "sha256:$expected_digest" ]]
           artifact_zip="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}.zip"
           artifact_dir="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
           assets_dir="$RUNNER_TEMP/s20p-b-release-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"

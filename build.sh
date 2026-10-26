@@ -525,11 +525,24 @@ retry_failed_downloads_verbose() {
     done
 }
 
+has_check_all_makeflag() {
+    [[ ${MAKEFLAGS:-} =~ (^|[[:space:]])CHECK_ALL([:+?]?=|$) ]]
+}
+
 preflight_download_sources() {
     local download_jobs
     local download_log
     local download_failed=0
     local failure_pattern
+
+    # CHECK_ALL asks upstream make download to fetch every package, including
+    # disabled recipes. B excludes Lucky only from the image, so keep normal
+    # selected-package download semantics even if the runner environment drifts.
+    unset CHECK_ALL
+    if has_check_all_makeflag; then
+        echo 'Error: MAKEFLAGS enables CHECK_ALL; refusing an all-package download.' >&2
+        return 1
+    fi
 
     download_jobs=$(($(nproc) * 2))
     download_log=$(mktemp)
@@ -632,6 +645,7 @@ if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
         --baseline-dir "$REPO_ROOT/ci/baseline" \
         --optional-packages "$REPO_ROOT/ci/mobile-usb-packages.txt" \
         --package-info "$PWD/tmp/.packageinfo" \
+        --source-lock "$S20P_SOURCE_LOCK" \
         --output "$S20P_CAPTURE_DIR/provenance/config-gate.json"
     python3 "$REPO_ROOT/ci/provenance.py" "$PWD" \
         --lock "$S20P_SOURCE_LOCK" --wrapper "$REPO_ROOT" \

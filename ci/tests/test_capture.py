@@ -609,7 +609,8 @@ else:
         self.assertIn("--latest=false", source)
         self.assertNotIn("secrets: inherit", source)
         self.assertIn("needs.build.result == 'success'", source)
-        self.assertIn("github.event.repository.default_branch", source)
+        self.assertIn("github.event_name == 'workflow_dispatch'", source)
+        self.assertIn("github.ref == 'refs/heads/codex/s20p-b-25-12'", source)
 
 
 class BuildPolicyTests(unittest.TestCase):

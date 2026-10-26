@@ -20,6 +20,7 @@ jobs:
     timeout-minutes: 360
     outputs:
       publish_candidate: ${{ steps.build.outputs.publish_candidate }}
+      artifact_digest: ${{ steps.upload_candidate.outputs['artifact-digest'] }}
     steps:
       - name: Checkout build policy
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -66,6 +67,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Upload validated candidate bundle
+        id: upload_candidate
         if: ${{ success() && steps.build.outputs.publish_candidate == 'true' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -74,37 +76,73 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  publish-candidate:
+  publish-b-prerelease:
     needs: build
-    if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/s20p-b-25-12' }}
     runs-on: ubuntu-24.04
     permissions:
+      actions: read
       contents: write
     steps:
-      - name: Download validated candidate bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - name: Checkout the exact wrapper commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          name: s20p-candidate-${{ github.run_id }}-${{ github.run_attempt }}
-          path: candidate
-      - name: Publish prerelease only
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify exact run artifact and prepare release assets
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          BUILD_COMMIT: ${{ github.sha }}
-          RUN_ID: ${{ github.run_id }}
-          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_BUILD_COMMIT: ${{ github.sha }}
+          GH_EXPECTED_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
         run: |
           set -euo pipefail
-          (cd candidate && sha256sum -c SHA256SUMS)
-          tag="s20p-candidate-${RUN_ID}-${RUN_ATTEMPT}"
+          artifact_name="s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
+          api="repos/${GH_REPO}/actions/runs/${GH_RUN_ID}/artifacts"
+          response=$(gh api "$api")
+          matches=$(jq --arg name "$artifact_name" --arg run "$GH_RUN_ID" --arg sha "$GH_BUILD_COMMIT" \
+            '[.artifacts[] | select(.name == $name and .expired == false and
+              (.workflow_run.id | tostring) == $run and .workflow_run.head_sha == $sha)]' <<<"$response")
+          [[ $(jq 'length' <<<"$matches") == 1 ]]
+          artifact_id=$(jq -er '.[0].id' <<<"$matches")
+          api_digest=$(jq -er '.[0].digest' <<<"$matches")
+          [[ $api_digest =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ $api_digest == "$GH_EXPECTED_ARTIFACT_DIGEST" ]]
+          artifact_zip="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}.zip"
+          artifact_dir="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
+          assets_dir="$RUNNER_TEMP/s20p-b-release-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
+          gh api "repos/${GH_REPO}/actions/artifacts/${artifact_id}/zip" > "$artifact_zip"
+          python3 ci/release_candidate.py verify-artifact-zip "$artifact_zip" "$artifact_dir" \
+            --api-digest "$api_digest" --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT"
+          python3 ci/release_candidate.py prepare "$artifact_dir" "$assets_dir" \
+            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" --build-commit "$GH_BUILD_COMMIT"
+          python3 ci/release_candidate.py verify "$assets_dir" \
+            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" --build-commit "$GH_BUILD_COMMIT"
+          printf '%s\n' "$assets_dir" > "$RUNNER_TEMP/s20p-b-assets-dir"
+      - name: Publish verified prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GH_BUILD_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          assets_dir=$(cat "$RUNNER_TEMP/s20p-b-assets-dir")
+          (cd "$assets_dir" && sha256sum -c SHA256SUMS)
+          tag="s20p-b-25.12-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
           cat > release-notes.md <<'NOTES'
-          Dedicated S20P B candidate on chasey 25.12 commit 9f397975c7b47ce6986a6e39529d2f72fd5c729d.
-          The original 2026-10-17 preservation baseline and A's other 38 Git source pins remain required.
-          Image preservation and signed same-build APK feed checks passed.
-          Original historical feeds were unavailable; this is not a bit-identical rebuild.
-          Live hardware acceptance and migration acceptance have not run. This is not stable.
-          The bundle includes complete bin/, public keys, kernel metadata, provenance, checksums and logs.
+          S20P B 25.12 prerelease candidate. Candidate assets were checked against the same-run GitHub artifact digest, ZIP CRC, internal checksums, source pins, signed feeds, image metadata, ABI and preservation report.
+
+          This is not a stable release. Live hardware boot and migration have not been validated. Lucky and its LuCI packages are excluded to avoid an unavailable source archive. The signed iStore feed offers Lucky packages for S20P architecture, but its core version is older than the captured baseline; configuration migration and runtime compatibility are unverified.
+
+          The release contains a directly flashable S20P sysupgrade .bin, the complete same-build evidence archive, checksums, build verification metadata and installation instructions. It is not bit-identical to the historical image.
           NOTES
-          gh release create "$tag" candidate/* --target "$BUILD_COMMIT" \
-            --title "S20P candidate ${RUN_ID}.${RUN_ATTEMPT}" \
+          shopt -s nullglob
+          assets=("$assets_dir"/*)
+          [[ ${#assets[@]} == 6 ]]
+          gh release create "$tag" "${assets[@]}" --target "$GH_BUILD_COMMIT" \
+            --title "S20P B 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}" \
             --notes-file release-notes.md --prerelease --latest=false

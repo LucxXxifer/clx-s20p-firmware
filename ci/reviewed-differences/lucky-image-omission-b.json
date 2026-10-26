@@ -1,0 +1,766 @@
+{
+  "baseline_package_manifest_sha256": "db9641bd5365413332684356215eef094a4f2d28aeca5d2f12afb39266abe461",
+  "baseline_packages": [
+    {
+      "dependencies": "libc",
+      "identity": "Q1vrx5wTKSMFp9p31uaWxNYxWLut4=",
+      "name": "lucky",
+      "version": "3.2.4-r3"
+    },
+    {
+      "dependencies": "libc lua luci-lib-ip luci-lib-jsonc luci-lib-nixio lucky rpcd-mod-file",
+      "identity": "Q1xuiUpiYFHpUv7yka2FigEE3D734=",
+      "name": "luci-app-lucky",
+      "version": "3.0.0-r26"
+    },
+    {
+      "dependencies": "libc luci-app-lucky",
+      "identity": "Q1bQ+8JorKsZOG5DEt+sZXt9QMmCw=",
+      "name": "luci-i18n-lucky-zh-cn",
+      "version": "0"
+    }
+  ],
+  "limitations": [
+    "Only these three exact original package names/versions and hash-addressed package-owned rootfs records may be omitted from B.",
+    "All other package names, rootfs entries, critical files, signatures, source lock, ABI, feeds and private-data checks remain mandatory.",
+    "The verified iStore feed currently offers Lucky 2.19.5-r1, older than the captured baseline 3.2.4-r3; hardware behavior and configuration migration are not validated."
+  ],
+  "package_archives_from_verified_A_same-source-feed": [
+    {
+      "filename": "lucky-3.4.0-r3.apk",
+      "package": "lucky",
+      "payload_path_count": 20,
+      "sha256": "d6859d4e3d1ee4784b4064eecd230e2c0289b598eca032b412889d72728d9dfc"
+    },
+    {
+      "filename": "luci-app-lucky-3.0.0-r26.apk",
+      "package": "luci-app-lucky",
+      "payload_path_count": 43,
+      "sha256": "75eff96f0b9d10f784106d8e8be7c6123e2db0c79bd53fd38569ffff6dd9f97e"
+    },
+    {
+      "filename": "luci-i18n-lucky-zh-cn-0.apk",
+      "package": "luci-i18n-lucky-zh-cn",
+      "payload_path_count": 13,
+      "sha256": "a627a36dca180beb74748539edf12c8820789268f6660140a3111a7e5a71b741"
+    }
+  ],
+  "package_names": [
+    "lucky",
+    "luci-app-lucky",
+    "luci-i18n-lucky-zh-cn"
+  ],
+  "package_payload_path_owners": {
+    "/etc": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "/etc/config": [
+      "lucky"
+    ],
+    "/etc/config/lucky": [
+      "lucky"
+    ],
+    "/etc/init.d": [
+      "lucky"
+    ],
+    "/etc/init.d/lucky": [
+      "lucky"
+    ],
+    "/etc/rc.d/K15lucky": [
+      "lucky (generated service enable links)"
+    ],
+    "/etc/rc.d/S99lucky": [
+      "lucky (generated service enable links)"
+    ],
+    "/etc/uci-defaults": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/etc/uci-defaults/luci-app-lucky": [
+      "luci-app-lucky"
+    ],
+    "/etc/uci-defaults/luci-i18n-lucky-zh-cn": [
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/lib": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "/lib/apk": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "/lib/apk/packages": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "/lib/apk/packages/luci-app-lucky.list": [
+      "luci-app-lucky"
+    ],
+    "/lib/apk/packages/luci-i18n-lucky-zh-cn.list": [
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/lib/apk/packages/lucky.conffiles": [
+      "lucky"
+    ],
+    "/lib/apk/packages/lucky.conffiles_static": [
+      "lucky"
+    ],
+    "/lib/apk/packages/lucky.list": [
+      "lucky"
+    ],
+    "/usr": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn",
+      "lucky"
+    ],
+    "/usr/bin": [
+      "lucky"
+    ],
+    "/usr/bin/lucky": [
+      "lucky"
+    ],
+    "/usr/lib": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/usr/lib/lua": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/usr/lib/lua/luci": [
+      "luci-app-lucky",
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/usr/lib/lua/luci/controller": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/controller/lucky.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/i18n": [
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/usr/lib/lua/luci/i18n/lucky.zh-cn.lmo": [
+      "luci-i18n-lucky-zh-cn"
+    ],
+    "/usr/lib/lua/luci/lucky_archive.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/lucky_core.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/lucky_diagnostics.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/lucky_legacy.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/lucky_rules.lua": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/view": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/view/lucky": [
+      "luci-app-lucky"
+    ],
+    "/usr/lib/lua/luci/view/lucky/legacy.htm": [
+      "luci-app-lucky"
+    ],
+    "/usr/libexec": [
+      "luci-app-lucky",
+      "lucky"
+    ],
+    "/usr/libexec/lucky-backup": [
+      "luci-app-lucky"
+    ],
+    "/usr/libexec/lucky-call": [
+      "lucky"
+    ],
+    "/usr/libexec/lucky-diagnostics": [
+      "luci-app-lucky"
+    ],
+    "/usr/libexec/lucky-watchdog": [
+      "lucky"
+    ],
+    "/usr/share": [
+      "luci-app-lucky",
+      "lucky"
+    ],
+    "/usr/share/luci": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/luci/menu.d": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/luci/menu.d/luci-app-lucky.json": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/lucky": [
+      "lucky"
+    ],
+    "/usr/share/lucky/arch": [
+      "lucky"
+    ],
+    "/usr/share/rpcd": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/rpcd/acl.d": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/rpcd/acl.d/luci-app-lucky.json": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/rpcd/ucode": [
+      "luci-app-lucky"
+    ],
+    "/usr/share/rpcd/ucode/luci.lucky": [
+      "luci-app-lucky"
+    ],
+    "/www": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky/config-3_0_0-26.css": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky/config-3_0_0-26.js": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky/legacy-3_0_0-26.css": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky/legacy-3_0_0-26.js": [
+      "luci-app-lucky"
+    ],
+    "/www/luci-static/resources/view/lucky/lucky.js": [
+      "luci-app-lucky"
+    ]
+  },
+  "reason": "Run 40290424924 failed before compilation because the fixed Lucky 3.4.0 archive returned 403/404 from all configured mirrors. The verified iStoreOS APK feed currently has a signed, architecture-compatible Lucky package set that can be fetched later; its core version is older than the captured ROM version, and service/config behavior remains untested.",
+  "removed_path_count": 36,
+  "removed_records": [
+    {
+      "gid": 0,
+      "mode": "0600",
+      "mtime_unix": 1792144831,
+      "path": "/etc/config/lucky",
+      "sha256": "50975043beb4cb8949d16fa7220a2750efe2df758dfa38294b23606ea882095e",
+      "size": 144,
+      "squashfs_inode": 119,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/etc/init.d/lucky",
+      "sha256": "371fda345ba6ec716e45f6457104b71d7539b729270cb85f4d68aed5b0a25019",
+      "size": 2774,
+      "squashfs_inode": 214,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0777",
+      "mtime_unix": 1792144831,
+      "path": "/etc/rc.d/K15lucky",
+      "sha256": "57eee0771ce2709e896ad4e9c11a17f8ea98375b31ac575cd7e41e6601d84f50",
+      "size": 15,
+      "squashfs_inode": 463,
+      "target": "../init.d/lucky",
+      "type": "symlink",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0777",
+      "mtime_unix": 1792144831,
+      "path": "/etc/rc.d/S99lucky",
+      "sha256": "57eee0771ce2709e896ad4e9c11a17f8ea98375b31ac575cd7e41e6601d84f50",
+      "size": 15,
+      "squashfs_inode": 522,
+      "target": "../init.d/lucky",
+      "type": "symlink",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/etc/uci-defaults/luci-app-lucky",
+      "sha256": "49c3e7730e725b551037e93bb168a7b0e23d0460e652b93cd81d41919086e60f",
+      "size": 210,
+      "squashfs_inode": 842,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/etc/uci-defaults/luci-i18n-lucky-zh-cn",
+      "sha256": "c272c8973a1bc727c9ad0607c3675dc9f8be3844eacee3dbc188248f6332c8f0",
+      "size": 82,
+      "squashfs_inode": 860,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/lib/apk/packages/luci-app-lucky.list",
+      "sha256": "3a904f68666a7a28a43e42f72e3aae47423350901c7cb434946b51e8b0ce8b35",
+      "size": 742,
+      "squashfs_inode": 1235,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/lib/apk/packages/luci-i18n-lucky-zh-cn.list",
+      "sha256": "a2fd2f486db2e9dcd86f126dcda6410b542135513351ec9bfbd07ecb18682ab0",
+      "size": 79,
+      "squashfs_inode": 1269,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/lib/apk/packages/lucky.conffiles",
+      "sha256": "5721a006c000c37589f6f5bf6bda6ce13331b7176038b8ef49ee34b75b912dd9",
+      "size": 18,
+      "squashfs_inode": 1303,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/lib/apk/packages/lucky.conffiles_static",
+      "sha256": "57499bd6531366f91c399f21a3eff77321d036445b289318828340c4f415e119",
+      "size": 83,
+      "squashfs_inode": 1304,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/lib/apk/packages/lucky.list",
+      "sha256": "c25223878b603088b4ad5480044db53596173bdf12e6cf1534a582f0f997b6d3",
+      "size": 125,
+      "squashfs_inode": 1305,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/bin/lucky",
+      "sha256": "9449245bef8a58a5a94dc17c0a2c7f37637ba4825ac870c59c3bcd311ac32019",
+      "size": 28400389,
+      "squashfs_inode": 1992,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/controller/lucky.lua",
+      "sha256": "6035e7bb8d6ea77b92194700bed704adca7a01edc1f982fd04f392efe1403e92",
+      "size": 955,
+      "squashfs_inode": 2338,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/i18n/lucky.zh-cn.lmo",
+      "sha256": "1b65f7dc00dafa701a9629e028b28e8f18af87550e26ed8e6cc767340b71cc28",
+      "size": 9776,
+      "squashfs_inode": 2363,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/lucky_archive.lua",
+      "sha256": "0fd9a5817bdcf5a573655211782a8c39f0bbf09bbb8986685bf56c501d408e45",
+      "size": 9643,
+      "squashfs_inode": 2380,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/lucky_core.lua",
+      "sha256": "fc79345e918ad5e6c874ec0bfdc0b68e3ed4f0eb6bad5224d0814eeb8763488a",
+      "size": 20850,
+      "squashfs_inode": 2381,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/lucky_diagnostics.lua",
+      "sha256": "48de264a4c1e142d19998c165caf7e652fc7d8ac765239645f7869397c1967a7",
+      "size": 6298,
+      "squashfs_inode": 2382,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/lucky_legacy.lua",
+      "sha256": "b3d659929b9c2c08cefdbc4fe6fdd3da5f75d87a9630f2d6b3c640a8f127fada",
+      "size": 11321,
+      "squashfs_inode": 2383,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/lucky_rules.lua",
+      "sha256": "f3dcbd6515490f0eda110f4dda774f8154bbaaf5d947f227a3fdbf89cb7e129c",
+      "size": 4010,
+      "squashfs_inode": 2384,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/view/lucky",
+      "sha256": null,
+      "size": 0,
+      "squashfs_inode": 2518,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/lib/lua/luci/view/lucky/legacy.htm",
+      "sha256": "9043968deaf04e1229d53a2e44f2c8c9adead743e5409670d51475aef70d1527",
+      "size": 407,
+      "squashfs_inode": 2519,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/libexec/lucky-backup",
+      "sha256": "99a2399a2b7760b100ae1028052d514fa6afa43448f2070ea7e97b842814ed74",
+      "size": 17016,
+      "squashfs_inode": 2902,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/libexec/lucky-call",
+      "sha256": "b260b71f5ef3745a10dba1f43e93c986ef0a6ff4efb15d885dedc38d3f7b9589",
+      "size": 3870,
+      "squashfs_inode": 2903,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/libexec/lucky-diagnostics",
+      "sha256": "22b4741cbfe71a8ad614e58813c9a9d777d1c1e69bf79acb5ed9bea04e47d37b",
+      "size": 408,
+      "squashfs_inode": 2904,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/libexec/lucky-watchdog",
+      "sha256": "aa79be9f67b5c6e950086153ec9a19f1ab77b1473bf12ffee9ddef217e6a4584",
+      "size": 3419,
+      "squashfs_inode": 2905,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/share/luci/menu.d/luci-app-lucky.json",
+      "sha256": "8d32cfe3df826abf5ecd8ae259b5e1ba6a97247c33590ae76e5a5361abf28ba3",
+      "size": 221,
+      "squashfs_inode": 3468,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/usr/share/lucky",
+      "sha256": null,
+      "size": 0,
+      "squashfs_inode": 3492,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/share/lucky/arch",
+      "sha256": "c1669e1d8edca98769c37d494b76442a1d6e5ffffd7b4da1fb63aef8ebaf6f01",
+      "size": 6,
+      "squashfs_inode": 3493,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/share/rpcd/acl.d/luci-app-lucky.json",
+      "sha256": "87acf2f18fff3f8917fc2d21194bd8becc8feb979a764b1e554d4af29e8ae508",
+      "size": 3627,
+      "squashfs_inode": 3640,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/usr/share/rpcd/ucode/luci.lucky",
+      "sha256": "9554cd89681155a3a6c7947c9025ebd8c74c64dd1ac1c62150a9d9e4d211705a",
+      "size": 2433,
+      "squashfs_inode": 3663,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0755",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky",
+      "sha256": null,
+      "size": 0,
+      "squashfs_inode": 4257,
+      "type": "directory",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky/config-3_0_0-26.css",
+      "sha256": "6bdbc7081529547a9e47887c075ab541456d8163b1f524282ffcb33572b0faf1",
+      "size": 12030,
+      "squashfs_inode": 4258,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky/config-3_0_0-26.js",
+      "sha256": "d8040e43470bbaaed0f6715d8156d85e4f52eb234e2e62eff08b1ba9fe0048ab",
+      "size": 42344,
+      "squashfs_inode": 4259,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky/legacy-3_0_0-26.css",
+      "sha256": "befb9be3b2fb60c6776b22b4cd8a94c5150395b86cdf528de744f1c56ebbdfa6",
+      "size": 1042,
+      "squashfs_inode": 4260,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky/legacy-3_0_0-26.js",
+      "sha256": "924e82559d6b650ac438df17dc1e393a5c0e8063c92f7217c9f4fa625c2451bd",
+      "size": 8770,
+      "squashfs_inode": 4261,
+      "type": "file",
+      "uid": 0
+    },
+    {
+      "gid": 0,
+      "mode": "0644",
+      "mtime_unix": 1792144831,
+      "path": "/www/luci-static/resources/view/lucky/lucky.js",
+      "sha256": "16710feecdfaded68cbb80cd13265a780ccb206f3c88663c34ba1c2c7afbbb61",
+      "size": 2609,
+      "squashfs_inode": 4262,
+      "type": "file",
+      "uid": 0
+    }
+  ],
+  "required_absent_service_links": [
+    "/etc/rc.d/K15lucky",
+    "/etc/rc.d/S99lucky"
+  ],
+  "rootfs_manifest_sha256": "9d2efae060de16ba418185530ac61901f521db5b06418d21fd7eff97db8b6f9f",
+  "schema_version": 1,
+  "source": {
+    "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+    "ref": "25.12",
+    "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+  },
+  "title": "B-only optional Lucky image omission",
+  "trusted_store_feed": {
+    "repository_root": "https://istore.istoreos.com/repo-apk",
+    "verified_at_utc": "2026-10-26T10:08:00Z",
+    "apk_tools_version": "3.0.7-r0",
+    "trusted_key_sha256": "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08",
+    "device_architecture": "aarch64_cortex-a53",
+    "archlist_url": "https://istore.istoreos.com/repo-apk/aarch64_cortex-a53/archlist.conf",
+    "archlist_sha256": "d7dae0d488563848c3e32c8f47761d07f52ac7d9f9d888c6010be37fb587588f",
+    "archlist": [
+      "aarch64_cortex-a53",
+      "aarch64_generic"
+    ],
+    "indexes": [
+      {
+        "url": "https://istore.istoreos.com/repo-apk/aarch64_generic/nas/packages.adb",
+        "sha256": "65a3a158eab62f4e66a5bf7e3e0b377e589c33ab21793b87d4a420868b95bbe3",
+        "signature": "verified",
+        "signing_key_sha256": "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
+      },
+      {
+        "url": "https://istore.istoreos.com/repo-apk/all/nas_luci/packages.adb",
+        "sha256": "1667437721887cd0307e7e4b443cafe41dd3ff7a5f577d1dbd784a2abccc29bc",
+        "signature": "verified",
+        "signing_key_sha256": "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
+      },
+      {
+        "url": "https://istore.istoreos.com/repo-apk/all/meta/packages.adb",
+        "sha256": "5493f55647122c394bb8e40cd0fa42493b9fe8ac2ecd118b6d871250b5bc418a",
+        "signature": "verified",
+        "signing_key_sha256": "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
+      }
+    ],
+    "packages": [
+      {
+        "name": "lucky",
+        "version": "2.19.5-r1",
+        "arch": "aarch64_generic",
+        "depends": [
+          "libc"
+        ],
+        "index_url": "https://istore.istoreos.com/repo-apk/aarch64_generic/nas/packages.adb",
+        "index_sha256": "65a3a158eab62f4e66a5bf7e3e0b377e589c33ab21793b87d4a420868b95bbe3",
+        "index_identity": "e86ff3990b29473493d3c1cb7eb1d38481affbe7d1652f8647b075aa3f6a493c",
+        "file_size": 7379412,
+        "fetched_apk_sha256": "9036339565697173dfefc22801793d116e316cc256be954f070eb5fcce823d1a"
+      },
+      {
+        "name": "luci-app-lucky",
+        "version": "2.2.3-r1",
+        "arch": "noarch",
+        "depends": [
+          "libc",
+          "luci-compat",
+          "luci-lua-runtime",
+          "lucky"
+        ],
+        "index_url": "https://istore.istoreos.com/repo-apk/all/nas_luci/packages.adb",
+        "index_sha256": "1667437721887cd0307e7e4b443cafe41dd3ff7a5f577d1dbd784a2abccc29bc",
+        "index_identity": "1567e5681b5db6e89e281ff67683de56b558cbbaf41b5eabddb86ba1e2c4d20f",
+        "file_size": 5778,
+        "fetched_apk_sha256": "8e74aa523d8c5372305d31a1414af29fd21c47e1f0ce7f40ef942390c6bf5f52"
+      },
+      {
+        "name": "luci-i18n-lucky-zh-cn",
+        "version": "25.293.25516~c0aefad",
+        "arch": "noarch",
+        "depends": [
+          "libc",
+          "luci-app-lucky"
+        ],
+        "index_url": "https://istore.istoreos.com/repo-apk/all/nas_luci/packages.adb",
+        "index_sha256": "1667437721887cd0307e7e4b443cafe41dd3ff7a5f577d1dbd784a2abccc29bc",
+        "index_identity": "3e50f16a2fd271a4c1e2ce1883d7f39e8ba568090af314c874d78073d9a29841",
+        "file_size": 1975,
+        "fetched_apk_sha256": "d829b7d2805779d9144dd307c94947184fd7898f715f13c2e9bdbd8e59fe4198"
+      }
+    ],
+    "version_note": "Current signed feed core 2.19.5-r1 is older than baseline core 3.2.4-r3; package metadata and signatures are verified, but runtime behavior and configuration migration are unverified.",
+    "application_metadata": {
+      "name": "app-meta-lucky",
+      "version": "2.19.5-r1",
+      "arch": "noarch",
+      "depends": [
+        "libc",
+        "luci-app-lucky",
+        "luci-i18n-lucky-zh-cn",
+        "lucky"
+      ],
+      "index_url": "https://istore.istoreos.com/repo-apk/all/meta/packages.adb",
+      "index_sha256": "5493f55647122c394bb8e40cd0fa42493b9fe8ac2ecd118b6d871250b5bc418a",
+      "index_identity": "65b4212956bc38924b2e6d0674a885c0250479e5e8277f626290e84efd94c783",
+      "file_size": 14463,
+      "fetched_apk_sha256": "cceaaa304443f3ec1f15876d6ddc8e6f9eea78caa5edb14fea7349813fe4a0e0"
+    }
+  }
+}

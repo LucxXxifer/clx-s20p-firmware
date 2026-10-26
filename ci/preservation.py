@@ -26,6 +26,13 @@ import sys
 SECURITY_REMOVAL_REVIEW = Path(__file__).with_name("reviewed-security-removals") / "chasey-9f397975.json"
 SECURITY_REMOVAL_REVIEW_SHA256 = "0dc44aff92ac7662334e3a1dc9f562e2704149767b54b26cdb984626bbc1fc8b"
 SECURITY_REMOVAL_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+B_SOURCE_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+B_OPTIONAL_PACKAGE_REVIEW = Path(__file__).with_name("reviewed-differences") / "lucky-image-omission-b.json"
+B_OPTIONAL_PACKAGE_REVIEW_SHA256 = "03d11294764d575f08a14d0e260603ca89fbc7532f6c453c291e244415cbd8aa"
+B_OPTIONAL_PACKAGE_NAMES = (
+    "lucky", "luci-app-lucky", "luci-i18n-lucky-zh-cn",
+)
+B_LUCKY_STORE_KEY_SHA256 = "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
 
 
 def digest(value):
@@ -38,6 +45,238 @@ def canonical(value):
 
 def read_json(path):
     return json.loads(Path(path).read_text())
+
+
+def strict_json(raw):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON key: " + key)
+            result[key] = value
+        return result
+    return json.loads(raw, object_pairs_hook=unique)
+
+
+def source_commit(lock):
+    sources = lock.get("sources") if isinstance(lock, dict) else None
+    if not isinstance(sources, list):
+        return None
+    main = [row for row in sources if isinstance(row, dict) and row.get("role") == "main-source"]
+    if len(main) != 1:
+        return None
+    return main[0].get("commit")
+
+
+def require_b_main_source(rows, description):
+    if not isinstance(rows, list):
+        raise ValueError(description + " main-source inventory is missing")
+    main = [row for row in rows if isinstance(row, dict) and row.get("role") == "main-source"]
+    if len(main) != 1:
+        raise ValueError(description + " requires exactly one main-source")
+    row = main[0]
+    if (row.get("url", "").removesuffix(".git") !=
+            "https://github.com/chasey-dev/immortalwrt-mt798x-rebase" or
+            row.get("ref") != "25.12" or row.get("commit") != B_SOURCE_COMMIT):
+        raise ValueError(description + " main-source does not match fixed B repository/ref/commit")
+
+
+def require_b_resolved_main_source(rows):
+    if not isinstance(rows, list):
+        raise ValueError("resolved main-source inventory is missing")
+    expected_url = "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+    matches = [row for row in rows if isinstance(row, dict) and
+               row.get("url", "").removesuffix(".git") == expected_url]
+    if len(matches) != 1 or matches[0].get("commit") != B_SOURCE_COMMIT:
+        raise ValueError("resolved main-source does not match fixed B repository/commit")
+
+
+def load_b_optional_package_policy(baseline_dir, source_lock_path,
+                                   review_path=B_OPTIONAL_PACKAGE_REVIEW):
+    """Load the one hash-pinned, fixed-B Lucky image omission review."""
+    source_path = Path(source_lock_path)
+    if source_path.is_symlink() or not source_path.is_file():
+        raise ValueError("regular source lock required for optional package policy")
+    lock = strict_json(source_path.read_bytes())
+    requested_lock = lock.get("source_lock", lock)
+    commit = lock.get("upstream_commit") or source_commit(requested_lock)
+    if commit != B_SOURCE_COMMIT:
+        return None
+    if source_commit(requested_lock) != B_SOURCE_COMMIT:
+        raise ValueError("unique fixed B main-source identity required for Lucky omission")
+    require_b_main_source(requested_lock.get("sources"), "requested")
+    if "source_lock" in lock:
+        if lock.get("upstream_commit") != B_SOURCE_COMMIT:
+            raise ValueError("resolved main-source upstream commit does not match fixed B")
+        require_b_resolved_main_source(lock.get("sources"))
+
+    review_file = Path(review_path)
+    if review_file.is_symlink() or not review_file.is_file():
+        raise ValueError("regular B optional package review required")
+    raw = review_file.read_bytes()
+    if digest(raw) != B_OPTIONAL_PACKAGE_REVIEW_SHA256:
+        raise ValueError("B optional package review digest mismatch")
+    review = strict_json(raw)
+    if (review.get("schema_version") != 1 or review.get("source", {}).get("commit") != B_SOURCE_COMMIT or
+            review.get("source", {}).get("repository") != "https://github.com/chasey-dev/immortalwrt-mt798x-rebase" or
+            review.get("source", {}).get("ref") != "25.12"):
+        raise ValueError("B optional package review source mismatch")
+    if review.get("package_names") != list(B_OPTIONAL_PACKAGE_NAMES):
+        raise ValueError("B optional package review must name the exact Lucky package set")
+
+    baseline = Path(baseline_dir)
+    package_path = baseline / "original-package-manifest.json"
+    rootfs_path = baseline / "full-rootfs-manifest.json"
+    package_bytes, rootfs_bytes = package_path.read_bytes(), rootfs_path.read_bytes()
+    if digest(package_bytes) != review.get("baseline_package_manifest_sha256"):
+        raise ValueError("B optional package review baseline package digest mismatch")
+    if digest(rootfs_bytes) != review.get("rootfs_manifest_sha256"):
+        raise ValueError("B optional package review baseline rootfs digest mismatch")
+    integrity = read_json(baseline / "baseline-sha256.json")
+    if (integrity.get(package_path.name) != digest(package_bytes) or
+            integrity.get(rootfs_path.name) != digest(rootfs_bytes)):
+        raise ValueError("B optional package review baseline integrity mismatch")
+
+    package_rows = strict_json(package_bytes)
+    expected_packages = [row for row in package_rows
+                         if isinstance(row, dict) and row.get("name") in B_OPTIONAL_PACKAGE_NAMES]
+    reviewed_packages = review.get("baseline_packages")
+    expected_by_name = {row["name"]: row for row in expected_packages}
+    if (len(expected_by_name) != len(B_OPTIONAL_PACKAGE_NAMES) or
+            reviewed_packages != [expected_by_name.get(name) for name in B_OPTIONAL_PACKAGE_NAMES]):
+        raise ValueError("B optional package review baseline package identity mismatch")
+
+    manifest_rows = strict_json(rootfs_bytes).get("files")
+    if not isinstance(manifest_rows, list):
+        raise ValueError("B optional package review baseline rootfs inventory is invalid")
+    baseline_files = {row.get("path"): row for row in manifest_rows if isinstance(row, dict)}
+    removed_records = review.get("removed_records")
+    if (not isinstance(removed_records, list) or len(removed_records) != review.get("removed_path_count") or
+            not removed_records or any(baseline_files.get(row.get("path")) != row for row in removed_records)):
+        raise ValueError("B optional package review must match exact baseline file records")
+    removed_paths = [row.get("path") for row in removed_records]
+    if len(removed_paths) != len(set(removed_paths)):
+        raise ValueError("duplicate B optional package review file path")
+    critical_rows = strict_json((baseline / "critical-files-manifest.json").read_bytes()).get("files", [])
+    critical_paths = {row.get("path") for row in critical_rows}
+    owners = review.get("package_payload_path_owners")
+    if not isinstance(owners, dict):
+        raise ValueError("B optional package review file ownership map is missing")
+    service_links = {"/etc/rc.d/K15lucky", "/etc/rc.d/S99lucky"}
+    for path in removed_paths:
+        path_owners = owners.get(path)
+        allowed_owners = ({"lucky (generated service enable links)"}
+                          if path in service_links else set(B_OPTIONAL_PACKAGE_NAMES))
+        if (not isinstance(path_owners, list) or not path_owners or
+                not set(path_owners) <= allowed_owners):
+            raise ValueError("B optional package path has unrelated or unknown owner: " + path)
+        if path in critical_paths and not set(path_owners) <= allowed_owners:
+            raise ValueError("B optional critical path has unrelated or unknown owner: " + path)
+    if review.get("required_absent_service_links") != sorted(service_links):
+        raise ValueError("B optional package review service links mismatch")
+    if any(baseline_files.get(path, {}).get("type") != "symlink"
+           for path in review["required_absent_service_links"]):
+        raise ValueError("B optional package review service link baseline mismatch")
+
+    store = review.get("trusted_store_feed")
+    if (not isinstance(store, dict) or store.get("repository_root") != "https://istore.istoreos.com/repo-apk" or
+            store.get("trusted_key_sha256") != B_LUCKY_STORE_KEY_SHA256):
+        raise ValueError("trusted Lucky store feed key mismatch")
+    key_records = [row for row in critical_rows if row.get("path") == "/etc/apk/keys/istore.pem"]
+    if len(key_records) != 1 or key_records[0].get("sha256") != B_LUCKY_STORE_KEY_SHA256:
+        raise ValueError("trusted Lucky store key is not in the critical baseline")
+    if not {"aarch64_cortex-a53", "aarch64_generic"} <= set(store.get("archlist", [])):
+        raise ValueError("trusted Lucky store feed does not list S20P architecture")
+    indexes = store.get("indexes")
+    expected_index_urls = {
+        "https://istore.istoreos.com/repo-apk/aarch64_generic/nas/packages.adb",
+        "https://istore.istoreos.com/repo-apk/all/nas_luci/packages.adb",
+        "https://istore.istoreos.com/repo-apk/all/meta/packages.adb",
+    }
+    if not isinstance(indexes, list) or len(indexes) != 3 or any(
+            not isinstance(row, dict) or row.get("signature") != "verified" or
+            row.get("signing_key_sha256") != B_LUCKY_STORE_KEY_SHA256 or
+            not re.fullmatch(r"[0-9a-f]{64}", str(row.get("sha256", "")))
+            for row in indexes):
+        raise ValueError("trusted Lucky store feed signature evidence is incomplete")
+    if {row["url"] for row in indexes} != expected_index_urls:
+        raise ValueError("trusted Lucky store feed index set mismatch")
+    index_by_url = {row["url"]: row for row in indexes}
+    packages = store.get("packages")
+    if not isinstance(packages, list) or {row.get("name") for row in packages if isinstance(row, dict)} != set(B_OPTIONAL_PACKAGE_NAMES):
+        raise ValueError("trusted Lucky store feed package set mismatch")
+    baseline_names = {row["name"] for row in package_rows}
+    for package in packages:
+        if (package.get("arch") not in {"aarch64_generic", "noarch"} or
+                package.get("index_url") not in index_by_url or
+                package.get("index_sha256") != index_by_url[package["index_url"]]["sha256"] or
+                not re.fullmatch(r"[0-9a-f]{64}", str(package.get("fetched_apk_sha256", ""))) or
+                not re.fullmatch(r"[0-9a-f]{64}", str(package.get("index_identity", ""))) or
+                type(package.get("file_size")) is not int or package["file_size"] <= 0):
+            raise ValueError("trusted Lucky store feed package evidence is malformed")
+        if not set(package.get("depends", [])) <= baseline_names | set(B_OPTIONAL_PACKAGE_NAMES):
+            raise ValueError("store package dependency is not in B baseline: " + package["name"])
+    application = store.get("application_metadata")
+    meta_index = index_by_url["https://istore.istoreos.com/repo-apk/all/meta/packages.adb"]
+    if (not isinstance(application, dict) or application.get("name") != "app-meta-lucky" or
+            application.get("version") != "2.19.5-r1" or application.get("arch") != "noarch" or
+            application.get("index_url") != meta_index["url"] or
+            application.get("index_sha256") != meta_index["sha256"] or
+            not re.fullmatch(r"[0-9a-f]{64}", str(application.get("index_identity", ""))) or
+            type(application.get("file_size")) is not int or application["file_size"] <= 0 or
+            not re.fullmatch(r"[0-9a-f]{64}", str(application.get("fetched_apk_sha256", ""))) or
+            not set(application.get("depends", [])) <= baseline_names | set(B_OPTIONAL_PACKAGE_NAMES)):
+        raise ValueError("iStore Lucky application metadata evidence is incomplete")
+    if not store.get("version_note"):
+        raise ValueError("trusted Lucky store feed version limitation is missing")
+    normalized = dict(review)
+    normalized.update({
+        "upstream_commit": B_SOURCE_COMMIT,
+        "packages": review["baseline_packages"],
+        "absent_files": review["removed_records"],
+        "review_sha256": B_OPTIONAL_PACKAGE_REVIEW_SHA256,
+    })
+    return normalized
+
+
+def reviewed_b_optional_package_absences(review, original, actual):
+    """Require exactly the reviewed B-only package set to be absent."""
+    optional = set(B_OPTIONAL_PACKAGE_NAMES)
+    present = optional & set(actual)
+    if present:
+        raise ValueError("reviewed optional Lucky package must not be installed: " + ", ".join(sorted(present)))
+    missing = set(original) - set(actual)
+    unexpected = missing - optional
+    if unexpected:
+        raise ValueError("unreviewed missing baseline package: " + ", ".join(sorted(unexpected)))
+    if missing != optional:
+        raise ValueError("reviewed optional Lucky packages must be absent")
+    for name in optional:
+        old = original[name]
+        expected = next(row for row in review["baseline_packages"] if row["name"] == name)
+        if (old.get("version") != expected.get("version") or
+                old.get("depends", old.get("dependencies", "")) != expected.get("dependencies", "")):
+            raise ValueError("baseline package identity differs from B optional package review: " + name)
+    return missing
+
+
+def reviewed_b_optional_file_absences(review, baseline, actual, preapproved_absences=None):
+    """Return only exact reviewed baseline file records that are absent."""
+    allowed = {row["path"]: row for row in review["removed_records"]}
+    if any(baseline.get(path) != row for path, row in allowed.items()):
+        raise ValueError("reviewed Lucky file record differs from baseline")
+    missing = set(baseline) - set(actual)
+    unreviewed = missing - set(allowed) - set(preapproved_absences or ())
+    if unreviewed:
+        raise ValueError("unreviewed missing rootfs path: " + ", ".join(sorted(unreviewed)))
+    # Regular package payloads and service links must be gone. Directories may
+    # remain when the rest of the image still needs them.
+    required_absent = {path for path, record in allowed.items()
+                       if record.get("type") != "directory"}
+    present = required_absent & set(actual)
+    if present:
+        raise ValueError("reviewed Lucky files must be absent: " + ", ".join(sorted(present)))
+    return missing & set(allowed)
 
 
 def parse_config(path):
@@ -289,6 +528,7 @@ class Gate:
         self.baseline = Path(baseline)
         self.errors, self.differences, self.checks = [], [], {}
         self._source_evidence = None
+        self.b_optional_package_policy = None
         self.approvals = {}
         if approval:
             for item in read_json(approval)["approved"]:
@@ -332,7 +572,8 @@ class Gate:
             record["approval_reason"] = self.approvals[identifier]
         self.differences.append(record)
 
-    def config(self, path, optional_packages=None, package_info=None):
+    def config(self, path, optional_packages=None, package_info=None, source_lock=None,
+               optional_package_review=B_OPTIONAL_PACKAGE_REVIEW):
         values = parse_config(path)
         required = dict(self.policy["required_config"])
         required.update(self.mtk)
@@ -364,6 +605,15 @@ class Gate:
             selectors[name] = selector
             required.setdefault(selector, ["y", "m"])
         required.update({"CONFIG_PACKAGE_" + name: "y" for name in self.policy["required_packages"]})
+        optional_policy = (load_b_optional_package_policy(self.baseline, source_lock, optional_package_review)
+                          if source_lock else None)
+        if optional_policy:
+            for name in B_OPTIONAL_PACKAGE_NAMES:
+                selector = selectors.get(name)
+                if selector is None:
+                    self.error("optional_package_metadata", name, "exact recipe selector", "MISSING")
+                    continue
+                required[selector] = "n"
         optional = []
         if optional_packages:
             for line in Path(optional_packages).read_text().splitlines():
@@ -393,6 +643,13 @@ class Gate:
                                  "package_info_sha256": (digest(Path(package_info).read_bytes())
                                                          if package_info else None),
                                  "original_package_selectors": selectors,
+                                 "b_optional_package_omission": ({
+                                     "upstream_commit": B_SOURCE_COMMIT,
+                                     "packages": list(B_OPTIONAL_PACKAGE_NAMES),
+                                     "review_sha256": B_OPTIONAL_PACKAGE_REVIEW_SHA256,
+                                     "store_feed_key_sha256": B_LUCKY_STORE_KEY_SHA256,
+                                 } if optional_policy else None),
+                                 "b_optional_packages": (list(B_OPTIONAL_PACKAGE_NAMES) if optional_policy else None),
                                  "unsupported_fragment_symbols": unsupported,
                                  "additional_selected_package_symbols": sorted(selected - set(self.original)),
                                  "scope": "required symbols only; original expanded config is unavailable"}
@@ -435,6 +692,12 @@ class Gate:
                     self.error("source_lock", str(name) + ".commit", "full Git commit", item.get("commit"))
                 if not re.fullmatch(r"[0-9a-f]{64}", str(item.get("tree_hash", ""))):
                     self.error("source_lock", str(name) + ".tree_hash", "SHA256", item.get("tree_hash"))
+            if lock.get("upstream_commit") == B_SOURCE_COMMIT:
+                try:
+                    require_b_resolved_main_source(sources)
+                except ValueError as error:
+                    self.error("source_lock", "main_source",
+                               "fixed B repository at " + B_SOURCE_COMMIT, str(error))
         self.checks["source_lock"] = {"sha256": digest(Path(path).read_bytes()),
                                       "recorded_sources": len(sources) if isinstance(sources, list) else 0,
                                       "build_fingerprint": lock.get("build_fingerprint"),
@@ -651,7 +914,7 @@ class Gate:
                     der = base64.b64decode(re.sub(rb"\s+", b"", block), validate=True)
                     exact_der_certificate(der, label)
 
-    def packages(self, root, inventory):
+    def packages(self, root, inventory, optional_package_policy=None):
         installed = safe_path(root, "/lib/apk/db/installed")
         actual = parse_packages(installed)
         manifest = parse_packages(inventory)
@@ -659,7 +922,18 @@ class Gate:
             self.error("package_db_mismatch", "build manifest vs actual APK DB",
                        {k: p["version"] for k, p in manifest.items()},
                        {k: p["version"] for k, p in actual.items()})
-        for name in sorted(set(self.original) | set(self.policy["required_packages"])):
+        if optional_package_policy:
+            try:
+                omitted = reviewed_b_optional_package_absences(optional_package_policy, self.original, actual)
+            except ValueError as error:
+                self.error("optional_package_omission", "Lucky", "exact B-only reviewed absence", str(error))
+                omitted = set()
+            for name in sorted(omitted):
+                self.difference("removed_optional_package", name, self.original[name], None,
+                                "expected", "fixed B-only Lucky omission; hash-pinned review and signed compatible iStore feed")
+        else:
+            omitted = set()
+        for name in sorted((set(self.original) - omitted) | set(self.policy["required_packages"])):
             if name not in actual:
                 self.error("missing_package", name)
         kernel = actual.get("kernel", {}).get("version", "")
@@ -710,6 +984,9 @@ class Gate:
                 self.difference("package_dependencies", name, old_deps, package.get("depends", ""))
         self.checks["packages"] = {"actual_count": len(actual), "kernel": kernel,
                                    "original_count": len(self.original),
+                                   "reviewed_optional_absent": sorted(omitted),
+                                   "optional_package_review_sha256": (B_OPTIONAL_PACKAGE_REVIEW_SHA256
+                                                                       if optional_package_policy else None),
                                    "additional_packages": sorted(set(actual) - set(self.original)),
                                    "kmods": sum(n.startswith("kmod-") for n in actual),
                                    "luci_apps": sum(n.startswith("luci-app-") for n in actual)}
@@ -791,7 +1068,8 @@ class Gate:
                                       "scope": "capture verified native signed feeds, exact rootfs key binding"}
         return passed
 
-    def files(self, root, provenance_ok, packages, reachable, signing_key_ok=False):
+    def files(self, root, provenance_ok, packages, reachable, signing_key_ok=False,
+              optional_package_policy=None):
         baseline = file_index(read_json(self.baseline / "full-rootfs-manifest.json")["files"])
         critical = file_index(read_json(self.baseline / "critical-files-manifest.json")["files"])
         if not baseline or not critical or not set(critical).issubset(baseline):
@@ -803,6 +1081,9 @@ class Gate:
             self.error("baseline_count", "critical_entries", self.policy["critical_entries"], len(critical))
         actual = walk_files(root)
         removed = self.security_removals(root, provenance_ok, packages, baseline)
+        optional_removed = (reviewed_b_optional_file_absences(optional_package_policy, baseline, actual,
+                                                              preapproved_absences=set(removed))
+                            if optional_package_policy else set())
         for name, expected in baseline.items():
             # Reject redirected parent directories even when walk() correctly
             # avoided following the link and the descendant appears missing.
@@ -810,6 +1091,10 @@ class Gate:
             current = actual.get(name)
             if current is None:
                 if name in removed:
+                    continue
+                if name in optional_removed:
+                    self.difference("removed_optional_file", name, expected, None, "expected",
+                                    "fixed B-only Lucky package-owned path; exact baseline record in hash-pinned review")
                     continue
                 self.error("missing_file", name)
                 continue
@@ -851,6 +1136,9 @@ class Gate:
                             "explicit new rootfs entry; verify owning added package" if not generated else "generated rootfs metadata/directory")
         self.checks["rootfs"] = {"baseline_entries": len(baseline), "actual_entries": len(actual),
                                   "critical_entries": len(critical), "added_entries": len(additions),
+                                  "reviewed_optional_absent": sorted(optional_removed),
+                                  "optional_package_review_sha256": (B_OPTIONAL_PACKAGE_REVIEW_SHA256
+                                                                      if optional_package_policy else None),
                                   "xattrs": "not checked; original baseline did not inventory xattrs",
                                   "mtime": "not an equivalence requirement"}
 
@@ -946,6 +1234,10 @@ def main(argv=None):
                                  help="package names that must survive defconfig as m or y")
             command.add_argument("--package-info", type=Path,
                                  help="actual tmp/.packageinfo for exact runtime ABI-to-recipe names")
+            command.add_argument("--source-lock", type=Path,
+                                 help="requested source lock used to bind the fixed B-only package policy")
+            command.add_argument("--optional-package-review", type=Path,
+                                 default=B_OPTIONAL_PACKAGE_REVIEW)
         else:
             command.add_argument("--rootfs", required=True, type=Path)
             command.add_argument("--kernel-config", required=True, type=Path)
@@ -959,15 +1251,19 @@ def main(argv=None):
     try:
         gate = Gate(args.phase, args.baseline_dir, args.approve_differences)
         if args.phase == "config":
-            gate.config(args.config, args.optional_packages, args.package_info)
+            gate.config(args.config, args.optional_packages, args.package_info,
+                        args.source_lock, args.optional_package_review)
         else:
             root = args.rootfs.resolve()
             provenance_ok = gate.source_lock(args.source_lock)
-            actual, reachable = gate.packages(root, args.packages)
+            gate.b_optional_package_policy = load_b_optional_package_policy(
+                args.baseline_dir, args.source_lock)
+            actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy)
             gate.kernel_config(args.kernel_config)
             gate.dtb(args.dtb)
             signing_key_ok = gate.signing_key(root, actual, args.public_key, args.signed_feeds)
-            gate.files(root, provenance_ok, actual, reachable, signing_key_ok)
+            gate.files(root, provenance_ok, actual, reachable, signing_key_ok,
+                       gate.b_optional_package_policy)
         report = gate.result()
     except (OSError, ValueError, KeyError, TypeError, struct.error) as error:
         if gate:

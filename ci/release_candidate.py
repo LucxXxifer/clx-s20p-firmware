@@ -11,10 +11,12 @@ import stat
 import tarfile
 import tempfile
 import zipfile
+import upstream_sync
 
 
-B_SOURCE_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
-B_SOURCE_URL = "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+UPSTREAM_BASE_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+UPSTREAM_URL = "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+UPSTREAM_REF = "25.12"
 WRAPPER_COMMIT = "d46704afb327fce99e7d770c08fc46b48d5bb1b7"
 B_OPTIONAL_PACKAGE_NAMES = ("lucky", "luci-app-lucky", "luci-i18n-lucky-zh-cn")
 B_OPTIONAL_PACKAGE_REVIEW_SHA256 = "03d11294764d575f08a14d0e260603ca89fbc7532f6c453c291e244415cbd8aa"
@@ -215,7 +217,31 @@ def extract_verified_archive(archive_path, destination):
     return actual
 
 
-def verify_candidate_bundle(root, run_id, run_attempt, build_commit):
+def verify_upstream_resolution(root, expected_commit):
+    if not re.fullmatch(r"[0-9a-f]{40}", str(expected_commit or "")):
+        raise ValueError("exact resolved upstream commit SHA is required")
+    evidence = read_json(Path(root), "provenance/upstream-resolution.json")
+    expected = {
+        "schema_version": 1,
+        "repository": UPSTREAM_URL,
+        "ref": UPSTREAM_REF,
+        "base_commit": UPSTREAM_BASE_COMMIT,
+        "head_commit": expected_commit,
+        "compare_status": "identical" if expected_commit == UPSTREAM_BASE_COMMIT else "ahead",
+        "merge_base": UPSTREAM_BASE_COMMIT,
+        "should_build": True,
+    }
+    if (any(evidence.get(key) != value for key, value in expected.items()) or
+            type(evidence.get("forced")) is not bool or
+            type(evidence.get("previous_attempted")) is not bool or
+            (expected_commit == UPSTREAM_BASE_COMMIT and evidence.get("forced") is not True) or
+            (evidence.get("previous_attempted") is True and evidence.get("forced") is not True)):
+        raise ValueError("upstream resolution evidence does not match the candidate SHA")
+    upstream_sync.validate_previous_comparison(expected_commit, evidence.get("previous_comparison"))
+    return evidence
+
+
+def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_commit):
     root = Path(root)
     build = read_json(root, "reports/build-status.json")
     preservation = read_json(root, "reports/preservation-image.json")
@@ -226,6 +252,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit):
     safety = read_json(root, "reports/image-safety.json")
     fwtool = read_json(root, "inspection/fwtool-metadata.json")
     inventory = read_json(root, "inspection/installed-packages.json")
+    upstream_resolution = verify_upstream_resolution(root, upstream_commit)
 
     if (build.get("status") != "candidate" or build.get("preservation") != "pass" or
             build.get("live_acceptance") != "not-run" or build.get("stable_eligible") is not False or
@@ -258,28 +285,39 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit):
     omission = config_check.get("b_optional_package_omission", {})
     if (config.get("status") != "pass" or config.get("errors") != [] or
             config_check.get("b_optional_packages") != list(B_OPTIONAL_PACKAGE_NAMES) or
-            omission.get("upstream_commit") != B_SOURCE_COMMIT or
+            omission.get("upstream_commit") != upstream_commit or
             omission.get("packages") != list(B_OPTIONAL_PACKAGE_NAMES) or
             omission.get("review_sha256") != B_OPTIONAL_PACKAGE_REVIEW_SHA256):
-        raise ValueError("config gate did not record the pinned B-only omission")
+        raise ValueError("config gate did not record the exact reviewed Lucky omission")
     if source.get("wrapper_checkout_commit") != build_commit:
         raise ValueError("bundle wrapper commit does not match workflow run commit")
-    if (source.get("upstream_commit") != B_SOURCE_COMMIT or
+    if (source.get("upstream_commit") != upstream_commit or
             source.get("wrapper_commit") != WRAPPER_COMMIT):
-        raise ValueError("bundle has the wrong fixed B source commit or wrapper source")
+        raise ValueError("bundle has the wrong resolved upstream commit or wrapper source")
+    if source.get("upstream_resolution") != upstream_resolution:
+        raise ValueError("source provenance does not embed the validated upstream resolution")
     requested = source.get("source_lock", {})
     request_rows = [row for row in requested.get("sources", []) if row.get("role") == "main-source"]
     resolved_rows = [row for row in source.get("sources", [])
-                     if row.get("url", "").removesuffix(".git") == B_SOURCE_URL]
-    if (len(request_rows) != 1 or request_rows[0].get("commit") != B_SOURCE_COMMIT or
-            request_rows[0].get("ref") != "25.12" or
-            request_rows[0].get("url", "").removesuffix(".git") != B_SOURCE_URL or
-            len(resolved_rows) != 1 or resolved_rows[0].get("commit") != B_SOURCE_COMMIT):
-        raise ValueError("requested or resolved main-source is not the fixed B pin")
+                     if row.get("url", "").removesuffix(".git") == UPSTREAM_URL]
+    if (len(request_rows) != 1 or request_rows[0].get("commit") != upstream_commit or
+            request_rows[0].get("ref") != UPSTREAM_REF or
+            request_rows[0].get("url", "").removesuffix(".git") != UPSTREAM_URL or
+            len(resolved_rows) != 1 or resolved_rows[0].get("commit") != upstream_commit):
+        raise ValueError("requested or resolved main-source does not match the exact upstream SHA")
     requested_lock = root / "provenance/requested-sources.lock.json"
     if (not requested_lock.is_file() or requested_lock.is_symlink() or
             hashlib.sha256(requested_lock.read_bytes()).hexdigest() != source.get("source_lock_sha256")):
         raise ValueError("requested source lock hash does not match source provenance")
+    if read_json(root, "provenance/requested-sources.lock.json") != requested:
+        raise ValueError("saved requested source lock differs from embedded provenance")
+    committed_lock = json.loads(Path(__file__).with_name("sources.lock.json").read_text())
+    resolution = upstream_sync.Resolution(
+        upstream_commit, True, upstream_resolution["compare_status"],
+        upstream_resolution["merge_base"], upstream_resolution["forced"],
+        upstream_resolution["previous_attempted"], upstream_resolution.get("previous_comparison"))
+    if requested != upstream_sync.update_lock(committed_lock, resolution):
+        raise ValueError("requested lock differs from reviewed source pins and exact upstream SHA")
     if (safety.get("status") != "pass" or safety.get("supported_devices") != ["clx,s20p"] or
             safety.get("partition_layout") != "existing GPT kernel32MiB/rootfs2GiB" or
             fwtool.get("supported_devices") != ["clx,s20p"] or
@@ -331,7 +369,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit):
         "kmod_count": pkg_check.get("kmods"),
         "luci_app_count": pkg_check.get("luci_apps"),
         "wrapper_commit": build_commit,
-        "upstream_commit": B_SOURCE_COMMIT,
+        "upstream_commit": upstream_commit,
         "source_lock_sha256": source.get("source_lock_sha256"),
         "public_key_sha256": signed["image_trust"]["public_key_sha256"],
     }
@@ -400,7 +438,7 @@ def checksum_lines(directory, exclude=()):
     return "\n".join(rows) + "\n"
 
 
-def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, build_commit):
+def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, build_commit, upstream_commit):
     outer = Path(artifact_dir)
     archive = verify_outer_artifact(outer, run_id, run_attempt)
     output = Path(output_dir)
@@ -410,21 +448,21 @@ def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, bui
     with tempfile.TemporaryDirectory(prefix="s20p-b-release-") as temp:
         extracted = Path(temp) / "bundle"
         extract_verified_archive(archive, extracted)
-        verified = verify_candidate_bundle(extracted, run_id, run_attempt, build_commit)
+        verified = verify_candidate_bundle(extracted, run_id, run_attempt, build_commit, upstream_commit)
         image = extracted / verified["image_path"]
-        image_name = "s20p-B-25.12-9f397975-sysupgrade.bin"
+        image_name = "s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin"
         shutil.copyfile(image, output / image_name)
         archive_name = archive.name
         shutil.copyfile(archive, output / archive_name)
         (output / "archive.SHA256SUMS").write_text(
             f"{sha256_file(output / archive_name)}  {archive_name}\n")
-    guide = f"""# S20P B 25.12 prerelease candidate
+    guide = f"""# S20P A rolling 25.12 prerelease candidate
 
-This is a directly flashable S20P sysupgrade image from GitHub Actions run {run_id} (attempt {run_attempt}), wrapper commit `{build_commit}`, fixed upstream commit `{B_SOURCE_COMMIT}`. It is a prerelease candidate, not a stable release. Hardware boot and migration have not been validated.
+This is a directly flashable S20P sysupgrade image from GitHub Actions run {run_id} (attempt {run_attempt}), wrapper commit `{build_commit}`, resolved upstream commit `{upstream_commit}`. It is a rolling prerelease candidate, not a stable release. Hardware boot and migration have not been validated.
 
 ## Before using it
 
-Keep the current router online until you have read the release notes and verified `SHA256SUMS`. Back up the current router configuration and partitions, and confirm that you have a separate recovery path. Do not restore an old full-device backup over this image. This candidate omits the three built-in Lucky packages; a trusted signed iStore feed was audited, but the available Lucky release is older than the image baseline and its behavior/configuration migration has not been validated.
+Keep the current router online until you have read the release notes and verified `SHA256SUMS`. Back up the current router configuration and partitions, and confirm that you have a separate recovery path. Do not restore an old full-device backup over this image. This candidate omits the three built-in Lucky packages (`lucky`, `luci-app-lucky`, and `luci-i18n-lucky-zh-cn`) under the existing narrowly scoped package review. A trusted signed iStore feed was audited, but the available Lucky release is older than the image baseline and its behavior/configuration migration has not been validated.
 
 ## Verify the download
 
@@ -446,7 +484,7 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
     metadata = {
         "schema_version": 1,
         "run_id": str(run_id), "run_attempt": str(run_attempt),
-        "wrapper_commit": build_commit, "upstream_commit": B_SOURCE_COMMIT,
+        "wrapper_commit": build_commit, "upstream_commit": upstream_commit,
         "image": image_name, "image_sha256": verified["image_sha256"],
         "kernel_abi": verified["kernel_abi"], "package_count": verified["package_count"],
         "kmod_count": verified["kmod_count"], "luci_app_count": verified["luci_app_count"],
@@ -456,20 +494,21 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
     }
     (output / "BUILD-VERIFICATION.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     (output / "SHA256SUMS").write_text(checksum_lines(output, exclude={"SHA256SUMS"}))
-    verify_release_assets(output, run_id=run_id, run_attempt=run_attempt, build_commit=build_commit)
+    verify_release_assets(output, run_id=run_id, run_attempt=run_attempt,
+                          build_commit=build_commit, upstream_commit=upstream_commit)
     return {"image": image_name, "archive": archive.name, "verified": metadata}
 
 
-def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit):
+def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upstream_commit):
     output = Path(output_dir)
     checksums = verify_checksums(output)
     expected_names = {
-        "s20p-B-25.12-9f397975-sysupgrade.bin",
+        "s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin",
         f"s20p-samebuild-{run_id}-{run_attempt}.tar.gz",
         "archive.SHA256SUMS", "INSTALLATION.md", "BUILD-VERIFICATION.json",
     }
     if set(checksums) != expected_names:
-        raise ValueError("release asset set differs from verified B asset set")
+        raise ValueError("release asset set differs from verified rolling candidate asset set")
     archive = output / f"s20p-samebuild-{run_id}-{run_attempt}.tar.gz"
     archive_sum = parse_sha256sums(output / "archive.SHA256SUMS")
     if archive_sum != {archive.name: sha256_file(archive)}:
@@ -477,15 +516,15 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit):
     with tempfile.TemporaryDirectory(prefix="s20p-b-verify-") as temp:
         root = Path(temp) / "bundle"
         extract_verified_archive(archive, root)
-        verified = verify_candidate_bundle(root, run_id, run_attempt, build_commit)
-    image = output / "s20p-B-25.12-9f397975-sysupgrade.bin"
+        verified = verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_commit)
+    image = output / ("s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin")
     if sha256_file(image) != verified["image_sha256"]:
         raise ValueError("direct ROM does not match the same-build archive")
     metadata = read_json(output, "BUILD-VERIFICATION.json")
     if (metadata.get("run_id") != str(run_id) or metadata.get("run_attempt") != str(run_attempt) or
             metadata.get("wrapper_commit") != build_commit or
             metadata.get("image_sha256") != verified["image_sha256"] or
-            metadata.get("upstream_commit") != B_SOURCE_COMMIT or
+            metadata.get("upstream_commit") != upstream_commit or
             metadata.get("live_acceptance") != "not-run" or metadata.get("stable_eligible") is not False):
         raise ValueError("release build verification record does not match exact candidate")
     guide = (output / "INSTALLATION.md").read_text()
@@ -509,21 +548,25 @@ def main():
     prepare.add_argument("--run-id", required=True)
     prepare.add_argument("--run-attempt", required=True)
     prepare.add_argument("--build-commit", required=True)
+    prepare.add_argument("--upstream-commit", required=True)
     verify = sub.add_parser("verify")
     verify.add_argument("output_dir", type=Path)
     verify.add_argument("--run-id", required=True)
     verify.add_argument("--run-attempt", required=True)
     verify.add_argument("--build-commit", required=True)
+    verify.add_argument("--upstream-commit", required=True)
     args = parser.parse_args()
     if args.command == "verify-artifact-zip":
         result = {"archive": verify_artifact_zip(args.zip, args.destination, args.api_digest,
                                                   args.run_id, args.run_attempt)}
     elif args.command == "prepare":
         result = prepare_release_assets(args.artifact_dir, args.output_dir, run_id=args.run_id,
-                                        run_attempt=args.run_attempt, build_commit=args.build_commit)
+                                        run_attempt=args.run_attempt, build_commit=args.build_commit,
+                                        upstream_commit=args.upstream_commit)
     else:
         result = verify_release_assets(args.output_dir, run_id=args.run_id,
-                                       run_attempt=args.run_attempt, build_commit=args.build_commit)
+                                       run_attempt=args.run_attempt, build_commit=args.build_commit,
+                                       upstream_commit=args.upstream_commit)
     print(json.dumps(result, sort_keys=True))
 
 

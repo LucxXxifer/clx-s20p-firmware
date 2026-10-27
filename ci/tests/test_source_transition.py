@@ -55,7 +55,7 @@ class CommittedTransitionTests(unittest.TestCase):
 
 
 class ProvenanceTransitionTests(unittest.TestCase):
-    def run_provenance(self, source_head=B_SOURCE, locked_head=B_SOURCE):
+    def run_provenance(self, source_head=B_SOURCE, locked_head=B_SOURCE, evidence=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             checkout, wrapper, commands = (root / name for name in ("checkout", "wrapper", "commands"))
@@ -86,16 +86,21 @@ else:
             fake_git.chmod(0o755)
             lock = root / "lock.json"
             lock.write_text(json.dumps({"schema_version": 1, "sources": [
-                {"url": SOURCE_URL, "ref": "25.12", "commit": locked_head}]}))
+                {"role": "main-source", "url": SOURCE_URL, "ref": "25.12", "commit": locked_head}]}))
             log = root / "clones.jsonl"
             log.write_text("")
             output = root / "evidence/source-lock.json"
+            upstream_evidence = root / "upstream-resolution.json"
+            if evidence is not None:
+                upstream_evidence.write_text(json.dumps(evidence))
             environment = {**os.environ, "PATH": str(commands) + os.pathsep + os.environ["PATH"],
                            "S20P_GIT_LOG": str(log), "S20P_TEST_SOURCE_URL": SOURCE_URL,
                            "S20P_TEST_SOURCE_HEAD": source_head}
-            result = subprocess.run([sys.executable, str(CI / "provenance.py"), str(checkout),
-                                     "--lock", str(lock), "--wrapper", str(wrapper),
-                                     "--output", str(output)], env=environment,
+            command = [sys.executable, str(CI / "provenance.py"), str(checkout),
+                       "--lock", str(lock), "--wrapper", str(wrapper), "--output", str(output)]
+            if evidence is not None:
+                command.extend(["--upstream-evidence", str(upstream_evidence)])
+            result = subprocess.run(command, env=environment,
                                     capture_output=True, text=True)
             return result, json.loads(output.read_text()) if output.exists() else None
 
@@ -109,7 +114,7 @@ else:
     def test_a_head_is_rejected_even_with_coherent_old_lock(self):
         result, evidence = self.run_provenance(A_SOURCE, A_SOURCE)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("upstream commit drift", result.stderr)
+        self.assertIn("upstream resolution evidence", result.stderr)
         self.assertIsNone(evidence)
 
     def test_unapproved_head_is_rejected(self):
@@ -119,9 +124,68 @@ else:
         self.assertIsNone(evidence)
 
     def test_b_head_with_a_lock_is_rejected(self):
-        result, evidence = self.run_provenance(B_SOURCE, A_SOURCE)
+        head = "a" * 40
+        resolution = {
+            "schema_version": 1,
+            "repository": SOURCE_URL.removesuffix(".git"),
+            "ref": "25.12",
+            "base_commit": B_SOURCE,
+            "head_commit": head,
+            "compare_status": "ahead",
+            "merge_base": B_SOURCE,
+            "should_build": True,
+            "forced": False,
+            "previous_attempted": False,
+        }
+        result, evidence = self.run_provenance(B_SOURCE, head, resolution)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("prepared checkout source drift", result.stderr)
+        self.assertIn("upstream commit drift", result.stderr)
+        self.assertIsNone(evidence)
+
+    def test_daily_descendant_head_records_verified_resolution(self):
+        head = "a" * 40
+        resolution = {
+            "schema_version": 1,
+            "repository": SOURCE_URL.removesuffix(".git"),
+            "ref": "25.12",
+            "base_commit": B_SOURCE,
+            "head_commit": head,
+            "compare_status": "ahead",
+            "merge_base": B_SOURCE,
+            "should_build": True,
+            "forced": False,
+            "previous_attempted": False,
+        }
+        result, evidence = self.run_provenance(head, head, resolution)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(evidence["upstream_commit"], head)
+        self.assertEqual(evidence["upstream_resolution"], resolution)
+        self.assertEqual(evidence["source_lock"]["sources"][0]["commit"], head)
+
+    def test_daily_descendant_head_requires_matching_resolution_evidence(self):
+        head = "a" * 40
+        result, evidence = self.run_provenance(head, head)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("upstream resolution evidence", result.stderr)
+        self.assertIsNone(evidence)
+
+    def test_daily_descendant_head_rejects_forged_merge_base(self):
+        head = "a" * 40
+        resolution = {
+            "schema_version": 1,
+            "repository": SOURCE_URL.removesuffix(".git"),
+            "ref": "25.12",
+            "base_commit": B_SOURCE,
+            "head_commit": head,
+            "compare_status": "ahead",
+            "merge_base": "b" * 40,
+            "should_build": True,
+            "forced": False,
+            "previous_attempted": False,
+        }
+        result, evidence = self.run_provenance(head, head, resolution)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("upstream resolution evidence", result.stderr)
         self.assertIsNone(evidence)
 
 

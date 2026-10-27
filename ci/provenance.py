@@ -9,10 +9,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import source_lock
 
-UPSTREAM = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+UPSTREAM_URL = "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+UPSTREAM_REF = "25.12"
+UPSTREAM_BASE = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+UPSTREAM_COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
 WRAPPER = "d46704afb327fce99e7d770c08fc46b48d5bb1b7"
 ROOT_EXCLUDE = {"bin", "build_dir", "staging_dir", "tmp", "logs", "dl", ".ccache", "output", "action_build", "immortalwrt", ".tools"}
 
@@ -39,6 +43,57 @@ def source(path):
             "commit": git(path, "rev-parse", "HEAD"), "tree": git(path, "rev-parse", "HEAD^{tree}"),
             "tree_hash": hashlib.sha256(git(path, "ls-tree", "-r", "--full-tree", "HEAD").encode()).hexdigest(),
             "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed"}
+
+
+def validate_upstream_resolution(lock, path):
+    rows = lock.get("sources") if isinstance(lock, dict) else None
+    if not isinstance(rows, list):
+        raise ValueError("requested source lock has no source inventory")
+    main = [row for row in rows if isinstance(row, dict) and row.get("role") == "main-source"]
+    if len(main) != 1:
+        raise ValueError("requested source lock requires one main-source")
+    row = main[0]
+    commit = row.get("commit")
+    if (row.get("url", "").removesuffix(".git") != UPSTREAM_URL or
+            row.get("ref") != UPSTREAM_REF or
+            not UPSTREAM_COMMIT_RE.fullmatch(str(commit or "")) or
+            source_lock.lookup(lock, UPSTREAM_URL, UPSTREAM_REF) != commit):
+        raise ValueError("requested main-source does not match exact upstream repository/ref/SHA")
+    if path is None:
+        if commit == UPSTREAM_BASE:
+            return commit, None
+        raise ValueError("upstream resolution evidence is required for a moving source SHA")
+    evidence_path = Path(path)
+    if evidence_path.is_symlink() or not evidence_path.is_file():
+        raise ValueError("regular upstream resolution evidence is required")
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate upstream resolution evidence key: " + key)
+            result[key] = value
+        return result
+    evidence = json.loads(evidence_path.read_text(), object_pairs_hook=unique)
+    expected_status = "identical" if commit == UPSTREAM_BASE else "ahead"
+    expected = {
+        "schema_version": 1,
+        "repository": UPSTREAM_URL,
+        "ref": UPSTREAM_REF,
+        "base_commit": UPSTREAM_BASE,
+        "head_commit": commit,
+        "compare_status": expected_status,
+        "merge_base": UPSTREAM_BASE,
+        "should_build": True,
+    }
+    if (not isinstance(evidence, dict) or
+            any(evidence.get(key) != value for key, value in expected.items()) or
+            type(evidence.get("forced")) is not bool or
+            type(evidence.get("previous_attempted")) is not bool or
+            (commit == UPSTREAM_BASE and evidence.get("forced") is not True) or
+            (commit != UPSTREAM_BASE and evidence.get("previous_attempted") is True and
+             evidence.get("forced") is not True)):
+        raise ValueError("upstream resolution evidence does not bind the exact reviewed descendant SHA")
+    return commit, evidence
 
 
 def file_manifest(root):
@@ -87,15 +142,20 @@ def main():
     parser.add_argument("checkout", type=Path)
     parser.add_argument("--lock", type=Path)
     parser.add_argument("--wrapper", type=Path)
+    parser.add_argument("--upstream-evidence", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     if str(args.checkout) == "record-clone":
         parser.error("record-clone requires its own CLI path")
-    if git(args.checkout, "rev-parse", "HEAD") != UPSTREAM:
+    lock = json.loads(args.lock.read_text())
+    try:
+        expected_upstream, resolution = validate_upstream_resolution(lock, args.upstream_evidence)
+    except (ValueError, source_lock.LockError, OSError, json.JSONDecodeError) as error:
+        raise SystemExit("upstream resolution evidence rejected: " + str(error))
+    if git(args.checkout, "rev-parse", "HEAD") != expected_upstream:
         raise SystemExit("upstream commit drift")
     inputs, repos = file_manifest(args.checkout)
-    lock = json.loads(args.lock.read_text())
     for row in repos:
         if source_lock.lookup(lock, row["url"]) != row["commit"]:
             raise SystemExit("prepared checkout source drift: " + row["url"])
@@ -116,7 +176,8 @@ def main():
             raise SystemExit("multiple commits used for one locked repository: " + row["url"])
         sources[row["url"]] = row
     data = {"wrapper_commit": WRAPPER, "wrapper_checkout_commit": git(args.wrapper, "rev-parse", "HEAD"),
-            "upstream_commit": UPSTREAM, "build_fingerprint": fingerprint,
+            "upstream_commit": expected_upstream, "upstream_resolution": resolution,
+            "build_fingerprint": fingerprint,
             "wrapper_tree_hash": hashlib.sha256(json.dumps(wrapper_files, sort_keys=True).encode()).hexdigest(),
             "prepared_tree_hash": hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest(),
             "sources": sorted(sources.values(), key=lambda row: row["name"]), "source_lock_sha256": sha(args.lock),

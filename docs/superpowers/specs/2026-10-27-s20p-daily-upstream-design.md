@@ -1,6 +1,6 @@
 # S20P daily upstream candidate design
 
-**Status:** Design for review. No workflow or source-validation behavior is changed by this document.
+**Status:** Approved by the user on 2026-10-27; implementation and cloud validation tracked in the matching plan. The current-state section below records the pre-promotion snapshot.
 
 ## Goal
 
@@ -24,7 +24,7 @@ Use the reviewed B build line as the new rolling S20P A candidate line. GitHub A
 
 - Run on GitHub-hosted `ubuntu-24.04` from default `main` at the existing daily UTC schedule, shown to the user as 04:20 Asia/Shanghai.
 - Resolve the current upstream `25.12` head by exact 40-character commit SHA. Require it to be identical to or a descendant of the reviewed B starting point; reject missing, malformed, diverged, or regressed upstream identities.
-- If scheduled and the head equals the committed source pin, finish successfully without building or uploading large artifacts. A manual dispatch builds the current head so the workflow can be tested or intentionally rerun.
+- If scheduled and the head equals the committed source pin, finish successfully without building or uploading large artifacts. A new manual dispatch with `force=true` builds the current head so the workflow can be tested or intentionally retried. Actions' `Re-run jobs` is rejected because it reuses the older run identity.
 - For an advanced head, create a run-local source lock that changes only the main-source SHA. Keep the other 38 Git pins and all private local configuration out of the update. Record the resolved SHA and comparison evidence in the run provenance; do not push generated lock changes back to the repository.
 - Compile the exact resolved SHA on GitHub Actions. Preserve the existing package, source, signing, ABI, security, image-safety, and preservation gates. Keep the narrowly approved Lucky omission limited to `lucky`, `luci-app-lucky`, and `luci-i18n-lucky-zh-cn`.
 - Publish a run- and upstream-SHA-labeled rolling A prerelease only when every existing gate passes and all source-specific reviews still match. Any new or changed difference, security-removal review mismatch, package-world change, or provenance mismatch retains diagnostics and blocks release; do not auto-approve it.

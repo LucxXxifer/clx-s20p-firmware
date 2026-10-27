@@ -18,6 +18,7 @@ sys.path.insert(0, str(SCRIPT.parent))
 PROVENANCE_SPEC = importlib.util.spec_from_file_location("preservation_provenance", SCRIPT.with_name("provenance.py"))
 provenance = importlib.util.module_from_spec(PROVENANCE_SPEC)
 PROVENANCE_SPEC.loader.exec_module(provenance)
+UPSTREAM_COMMIT = "03eb30617955519e35845838c6255ebe687eb717"
 
 
 def dtb(phandle=1, model="CLX S20P"):
@@ -76,7 +77,7 @@ class PreservationFixtures(unittest.TestCase):
         self.policy = {
             "schema_version": 1,
             "counts": {"packages": 4, "kmods": 1, "luci_apps": 1, "mtk_symbols": 3},
-            "wrapper_commit": "c" * 40, "upstream_commit": "d" * 40,
+            "wrapper_commit": "c" * 40, "upstream_commit": UPSTREAM_COMMIT,
             "original_kernel": self.old_kernel, "kernel_version": "6.12.112",
             "original_fingerprint": "e" * 64,
             "required_packages": [],
@@ -101,10 +102,16 @@ class PreservationFixtures(unittest.TestCase):
         (self.baseline / "original-board.dtb").write_bytes(dtb())
         self.lock = self.base / "source-lock.json"
         self.write_json(self.lock, {
-            "wrapper_commit": "c" * 40, "upstream_commit": "d" * 40,
+            "wrapper_commit": "c" * 40, "upstream_commit": UPSTREAM_COMMIT,
             "wrapper_tree_hash": "1" * 64, "build_fingerprint": "2" * 64,
-            "sources": [{"name": "packages", "url": "https://example.invalid/source",
-                         "commit": "3" * 40, "tree_hash": "4" * 64}],
+            "sources": [
+                {"name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
+                 "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git",
+                 "role": "main-source", "ref": "25.12", "commit": UPSTREAM_COMMIT,
+                 "tree_hash": "5" * 64},
+                {"name": "packages", "url": "https://example.invalid/source",
+                 "commit": "3" * 40, "tree_hash": "4" * 64},
+            ],
         })
         fixed = self.rootfs / "etc/config/honk"
         fixed.parent.mkdir(parents=True)
@@ -277,7 +284,8 @@ class PreservationFixtures(unittest.TestCase):
 
     def install_source_records(self):
         lock = json.loads(self.lock.read_text())
-        lock["sources"] = [
+        main_source = lock["sources"][0]
+        lock["sources"] = [main_source,
             self.real_source("one", "https://github.com/One/Packages.git"),
             self.real_source("two", "https://github.com/Two/Packages.git"),
         ]
@@ -521,7 +529,8 @@ class PreservationFixtures(unittest.TestCase):
         self.assertEqual(result["status"], "review_required")
         pending = [d for d in result["differences"] if d["disposition"] == "review_required"]
         approval = self.base / "approved.json"
-        self.write_json(approval, {"approved": [{"id": d["id"], "reason": "explicit fixture review"}
+        self.write_json(approval, {"upstream_commit": UPSTREAM_COMMIT,
+                                  "approved": [{"id": d["id"], "reason": "explicit fixture review"}
                                                for d in pending]})
         code, result = self.invoke(extra=["--approve-differences", str(approval)])
         self.assertEqual(code, 0, result)
@@ -530,7 +539,8 @@ class PreservationFixtures(unittest.TestCase):
         (self.rootfs / "etc/config/honk").write_bytes(b"enabled=1\n")
         _, first = self.invoke()
         approval = self.base / "approved.json"
-        self.write_json(approval, {"approved": [{"id": d["id"], "reason": "review"}
+        self.write_json(approval, {"upstream_commit": UPSTREAM_COMMIT,
+                                  "approved": [{"id": d["id"], "reason": "review"}
                                                for d in first["differences"]]})
         (self.rootfs / "etc/config/honk").write_bytes(b"enabled=2\n")
         code, result = self.invoke(extra=["--approve-differences", str(approval)])
@@ -603,11 +613,11 @@ class PreservationFixtures(unittest.TestCase):
 
     def test_actual_provenance_sources_with_equal_basenames_pass(self):
         lock = self.install_source_records()
-        self.assertEqual([item["name"] for item in lock["sources"]],
+        self.assertEqual([item["name"] for item in lock["sources"][1:]],
                          ["github.com/one/packages", "github.com/two/packages"])
         code, result = self.invoke()
         self.assertEqual(code, 0, result)
-        self.assertEqual(result["checks"]["source_lock"]["recorded_sources"], 2)
+        self.assertEqual(result["checks"]["source_lock"]["recorded_sources"], 3)
 
     def test_actual_provenance_duplicate_source_name_fails(self):
         lock = self.install_source_records()
@@ -627,7 +637,7 @@ class PreservationFixtures(unittest.TestCase):
 
     def test_actual_provenance_git_tree_id_is_not_tree_hash(self):
         lock = self.install_source_records()
-        lock["sources"][0]["tree_hash"] = lock["sources"][0]["tree"]
+        lock["sources"][1]["tree_hash"] = lock["sources"][1]["tree"]
         self.write_json(self.lock, lock)
         code, result = self.invoke()
         self.assertEqual(code, 1, result)

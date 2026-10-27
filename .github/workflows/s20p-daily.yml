@@ -1,18 +1,30 @@
-name: S20P locked B 25.12 candidate
-run-name: S20P B 9f397975 · 10-17 baseline · ${{ github.run_number }}
+name: S20P rolling A 25.12 candidate
+run-name: S20P rolling A 25.12 · ${{ github.run_number }}
 
 on:
   schedule:
     # GitHub schedules use UTC: 20:20 UTC = next day 04:20 Asia/Shanghai.
     - cron: '20 20 * * *'
   workflow_dispatch:
+    inputs:
+      force:
+        description: Retry the exact current upstream head even if the last attempt was recorded
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: s20p-locked-daily
+  group: s20p-rolling-daily
   cancel-in-progress: false
+
+env:
+  UPSTREAM_REPOSITORY: chasey-dev/immortalwrt-mt798x-rebase
+  UPSTREAM_REF: 25.12
+  UPSTREAM_BASE: 9f397975c7b47ce6986a6e39529d2f72fd5c729d
 
 jobs:
   build:
@@ -20,32 +32,151 @@ jobs:
     timeout-minutes: 360
     outputs:
       publish_candidate: ${{ steps.build.outputs.publish_candidate }}
-      artifact_digest: ${{ steps.upload_candidate.outputs['artifact-digest'] }}
+      artifact_digest: ${{ steps.upload_candidate.outputs.artifact-digest }}
+      upstream_commit: ${{ steps.resolve.outputs.upstream_commit }}
+      should_build: ${{ steps.resolve.outputs.should_build }}
     steps:
-      - name: Checkout build policy
+      - name: Checkout rolling build policy
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Run focused policy tests
+
+      - name: Resolve exact upstream head and prepare run-local inputs
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ (github.event_name == 'workflow_dispatch' && inputs.force == true) && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          [[ $GITHUB_RUN_ATTEMPT == 1 ]] || {
+            echo 'Use Run workflow with force=true for a retry; Actions reruns reuse an older run identity.' >&2
+            exit 1
+          }
+          head=$(gh api "repos/${UPSTREAM_REPOSITORY}/git/ref/heads/${UPSTREAM_REF}" --jq '.object.sha')
+          compare=$(gh api "repos/${UPSTREAM_REPOSITORY}/compare/${UPSTREAM_BASE}...${head}")
+          status=$(jq -er '.status' <<<"$compare")
+          merge_base=$(jq -er '.merge_base_commit.sha' <<<"$compare")
+          [[ $head =~ ^[0-9a-f]{40}$ && $merge_base =~ ^[0-9a-f]{40}$ ]]
+
+          previous_state=''
+          workflow_id=''
+          runs=''
+          previous_runs=''
+          if workflow_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/s20p-daily.yml" --jq '.id'); then
+            if runs=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow_id}/runs?branch=main&per_page=100" | jq -s '.[].workflow_runs[]'); then
+              if previous_runs=$(jq -sc --arg sha "$GITHUB_SHA" --arg current "$GITHUB_RUN_ID" \
+                '[.[] | select(.head_sha == $sha and (.id | tostring) != $current and
+                  (.event == "schedule" or .event == "workflow_dispatch"))] |
+                 sort_by(.run_number) | reverse | .[]' <<<"$runs"); then
+                :
+              else
+                previous_runs=''
+                echo 'Previous run list could not be parsed; state lookup unavailable; rebuilding without prior state.' >&2
+              fi
+            else
+              echo 'Previous run list API unavailable; state lookup unavailable; rebuilding without prior state.' >&2
+            fi
+          else
+            echo 'Workflow API unavailable; state lookup unavailable; rebuilding without prior state.' >&2
+          fi
+          # A rejected or interrupted run has no state; retain the last verifiable head.
+          while IFS= read -r previous_run; do
+            [[ -n $previous_run ]] || continue
+            # Unsupported reruns must not hide the original first-attempt state.
+            previous_attempt=1
+            if previous_id=$(jq -er '.id' <<<"$previous_run"); then
+              if previous_artifacts=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${previous_id}/artifacts"); then
+                expected_name="s20p-upstream-state-${GITHUB_SHA}-${previous_id}-${previous_attempt}"
+                if state_record=$(jq -ce --arg name "$expected_name" \
+                  '[.artifacts[] | select(.name == $name and .expired == false)] | if length == 1 then .[0] else empty end' \
+                  <<<"$previous_artifacts"); then
+                  if state_id=$(jq -er '.id' <<<"$state_record") && state_digest=$(jq -er '.digest' <<<"$state_record"); then
+                    state_zip="$RUNNER_TEMP/previous-upstream-state-${previous_id}-${previous_attempt}.zip"
+                    state_json="$RUNNER_TEMP/previous-upstream-state-${previous_id}-${previous_attempt}.json"
+                    if gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${state_id}/zip" > "$state_zip" && \
+                      python3 ci/upstream_sync.py verify-state-zip "$state_zip" \
+                        --api-digest "$state_digest" --wrapper-commit "$GITHUB_SHA" \
+                        --destination "$state_json"; then
+                      previous_state="$state_json"
+                      break
+                    else
+                      echo 'Previous state artifact failed retrieval or verification; checking earlier runs.' >&2
+                    fi
+                  else
+                    echo 'Previous state artifact metadata is invalid; checking earlier runs.' >&2
+                  fi
+                else
+                  echo 'Previous state artifact is missing, expired, or ambiguous; checking earlier runs.' >&2
+                fi
+              else
+                echo 'Previous artifact-list API unavailable; checking earlier runs.' >&2
+              fi
+            else
+              echo 'Previous run metadata is invalid; checking earlier runs.' >&2
+            fi
+          done <<<"$previous_runs"
+
+          prepare_args=(
+            prepare --lock ci/sources.lock.json --baseline ci/baseline
+            --head "$head" --status "$status" --merge-base "$merge_base"
+            --wrapper-commit "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/s20p-inputs"
+          )
+          [[ $FORCE == true ]] && prepare_args+=(--force)
+          if [[ -n $previous_state ]]; then
+            prepare_args+=(--previous-state "$previous_state")
+            previous_head=$(jq -er '.upstream_commit' "$previous_state")
+            if [[ $previous_head != "$head" ]]; then
+              previous_compare=$(gh api "repos/${UPSTREAM_REPOSITORY}/compare/${previous_head}...${head}")
+              prepare_args+=(
+                --previous-status "$(jq -er '.status' <<<"$previous_compare")"
+                --previous-merge-base "$(jq -er '.merge_base_commit.sha' <<<"$previous_compare")"
+              )
+            fi
+          fi
+          result=$(python3 ci/upstream_sync.py "${prepare_args[@]}")
+          {
+            echo "upstream_commit=$(jq -er '.upstream_commit' <<<"$result")"
+            echo "should_build=$(jq -er '.should_build' <<<"$result")"
+            echo "previous_attempted=$(jq -er '.previous_attempted' <<<"$result")"
+            echo "inputs_dir=$(jq -er '.inputs_dir' <<<"$result")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run policy and shell tests
+        id: tests
         run: |
           python3 -m unittest discover -s ci/tests -v
           bash ci/tests/test_network.sh
           bash -n ci/build.sh ci/capture.sh ci/setup-runner.sh build.sh
+
       - name: Install reviewed runner dependencies
+        if: ${{ steps.resolve.outputs.should_build == 'true' }}
         run: bash ci/setup-runner.sh
+
       - name: Build and preserve same-build outputs
         id: build
-        run: bash ci/build.sh
-      - name: Audit all evidence before upload
-        if: ${{ always() && !cancelled() }}
+        if: ${{ steps.resolve.outputs.should_build == 'true' }}
+        continue-on-error: true
+        env:
+          S20P_SOURCE_LOCK: ${{ steps.resolve.outputs.inputs_dir }}/sources.lock.json
+          S20P_BASELINE_DIR: ${{ steps.resolve.outputs.inputs_dir }}/baseline
+          S20P_UPSTREAM_EVIDENCE: ${{ steps.resolve.outputs.inputs_dir }}/upstream-resolution.json
+          S20P_UPSTREAM_COMMIT: ${{ steps.resolve.outputs.upstream_commit }}
+        run: |
+          echo 'build_started=true' >> "$GITHUB_OUTPUT"
+          bash ci/build.sh
+
+      - name: Audit all evidence before retention
         id: audit
+        if: ${{ always() && steps.resolve.outputs.should_build == 'true' }}
+        continue-on-error: true
         run: |
           if [[ -d output ]]; then
             bash ci/capture.sh --audit-output "$PWD/output"
             echo 'safe=true' >> "$GITHUB_OUTPUT"
           fi
-      - name: Upload build evidence
-        if: ${{ always() && !cancelled() && steps.audit.outputs.safe == 'true' }}
+
+      - name: Upload same-build evidence
+        if: ${{ always() && steps.resolve.outputs.should_build == 'true' && steps.audit.outcome == 'success' && steps.audit.outputs.safe == 'true' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: s20p-evidence-${{ github.run_id }}-${{ github.run_attempt }}
@@ -64,44 +195,83 @@ jobs:
             output/inspection/fwtool-metadata.json
             output/SHA256SUMS
           include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 30
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload validated candidate bundle
         id: upload_candidate
-        if: ${{ success() && steps.build.outputs.publish_candidate == 'true' }}
+        if: ${{ steps.build.outcome == 'success' && steps.audit.outcome == 'success' && steps.build.outputs.publish_candidate == 'true' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: s20p-candidate-${{ github.run_id }}-${{ github.run_attempt }}
           path: output/release/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
 
-  publish-b-prerelease:
+      - name: Record exact run state
+        id: record_state
+        if: ${{ always() && steps.resolve.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/state"
+          if [[ '${{ steps.build.outputs.build_started }}' != 'true' ]]; then
+            outcome=skipped
+            started=false
+          elif [[ '${{ steps.build.outcome }}' == 'success' && '${{ steps.audit.outcome }}' == 'success' && '${{ steps.upload_candidate.outcome }}' == 'success' ]]; then
+            outcome=success
+            started=true
+          else
+            outcome=failure
+            started=true
+          fi
+          python3 ci/upstream_sync.py record-state \
+            --output "$RUNNER_TEMP/state/upstream-state.json" \
+            --wrapper-commit "$GITHUB_SHA" \
+            --upstream-commit "${{ steps.resolve.outputs.upstream_commit }}" \
+            --build-started "$started" --outcome "$outcome" \
+            --previous-attempted '${{ steps.resolve.outputs.previous_attempted }}' \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Upload exact run state
+        if: ${{ always() && steps.record_state.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: s20p-upstream-state-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/state/upstream-state.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Fail if a build or audit did not pass
+        if: ${{ always() && (steps.tests.outcome != 'success' || (steps.resolve.outputs.should_build == 'true' && (steps.build.outcome != 'success' || steps.audit.outcome != 'success'))) }}
+        run: exit 1
+
+  publish-rolling-a-prerelease:
     needs: build
-    if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/s20p-b-25-12' }}
+    if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: write
     steps:
-      - name: Checkout the exact wrapper commit
+      - name: Checkout exact rolling wrapper commit
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Verify exact run artifact and prepare release assets
+
+      - name: Verify exact artifact and prepare release assets
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           GH_RUN_ID: ${{ github.run_id }}
           GH_RUN_ATTEMPT: ${{ github.run_attempt }}
           GH_BUILD_COMMIT: ${{ github.sha }}
+          GH_UPSTREAM_COMMIT: ${{ needs.build.outputs.upstream_commit }}
           GH_EXPECTED_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
         run: |
           set -euo pipefail
           artifact_name="s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
-          api="repos/${GH_REPO}/actions/runs/${GH_RUN_ID}/artifacts"
-          response=$(gh api "$api")
+          response=$(gh api "repos/${GH_REPO}/actions/runs/${GH_RUN_ID}/artifacts")
           matches=$(jq --arg name "$artifact_name" --arg run "$GH_RUN_ID" --arg sha "$GH_BUILD_COMMIT" \
             '[.artifacts[] | select(.name == $name and .expired == false and
               (.workflow_run.id | tostring) == $run and .workflow_run.head_sha == $sha)]' <<<"$response")
@@ -114,37 +284,41 @@ jobs:
           [[ $api_digest == "sha256:$expected_digest" ]]
           artifact_zip="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}.zip"
           artifact_dir="$RUNNER_TEMP/s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
-          assets_dir="$RUNNER_TEMP/s20p-b-release-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
+          assets_dir="$RUNNER_TEMP/s20p-a-release-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
           gh api "repos/${GH_REPO}/actions/artifacts/${artifact_id}/zip" > "$artifact_zip"
           python3 ci/release_candidate.py verify-artifact-zip "$artifact_zip" "$artifact_dir" \
             --api-digest "$api_digest" --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT"
           python3 ci/release_candidate.py prepare "$artifact_dir" "$assets_dir" \
-            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" --build-commit "$GH_BUILD_COMMIT"
+            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" \
+            --build-commit "$GH_BUILD_COMMIT" --upstream-commit "$GH_UPSTREAM_COMMIT"
           python3 ci/release_candidate.py verify "$assets_dir" \
-            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" --build-commit "$GH_BUILD_COMMIT"
-          printf '%s\n' "$assets_dir" > "$RUNNER_TEMP/s20p-b-assets-dir"
-      - name: Publish verified prerelease
+            --run-id "$GH_RUN_ID" --run-attempt "$GH_RUN_ATTEMPT" \
+            --build-commit "$GH_BUILD_COMMIT" --upstream-commit "$GH_UPSTREAM_COMMIT"
+          printf '%s\n' "$assets_dir" > "$RUNNER_TEMP/s20p-a-assets-dir"
+
+      - name: Publish verified rolling A prerelease
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           GH_RUN_ID: ${{ github.run_id }}
           GH_RUN_ATTEMPT: ${{ github.run_attempt }}
           GH_BUILD_COMMIT: ${{ github.sha }}
+          GH_UPSTREAM_COMMIT: ${{ needs.build.outputs.upstream_commit }}
         run: |
           set -euo pipefail
-          assets_dir=$(cat "$RUNNER_TEMP/s20p-b-assets-dir")
+          assets_dir=$(cat "$RUNNER_TEMP/s20p-a-assets-dir")
           (cd "$assets_dir" && sha256sum -c SHA256SUMS)
-          tag="s20p-b-25.12-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
-          cat > release-notes.md <<'NOTES'
-          S20P B 25.12 prerelease candidate. Candidate assets were checked against the same-run GitHub artifact digest, ZIP CRC, internal checksums, source pins, signed feeds, image metadata, ABI and preservation report.
+          tag="s20p-a-25.12-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}-${GH_UPSTREAM_COMMIT:0:8}"
+          cat > release-notes.md <<NOTES
+          S20P rolling A 25.12 prerelease candidate.
 
-          This is not a stable release. Live hardware boot and migration have not been validated. Lucky and its LuCI packages are excluded to avoid an unavailable source archive. The signed iStore feed offers Lucky packages for S20P architecture, but its core version is older than the captured baseline; configuration migration and runtime compatibility are unverified.
-
-          The release contains a directly flashable S20P sysupgrade .bin, the complete same-build evidence archive, checksums, build verification metadata and installation instructions. It is not bit-identical to the historical image.
+          Upstream commit: ${GH_UPSTREAM_COMMIT}
+          Wrapper commit: ${GH_BUILD_COMMIT}
+          The candidate passed same-build package, signed-feed, source, ABI, image-safety and preservation checks. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
           NOTES
           shopt -s nullglob
           assets=("$assets_dir"/*)
           [[ ${#assets[@]} == 6 ]]
           gh release create "$tag" "${assets[@]}" --target "$GH_BUILD_COMMIT" \
-            --title "S20P B 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}" \
+            --title "S20P rolling A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}" \
             --notes-file release-notes.md --prerelease --latest=false

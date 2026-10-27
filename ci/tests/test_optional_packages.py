@@ -5,6 +5,7 @@ import importlib.util
 import json
 from pathlib import Path
 import re
+import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -30,11 +31,12 @@ class OptionalPackagePolicyTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         return Path(temporary.name) / name
 
-    def load(self, source_lock=None, review=None):
+    def load(self, source_lock=None, review=None, upstream_evidence=None):
         return preservation.load_b_optional_package_policy(
             self.baseline,
             source_lock or self.source_lock,
             review_path=review or self.review,
+            upstream_evidence_path=upstream_evidence,
         )
 
     def test_review_is_bound_to_fixed_b_source_and_exact_baseline_records(self):
@@ -45,6 +47,23 @@ class OptionalPackagePolicyTests(unittest.TestCase):
             set(preservation.B_OPTIONAL_PACKAGE_NAMES),
         )
         self.assertGreater(len(review["removed_records"]), 0)
+
+    def test_fixed_b_approvals_are_not_reused_for_a_moving_upstream_head(self):
+        with tempfile.TemporaryDirectory() as temp:
+            baseline = Path(temp) / "baseline"
+            shutil.copytree(self.baseline, baseline)
+            policy_path = baseline / "policy.json"
+            policy = json.loads(policy_path.read_text())
+            policy["upstream_commit"] = "a" * 40
+            policy_path.write_text(json.dumps(policy, indent=2) + "\n")
+            checksums_path = baseline / "baseline-sha256.json"
+            checksums = json.loads(checksums_path.read_text())
+            checksums["policy.json"] = hashlib.sha256(policy_path.read_bytes()).hexdigest()
+            checksums_path.write_text(json.dumps(checksums, indent=2) + "\n")
+            approval = Path(temp) / "approved-differences.json"
+            approval.write_text(json.dumps({"approved": [{"id": "b" * 64, "reason": "fixed-B review"}]}))
+            gate = preservation.Gate("config", baseline, approval)
+            self.assertEqual(gate.approvals, {})
 
     def test_a_source_does_not_receive_the_b_omission(self):
         request = json.loads(self.source_lock.read_text())
@@ -72,6 +91,70 @@ class OptionalPackagePolicyTests(unittest.TestCase):
         path.write_text(json.dumps(resolved))
         with self.assertRaisesRegex(ValueError, "resolved main-source"):
             self.load(source_lock=path)
+
+    def test_native_resolved_source_needs_exact_checkout_not_a_branch_field(self):
+        request = json.loads(self.source_lock.read_text())
+        resolved = {
+            "upstream_commit": preservation.B_SOURCE_COMMIT,
+            "source_lock": request,
+            "sources": [{
+                "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+                "commit": preservation.B_SOURCE_COMMIT,
+                "tree_hash": "b" * 64,
+            }],
+        }
+        path = self.temporary_path("native-resolved-source-lock.json")
+        path.write_text(json.dumps(resolved))
+        self.assertEqual(self.load(source_lock=path)["upstream_commit"], preservation.B_SOURCE_COMMIT)
+
+    def test_descendant_upstream_uses_only_the_pinned_lucky_omission(self):
+        head = "a" * 40
+        request = json.loads(self.source_lock.read_text())
+        main = next(row for row in request["sources"] if row.get("role") == "main-source")
+        main["commit"] = head
+        path = self.temporary_path("daily-source-lock.json")
+        path.write_text(json.dumps(request))
+        evidence = {
+            "schema_version": 1,
+            "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+            "ref": "25.12",
+            "base_commit": preservation.B_SOURCE_COMMIT,
+            "head_commit": head,
+            "compare_status": "ahead",
+            "merge_base": preservation.B_SOURCE_COMMIT,
+            "should_build": True,
+            "forced": False,
+            "previous_attempted": False,
+        }
+        evidence_path = self.temporary_path("upstream-resolution.json")
+        evidence_path.write_text(json.dumps(evidence))
+        policy = self.load(source_lock=path, upstream_evidence=evidence_path)
+        self.assertEqual(policy["upstream_commit"], head)
+        self.assertEqual(policy["package_names"], list(preservation.B_OPTIONAL_PACKAGE_NAMES))
+
+    def test_descendant_upstream_requires_matching_compare_evidence(self):
+        head = "a" * 40
+        request = json.loads(self.source_lock.read_text())
+        main = next(row for row in request["sources"] if row.get("role") == "main-source")
+        main["commit"] = head
+        path = self.temporary_path("daily-source-lock.json")
+        path.write_text(json.dumps(request))
+        evidence = {
+            "schema_version": 1,
+            "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+            "ref": "25.12",
+            "base_commit": preservation.B_SOURCE_COMMIT,
+            "head_commit": head,
+            "compare_status": "ahead",
+            "merge_base": "b" * 40,
+            "should_build": True,
+            "forced": False,
+            "previous_attempted": False,
+        }
+        evidence_path = self.temporary_path("upstream-resolution.json")
+        evidence_path.write_text(json.dumps(evidence))
+        with self.assertRaisesRegex(ValueError, "upstream compare evidence"):
+            self.load(source_lock=path, upstream_evidence=evidence_path)
 
     def test_image_source_gate_rejects_a_b_claim_without_resolved_b_source(self):
         policy = preservation.read_json(self.baseline / "policy.json")

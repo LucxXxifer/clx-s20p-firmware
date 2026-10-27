@@ -1,6 +1,10 @@
-# B：固定 chasey 25.12 來源更新
+# 初始 B 來源轉換紀錄與 rolling policy
 
-B 主 source 固定為 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`，只更新 A 的 `03eb30617955519e35845838c6255ebe687eb717`。A wrapper commit `2e6371c4a4801961cf88f2094224e1bb82ef4825`／run `40095658212` 的 release ref、bundle、來源與驗收證據獨立保留。B 不覆蓋 A，也不能借用 A 的套件簽名或同批 kmod。
+本文件的 compare、CA 移除和 package 差異內容記錄 **B 最初鎖定建置**，不是把未來上游差異預先批准。GitHub `main` 的 rolling workflow 以 `chasey-dev/immortalwrt-mt798x-rebase@25.12` 的 `9f397975c7b47ce6986a6e39529d2f72fd5c729d` 為唯一起點；每次從 GitHub compare 取得一個完整 SHA，確認其為此起點的 fast-forward descendant，並在 runner 暫存目錄生成精確 source lock。若有新差異，既有 preservation、package、ABI、source、簽章與安全 gate 仍逐項檢查，任何未審查差異都會阻止候選發布。
+
+固定 A 10/17 release `s20p-candidate-40095658212-1` 與初始 B candidate release `s20p-b-25.12-candidate-40420056051-1` 保留原始 assets 和校驗碼。rolling 候選只以獨立 prerelease 發布，不能覆蓋這兩個 release，也不能重用不同 run 的 signing key、feed 或 kmod。
+
+B 初始 source 固定為 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`，只更新 A 的 `03eb30617955519e35845838c6255ebe687eb717`。A wrapper commit `2e6371c4a4801961cf88f2094224e1bb82ef4825`／run `40095658212` 的 release ref、bundle、來源與驗收證據獨立保留。B 不覆蓋 A，也不能借用 A 的套件簽名或同批 kmod。
 
 這次 A/B 都是 25.12、Linux 6.12.112、APK；不是 SmartRouterZone 24.10/6.6 到另一套系統的遷移。B 沒有使用不含 S20P 適配的 `rework-24.10` 分支。
 
@@ -38,6 +42,6 @@ B新增僅限這兩條原記錄的source-bound security_removal審核：綁定�
 
 ## 候選與驗收範圍
 
-目前這是 B 建置配置，不是已驗收的 B ROM。A自動與本機成品檢查通過亦不代表stable。B需有獨立run／bundle／公鑰／完整matching feed；不硬套A或原ROM的ABI／fingerprint。GitHub workflow保留所有gate及default-branch發佈限制，在獨立B branch手動測試不會自行發release。
+初始 B 已由 Actions run `40420056051` 完成編譯及成品靜態驗證，並發布為獨立 prerelease；尚未完成 B 實機驗收。固定 A 已有基本實機及 USB 驗證，仍不代表長期 stable。每個候選都有獨立run／bundle／公鑰／完整matching feed，不硬套A或原ROM的ABI／fingerprint。升級後的 rolling workflow 只在 default `main` 通過全部 gates 時發布新 prerelease；保留的 B branch 是歷史來源。
 
 完成所有成品審查後仍需上機驗證USB／HiLink、全部網口、Wi-Fi、DNS／透明代理、Tailscale、Docker與重啟。`live_acceptance=not-run`、`stable_eligible=false`保留至實機驗收，不隨source更新或編譯成功改稱穩定版。

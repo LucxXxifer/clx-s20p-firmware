@@ -1,4 +1,8 @@
-> **CLX-S20P 專用每日重建分支**：固定 10/17 的上游基準，保留原 pipeline，新增 HiLink／ipset／ArkBridge Python 依賴。使用說明、限制與驗收見 [README_AUTOBUILD.md](README_AUTOBUILD.md)。原作者說明保留如下。
+> **CLX-S20P 固件線**：GitHub `main` 是 chasey ImmortalWrt 25.12 的每日上游候選編譯線；每日 04:20（Asia/Shanghai）檢查，僅在上游有新提交時建置，且只有全部差異、安全、套件與簽章檢查通過才建立 prerelease。公開庫使用 GitHub-hosted 標準 Linux runner，無須付費會員或本機 AI 任務。
+>
+> **固定下載版 A（10/17）**：[GitHub release 與下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)／[固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17)。此 release 保留原成品、校驗碼及說明；rolling `main` 不會改寫它。既有 B 候選也保留：[B 25.12 candidate](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。
+>
+> 每日流程、候選發布規則與驗收限制見 [README_AUTOBUILD.md](README_AUTOBUILD.md)。原作者的一般編譯說明保留如下。
 
 ---
 
@@ -61,32 +65,13 @@ ADD_CONFIG_FRAGMENTS=docker_deps ./build.sh gemtek_w1701k_immwrt config_preview
 REMOVE_CONFIG_FRAGMENTS=proxy ./build.sh x64_immwrt config_preview
 ```
 
-GitHub Actions 的手动构建也提供 `add_fragments` 与 `remove_fragments` 输入项，语义与上述环境变量一致。
+原始 `wrt_release` 的 GitHub Actions 手动构建曾提供 `add_fragments` 与 `remove_fragments` 输入项；本仓库現行的 S20P rolling workflow 不會透過這些輸入改動 package 選擇。
 
 编译完成后，脚本会从 `<BUILD_DIR>/bin/targets/` 收集固件文件到仓库根目录的 `firmware/`。每次完整构建前会清理旧的目标固件文件，`firmware/Packages.manifest` 会被移除。
 
-### 自动云编译与空间控制
+### 自动云编译
 
-`.github/workflows/upstream_watch.yml` 每 6 小时错峰检查一次以下配置对应的上游源码分支，也可以手动指定单个配置或强制构建：
-
-- `MEDIATEK-WIFI-YES`
-- `MEDIATEK-WIFI-NO`
-- `S20L-WIFI-YES`
-- `S20P-WIFI-YES`
-- `S20-WIFI-NO`
-- `jdcloud_ax6000_immwrt`
-- `jdcloud_ax6000_immwrt_honk`
-
-检测指纹由上游分支提交、设备配置、公共配置、有效 fragments 和共享构建脚本共同生成。只有不存在成功构建标记时才调用 Release 工作流；构建或发布失败不会写入标记。首次启用监听时会为尚无成功标记的配置执行一次构建。
-
-云编译空间策略：
-
-- 监听配置沿用工作流的并发限制，避免过多大型多设备任务同时发布和写缓存。
-- Actions 缓存只保存 `.ccache`、host staging 和 toolchain staging，不保存目标 `build_dir`、目标 staging 或固件输出。
-- ccache 上限为 2 GiB；普通 Build 产物只保留 3 天。
-- `MEDIATEK-WIFI-YES/NO` 和 S20 系列配置不再额外打包所有 kmod，避免在固件之外再次生成大型重复归档。
-- Release 上传后执行 `make clean` 并删除目标构建目录、目标 staging、`bin` 和临时发布目录，但保留可复用的 host/toolchain 缓存。
-- 监听配置各保留最近 2 个 Release；维护任务清理过期普通缓存和已完成的工作流记录，并为每个配置保留最近 5 个成功指纹标记。
+本仓库現行的自動編譯是上方說明的 S20P rolling workflow：每日追蹤 chasey 25.12，僅在精確上游 SHA 前進時執行 build，通過全部 gates 後發 prerelease。原多設備 `upstream_watch`、`build_wrt`、`release_wrt` 與維護 workflow 已移到 `docs/upstream-workflows/` 並改為 `.disabled` 保存，不會在 GitHub Actions 中執行。
 
 ## 5. 支持设备
 

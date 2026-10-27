@@ -1,4 +1,4 @@
-"""Fail-closed preparation of the B direct-download release assets."""
+"""Fail-closed preparation of rolling A direct-download release assets."""
 
 import hashlib
 import importlib.util
@@ -17,6 +17,7 @@ import zipfile
 
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
+import upstream_sync
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
@@ -38,15 +39,16 @@ class ReleaseCandidateTests(unittest.TestCase):
         self.output = self.root / "assets"
 
     def prepare(self, **options):
+        upstream_commit = options.pop("upstream_commit", release.UPSTREAM_BASE_COMMIT)
         return release.prepare_release_assets(
             self.artifact, self.output, run_id="1234", run_attempt="2",
-            build_commit=TEST_WRAPPER_COMMIT, **options,
+            build_commit=TEST_WRAPPER_COMMIT, upstream_commit=upstream_commit, **options,
         )
 
     def test_prepares_a_direct_bin_archive_checksums_and_install_guide(self):
         archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         result = self.prepare()
-        image = self.output / "s20p-B-25.12-9f397975-sysupgrade.bin"
+        image = self.output / "s20p-A-25.12-9f397975-sysupgrade.bin"
         self.assertEqual(result["image"], image.name)
         self.assertEqual(image.read_bytes(), test_sysupgrade_image())
         self.assertEqual(result["archive"], archive.name)
@@ -56,8 +58,10 @@ class ReleaseCandidateTests(unittest.TestCase):
         self.assertIn("1234", guide)
         self.assertIn(TEST_WRAPPER_COMMIT, guide)
         self.assertIn("not a stable release", guide.lower())
+        self.assertIn("rolling prerelease candidate", guide.lower())
         self.assertTrue(release.verify_release_assets(
             self.output, run_id="1234", run_attempt="2", build_commit=TEST_WRAPPER_COMMIT,
+            upstream_commit=release.UPSTREAM_BASE_COMMIT,
         )["pass"])
 
     def test_rejects_a_bundle_from_another_wrapper_commit(self):
@@ -72,13 +76,75 @@ class ReleaseCandidateTests(unittest.TestCase):
 
     def test_rejects_a_bundle_with_wrong_upstream_commit(self):
         release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit="a" * 40)
-        with self.assertRaisesRegex(ValueError, "fixed B source"):
+        with self.assertRaisesRegex(ValueError, "upstream resolution"):
             self.prepare()
+
+    def test_prepares_rolling_a_assets_for_the_exact_resolved_upstream_sha(self):
+        head = "a" * 40
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit=head)
+        result = self.prepare(upstream_commit=head)
+        image_name = "s20p-A-25.12-aaaaaaaa-sysupgrade.bin"
+        self.assertEqual(result["image"], image_name)
+        self.assertTrue((self.output / image_name).is_file())
+        metadata = release.read_json(self.output, "BUILD-VERIFICATION.json")
+        self.assertEqual(metadata["upstream_commit"], head)
+        guide = (self.output / "INSTALLATION.md").read_text()
+        self.assertIn(head, guide)
+        self.assertIn("rolling prerelease candidate", guide.lower())
+
+    def test_rejects_resolution_evidence_for_another_upstream_sha(self):
+        head = "a" * 40
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit=head)
+        rewrite_archive_json(archive, "provenance/upstream-resolution.json",
+                             lambda data: data.update(head_commit="b" * 40))
+        with self.assertRaisesRegex(ValueError, "upstream resolution"):
+            self.prepare(upstream_commit=head)
+
+    def test_rejects_candidate_claim_for_an_already_attempted_head_without_force(self):
+        head = "a" * 40
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit=head)
+        rewrite_archive_json(archive, "provenance/upstream-resolution.json",
+                             lambda data: data.update(previous_attempted=True))
+        with self.assertRaisesRegex(ValueError, "upstream resolution"):
+            self.prepare(upstream_commit=head)
+
+    def test_rejects_a_regressed_previous_head_comparison(self):
+        head = "a" * 40
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit=head)
+        rewrite_archive_json(archive, "provenance/upstream-resolution.json",
+                             lambda data: data.update(previous_comparison={
+                                 "base_commit": "b" * 40, "compare_status": "behind", "merge_base": head,
+                             }))
+        with self.assertRaisesRegex(ValueError, "previous"):
+            self.prepare(upstream_commit=head)
 
     def test_rejects_a_bundle_with_forged_resolved_main_source(self):
         archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         rewrite_archive_json(archive, "provenance/source-lock.json", lambda data: data["sources"][0].update(commit="a" * 40))
         with self.assertRaisesRegex(ValueError, "resolved main-source"):
+            self.prepare()
+
+    def test_saved_requested_lock_must_equal_embedded_provenance(self):
+        head = "a" * 40
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, upstream_commit=head)
+        request = json.loads((CI / "sources.lock.json").read_text())
+        next(row for row in request["sources"] if row.get("role") == "main-source")["commit"] = "b" * 40
+        rewrite_archive_json(archive, "provenance/requested-sources.lock.json",
+                             lambda data: (data.clear(), data.update(request)))
+        rewrite_archive_json(archive, "provenance/source-lock.json",
+                             lambda data: data.update(source_lock_sha256=hashlib.sha256(json_bytes(request)).hexdigest()))
+        with self.assertRaisesRegex(ValueError, "saved requested source lock"):
+            self.prepare(upstream_commit=head)
+
+    def test_release_rejects_coherent_drift_of_other_git_source_pins(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        request = json.loads((CI / "sources.lock.json").read_text())
+        request["sources"][0]["commit"] = "f" * 40
+        rewrite_archive_json(archive, "provenance/requested-sources.lock.json",
+                             lambda data: (data.clear(), data.update(request)))
+        rewrite_archive_json(archive, "provenance/source-lock.json", lambda data: data.update(
+            source_lock=request, source_lock_sha256=hashlib.sha256(json_bytes(request)).hexdigest()))
+        with self.assertRaisesRegex(ValueError, "reviewed source pins"):
             self.prepare()
 
     def test_rejects_a_bundle_with_failed_preservation(self):
@@ -188,22 +254,24 @@ class ReleaseCandidateTests(unittest.TestCase):
     def test_verifier_rejects_a_changed_direct_rom(self):
         release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         self.prepare()
-        image = self.output / "s20p-B-25.12-9f397975-sysupgrade.bin"
+        image = self.output / "s20p-A-25.12-9f397975-sysupgrade.bin"
         image.write_bytes(b"changed")
         with self.assertRaisesRegex(ValueError, "SHA256SUMS"):
             release.verify_release_assets(
                 self.output, run_id="1234", run_attempt="2", build_commit=TEST_WRAPPER_COMMIT,
+                upstream_commit=release.UPSTREAM_BASE_COMMIT,
             )
 
     def test_verifier_rejects_an_archive_whose_rom_differs_from_the_direct_asset(self):
         release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         self.prepare()
-        image = self.output / "s20p-B-25.12-9f397975-sysupgrade.bin"
+        image = self.output / "s20p-A-25.12-9f397975-sysupgrade.bin"
         image.write_bytes(b"a different but checksummed file")
         write_checksums(self.output, exclude={"SHA256SUMS"})
         with self.assertRaisesRegex(ValueError, "does not match the same-build archive"):
             release.verify_release_assets(
                 self.output, run_id="1234", run_attempt="2", build_commit=TEST_WRAPPER_COMMIT,
+                upstream_commit=release.UPSTREAM_BASE_COMMIT,
             )
 
 
@@ -224,6 +292,24 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         ])
     actual_count = len(packages)
     key_hash = hashlib.sha256(TEST_PUBLIC_KEY).hexdigest()
+    resolved_upstream = upstream_commit or release.UPSTREAM_BASE_COMMIT
+    requested_lock = upstream_sync.update_lock(
+        json.loads((CI / "sources.lock.json").read_text()),
+        upstream_sync.Resolution(resolved_upstream, True,
+            "identical" if resolved_upstream == release.UPSTREAM_BASE_COMMIT else "ahead",
+            release.UPSTREAM_BASE_COMMIT, resolved_upstream == release.UPSTREAM_BASE_COMMIT))
+    upstream_resolution = {
+        "schema_version": 1,
+        "repository": release.UPSTREAM_URL,
+        "ref": release.UPSTREAM_REF,
+        "base_commit": release.UPSTREAM_BASE_COMMIT,
+        "head_commit": resolved_upstream,
+        "compare_status": "identical" if resolved_upstream == release.UPSTREAM_BASE_COMMIT else "ahead",
+        "merge_base": release.UPSTREAM_BASE_COMMIT,
+        "should_build": True,
+        "forced": resolved_upstream == release.UPSTREAM_BASE_COMMIT,
+        "previous_attempted": False,
+    }
     files = {
         IMAGE_PATH: test_sysupgrade_image(root_payload=(b"different-rootfs" if payload_mismatch else TEST_ROOTFS_PAYLOAD)),
         "inspection/kernel.fit": TEST_KERNEL_PAYLOAD,
@@ -257,28 +343,24 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                       for index in range(5)],
         }),
         "provenance/source-lock.json": json_bytes({
-            "upstream_commit": upstream_commit or release.B_SOURCE_COMMIT,
+            "upstream_commit": resolved_upstream,
+            "upstream_resolution": upstream_resolution,
             "wrapper_commit": release.WRAPPER_COMMIT,
             "wrapper_checkout_commit": commit,
             "sources": [{
-                "role": "main-source", "url": release.B_SOURCE_URL,
-                "ref": "25.12", "commit": upstream_commit or release.B_SOURCE_COMMIT,
+                "role": "main-source", "url": release.UPSTREAM_URL,
+                "ref": "25.12", "commit": resolved_upstream,
                 "tree_hash": "c" * 64,
             }],
-            "source_lock_sha256": hashlib.sha256(json_bytes({"sources": [{
-                "role": "main-source", "url": release.B_SOURCE_URL,
-                "ref": "25.12", "commit": upstream_commit or release.B_SOURCE_COMMIT,
-            }]})).hexdigest(),
-            "source_lock": {"sources": [{
-                "role": "main-source", "url": release.B_SOURCE_URL,
-                "ref": "25.12", "commit": upstream_commit or release.B_SOURCE_COMMIT,
-            }]},
+            "source_lock_sha256": hashlib.sha256(json_bytes(requested_lock)).hexdigest(),
+            "source_lock": requested_lock,
         }),
+        "provenance/upstream-resolution.json": json_bytes(upstream_resolution),
         "provenance/config-gate.json": json_bytes({
             "status": "pass", "errors": [], "checks": {"config": {
                 "b_optional_packages": list(release.B_OPTIONAL_PACKAGE_NAMES),
                 "b_optional_package_omission": {
-                    "upstream_commit": release.B_SOURCE_COMMIT,
+                    "upstream_commit": resolved_upstream,
                     "packages": list(release.B_OPTIONAL_PACKAGE_NAMES),
                     "review_sha256": release.B_OPTIONAL_PACKAGE_REVIEW_SHA256,
                 },
@@ -316,10 +398,6 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         path = build / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
-    requested_lock = {"sources": [{
-        "role": "main-source", "url": release.B_SOURCE_URL,
-        "ref": "25.12", "commit": upstream_commit or release.B_SOURCE_COMMIT,
-    }]}
     requested_path = build / "provenance/requested-sources.lock.json"
     requested_path.parent.mkdir(parents=True, exist_ok=True)
     requested_path.write_bytes(json_bytes(requested_lock))

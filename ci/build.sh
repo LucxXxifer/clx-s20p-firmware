@@ -6,9 +6,11 @@ cd "$repo"
 export S20P_AUTOBUILD=1
 export S20P_CI_DIR="$repo/ci"
 export S20P_CAPTURE_DIR="$repo/output"
-export S20P_BASELINE_DIR="$repo/ci/baseline"
+export S20P_BASELINE_DIR="${S20P_BASELINE_DIR:-$repo/ci/baseline}"
 export S20P_LOCK_TOOL="$repo/ci/source_lock.py"
-export S20P_SOURCE_LOCK="$repo/ci/sources.lock.json"
+export S20P_SOURCE_LOCK="${S20P_SOURCE_LOCK:-$repo/ci/sources.lock.json}"
+export S20P_UPSTREAM_EVIDENCE="${S20P_UPSTREAM_EVIDENCE:-}"
+export S20P_UPSTREAM_COMMIT="${S20P_UPSTREAM_COMMIT:-}"
 export S20P_GIT_LOG="$S20P_CAPTURE_DIR/provenance/git-clones.jsonl"
 export S20P_HTTP_LOG="$S20P_CAPTURE_DIR/provenance/http-inputs.jsonl"
 export S20P_BUILD_LOG="$S20P_CAPTURE_DIR/logs/build.log"
@@ -18,11 +20,43 @@ unset ADD_CONFIG_FRAGMENTS REMOVE_CONFIG_FRAGMENTS
     echo 'Use a fresh checkout/output for each build; previous evidence will not be overwritten.' >&2
     exit 1
 }
-for required in "$S20P_LOCK_TOOL" "$S20P_SOURCE_LOCK" "$S20P_MOBILE_PACKAGES_FILE" ci/preservation.py ci/provenance.py ci/baseline/policy.json; do
+for required in "$S20P_LOCK_TOOL" "$S20P_SOURCE_LOCK" "$S20P_MOBILE_PACKAGES_FILE" ci/preservation.py ci/provenance.py "$S20P_BASELINE_DIR/policy.json"; do
     [[ -f $required ]] || { echo "Required build policy missing: $required" >&2; exit 1; }
 done
+verify_runtime_inputs() {
+    if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
+        python3 "$repo/ci/upstream_sync.py" verify-prepared \
+            --committed-lock "$repo/ci/sources.lock.json" --committed-baseline "$repo/ci/baseline" \
+            --lock "$S20P_SOURCE_LOCK" --baseline "$S20P_BASELINE_DIR" \
+            --evidence "$S20P_UPSTREAM_EVIDENCE"
+    elif [[ $S20P_SOURCE_LOCK != "$repo/ci/sources.lock.json" || $S20P_BASELINE_DIR != "$repo/ci/baseline" ]]; then
+        echo 'Custom source locks and baselines require verified upstream resolution evidence.' >&2
+        return 1
+    fi
+}
+verify_runtime_inputs
 mkdir -p "$S20P_CAPTURE_DIR/logs" "$S20P_CAPTURE_DIR/provenance" "$S20P_CAPTURE_DIR/reports"
 cp "$S20P_SOURCE_LOCK" "$S20P_CAPTURE_DIR/provenance/requested-sources.lock.json"
+if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
+    [[ -f $S20P_UPSTREAM_EVIDENCE && ! -L $S20P_UPSTREAM_EVIDENCE ]] || {
+        echo 'Regular verified upstream resolution evidence is required.' >&2; exit 1;
+    }
+    cp "$S20P_UPSTREAM_EVIDENCE" "$S20P_CAPTURE_DIR/provenance/upstream-resolution.json"
+fi
+locked_upstream=$(python3 "$S20P_LOCK_TOOL" --lock "$S20P_SOURCE_LOCK" get \
+    https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git --ref 25.12)
+[[ $locked_upstream =~ ^[0-9a-f]{40}$ ]] || { echo 'Exact locked upstream commit required.' >&2; exit 1; }
+if [[ -n $S20P_UPSTREAM_COMMIT && $S20P_UPSTREAM_COMMIT != "$locked_upstream" ]]; then
+    echo 'Workflow-selected upstream SHA differs from the generated source lock.' >&2
+    exit 1
+fi
+if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
+    evidence_upstream=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["head_commit"])' "$S20P_UPSTREAM_EVIDENCE")
+    [[ $evidence_upstream == "$locked_upstream" ]] || {
+        echo 'Upstream resolution evidence differs from the generated source lock.' >&2; exit 1;
+    }
+fi
+export S20P_UPSTREAM_COMMIT="$locked_upstream"
 # The parent wrapper's pre-clone and build share these exported lock variables.
 set +e
 (
@@ -43,6 +77,7 @@ fi
 [[ -f output/reports/capture.json && -f output/reports/signed-feeds.json ]] || {
     echo 'Build did not produce the required pre-clean capture.' >&2; exit 1;
 }
+verify_runtime_inputs
 set +e
 gate_command=(python3)
 if [[ $(id -u) != 0 && -z ${FAKEROOTKEY:-} ]]; then
@@ -56,7 +91,7 @@ gate_command+=(ci/preservation.py image)
 if [[ -f $repo/ci/approved-differences.json ]]; then
     gate_command+=(--approve-differences "$repo/ci/approved-differences.json")
 fi
-"${gate_command[@]}" \
+gate_command+=(
     --rootfs output/inspection/rootfs \
     --kernel-config output/metadata/kernel/.config \
     --packages output/inspection/rootfs/lib/apk/db/installed \
@@ -66,6 +101,11 @@ fi
     --signed-feeds output/reports/signed-feeds.json \
     --baseline-dir "$S20P_BASELINE_DIR" \
     --output output/reports/preservation-image.json
+)
+if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
+    gate_command+=(--upstream-evidence "$S20P_UPSTREAM_EVIDENCE")
+fi
+"${gate_command[@]}"
 gate_status=$?
 set -e
 # Exit 2 is an unapproved difference: retain evidence, do not publish a release.

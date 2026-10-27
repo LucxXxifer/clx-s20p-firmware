@@ -44,6 +44,7 @@ class SecurityRemovalTests(unittest.TestCase):
             "upstream_commit": self.review["source"]["commit"],
             "sources": [{"name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
                          "url": self.review["source"]["repository"],
+                         "ref": "25.12",
                          "commit": self.review["source"]["commit"], "tree_hash": "a" * 64}],
             "source_lock": self.requested,
         }
@@ -318,6 +319,12 @@ class SecurityRemovalTests(unittest.TestCase):
         baseline = preservation.file_index(json.loads((CI / "baseline/full-rootfs-manifest.json").read_text())["files"])
         self.assertEqual(gate.security_removals(self.root, False, self.packages, baseline), {})
         self.assertFalse(any(d["category"] == "security_removal" for d in gate.differences))
+
+    def test_moving_source_cannot_skip_the_source_bound_ca_review(self):
+        gate = self.gate()
+        gate.policy["upstream_commit"] = "a" * 40
+        self.evaluate(gate)
+        self.assertTrue(any(error["category"] == "security_removal_guard" for error in gate.errors))
 
 
 if __name__ == "__main__":

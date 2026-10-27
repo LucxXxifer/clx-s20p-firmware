@@ -91,24 +91,67 @@ def require_b_resolved_main_source(rows):
         raise ValueError("resolved main-source does not match fixed B repository/commit")
 
 
+def require_tracked_main_source(rows, expected_commit, description, *, require_ref=False):
+    if not isinstance(rows, list):
+        raise ValueError(description + " main-source inventory is missing")
+    expected_url = "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+    matches = [row for row in rows if isinstance(row, dict) and
+               row.get("url", "").removesuffix(".git") == expected_url]
+    if (len(matches) != 1 or (require_ref and matches[0].get("ref") != "25.12") or
+            matches[0].get("commit") != expected_commit):
+        raise ValueError(description + " main-source does not match exact tracked repository/ref/commit")
+
+
+def validate_upstream_evidence(path, commit):
+    if commit == B_SOURCE_COMMIT:
+        return None
+    if not path:
+        raise ValueError("upstream compare evidence is required for a moving source head")
+    evidence_path = Path(path)
+    if evidence_path.is_symlink() or not evidence_path.is_file():
+        raise ValueError("regular upstream compare evidence is required")
+    evidence = strict_json(evidence_path.read_bytes())
+    expected = {
+        "schema_version": 1,
+        "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
+        "ref": "25.12",
+        "base_commit": B_SOURCE_COMMIT,
+        "head_commit": commit,
+        "compare_status": "ahead",
+        "merge_base": B_SOURCE_COMMIT,
+        "should_build": True,
+    }
+    if (not isinstance(evidence, dict) or
+            any(evidence.get(key) != value for key, value in expected.items()) or
+            type(evidence.get("forced")) is not bool or
+            type(evidence.get("previous_attempted")) is not bool or
+            (evidence.get("previous_attempted") is True and evidence.get("forced") is not True)):
+        raise ValueError("upstream compare evidence does not prove a forward update from the reviewed base")
+    return evidence
+
+
 def load_b_optional_package_policy(baseline_dir, source_lock_path,
-                                   review_path=B_OPTIONAL_PACKAGE_REVIEW):
-    """Load the one hash-pinned, fixed-B Lucky image omission review."""
+                                   review_path=B_OPTIONAL_PACKAGE_REVIEW,
+                                   upstream_evidence_path=None):
+    """Load the one hash-pinned Lucky omission for the reviewed upstream line."""
     source_path = Path(source_lock_path)
     if source_path.is_symlink() or not source_path.is_file():
         raise ValueError("regular source lock required for optional package policy")
     lock = strict_json(source_path.read_bytes())
     requested_lock = lock.get("source_lock", lock)
     commit = lock.get("upstream_commit") or source_commit(requested_lock)
-    if commit != B_SOURCE_COMMIT:
+    if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise ValueError("exact upstream commit required for optional package policy")
+    if commit == "03eb30617955519e35845838c6255ebe687eb717":
         return None
-    if source_commit(requested_lock) != B_SOURCE_COMMIT:
-        raise ValueError("unique fixed B main-source identity required for Lucky omission")
-    require_b_main_source(requested_lock.get("sources"), "requested")
+    if source_commit(requested_lock) != commit:
+        raise ValueError("requested main-source must match the exact upstream commit")
+    require_tracked_main_source(requested_lock.get("sources"), commit, "requested", require_ref=True)
+    validate_upstream_evidence(upstream_evidence_path, commit)
     if "source_lock" in lock:
-        if lock.get("upstream_commit") != B_SOURCE_COMMIT:
-            raise ValueError("resolved main-source upstream commit does not match fixed B")
-        require_b_resolved_main_source(lock.get("sources"))
+        if lock.get("upstream_commit") != commit:
+            raise ValueError("resolved main-source upstream commit does not match requested lock")
+        require_tracked_main_source(lock.get("sources"), commit, "resolved")
 
     review_file = Path(review_path)
     if review_file.is_symlink() or not review_file.is_file():
@@ -231,7 +274,8 @@ def load_b_optional_package_policy(baseline_dir, source_lock_path,
         raise ValueError("trusted Lucky store feed version limitation is missing")
     normalized = dict(review)
     normalized.update({
-        "upstream_commit": B_SOURCE_COMMIT,
+        "upstream_commit": commit,
+        "reviewed_base_commit": B_SOURCE_COMMIT,
         "packages": review["baseline_packages"],
         "absent_files": review["removed_records"],
         "review_sha256": B_OPTIONAL_PACKAGE_REVIEW_SHA256,
@@ -530,12 +574,21 @@ class Gate:
         self._source_evidence = None
         self.b_optional_package_policy = None
         self.approvals = {}
+        self.policy = read_json(self.baseline / "policy.json")
         if approval:
-            for item in read_json(approval)["approved"]:
-                if not re.fullmatch(r"[0-9a-f]{64}", item["id"]) or not item.get("reason", "").strip():
+            review = read_json(approval)
+            if not isinstance(review, dict) or not isinstance(review.get("approved"), list):
+                raise ValueError("Approval manifest must contain an approved list")
+            approval_scope_matches = (
+                self.policy.get("upstream_commit") == B_SOURCE_COMMIT or
+                review.get("upstream_commit") == self.policy.get("upstream_commit")
+            )
+            for item in (review["approved"] if approval_scope_matches else []):
+                if (not isinstance(item, dict) or
+                        not re.fullmatch(r"[0-9a-f]{64}", str(item.get("id", ""))) or
+                        not item.get("reason", "").strip()):
                     raise ValueError("Approval requires an exact difference ID and review reason")
                 self.approvals[item["id"]] = item["reason"]
-        self.policy = read_json(self.baseline / "policy.json")
         integrity = self.baseline / "baseline-sha256.json"
         if integrity.exists():
             for name, expected in read_json(integrity).items():
@@ -573,7 +626,7 @@ class Gate:
         self.differences.append(record)
 
     def config(self, path, optional_packages=None, package_info=None, source_lock=None,
-               optional_package_review=B_OPTIONAL_PACKAGE_REVIEW):
+               optional_package_review=B_OPTIONAL_PACKAGE_REVIEW, upstream_evidence=None):
         values = parse_config(path)
         required = dict(self.policy["required_config"])
         required.update(self.mtk)
@@ -605,8 +658,9 @@ class Gate:
             selectors[name] = selector
             required.setdefault(selector, ["y", "m"])
         required.update({"CONFIG_PACKAGE_" + name: "y" for name in self.policy["required_packages"]})
-        optional_policy = (load_b_optional_package_policy(self.baseline, source_lock, optional_package_review)
-                          if source_lock else None)
+        optional_policy = (load_b_optional_package_policy(
+            self.baseline, source_lock, optional_package_review, upstream_evidence
+        ) if source_lock else None)
         if optional_policy:
             for name in B_OPTIONAL_PACKAGE_NAMES:
                 selector = selectors.get(name)
@@ -644,7 +698,7 @@ class Gate:
                                                          if package_info else None),
                                  "original_package_selectors": selectors,
                                  "b_optional_package_omission": ({
-                                     "upstream_commit": B_SOURCE_COMMIT,
+                                     "upstream_commit": optional_policy["upstream_commit"],
                                      "packages": list(B_OPTIONAL_PACKAGE_NAMES),
                                      "review_sha256": B_OPTIONAL_PACKAGE_REVIEW_SHA256,
                                      "store_feed_key_sha256": B_LUCKY_STORE_KEY_SHA256,
@@ -692,12 +746,11 @@ class Gate:
                     self.error("source_lock", str(name) + ".commit", "full Git commit", item.get("commit"))
                 if not re.fullmatch(r"[0-9a-f]{64}", str(item.get("tree_hash", ""))):
                     self.error("source_lock", str(name) + ".tree_hash", "SHA256", item.get("tree_hash"))
-            if lock.get("upstream_commit") == B_SOURCE_COMMIT:
-                try:
-                    require_b_resolved_main_source(sources)
-                except ValueError as error:
-                    self.error("source_lock", "main_source",
-                               "fixed B repository at " + B_SOURCE_COMMIT, str(error))
+            try:
+                require_tracked_main_source(sources, lock.get("upstream_commit"), "resolved")
+            except ValueError as error:
+                self.error("source_lock", "main_source",
+                           "exact tracked repository/ref/commit", str(error))
         self.checks["source_lock"] = {"sha256": digest(Path(path).read_bytes()),
                                       "recorded_sources": len(sources) if isinstance(sources, list) else 0,
                                       "build_fingerprint": lock.get("build_fingerprint"),
@@ -722,6 +775,10 @@ class Gate:
         CA is itself a hard error, even if it would match the original baseline.
         """
         if self.policy["upstream_commit"] != SECURITY_REMOVAL_COMMIT:
+            if self.policy["upstream_commit"] != "03eb30617955519e35845838c6255ebe687eb717":
+                self.error("security_removal_guard", "unreviewed upstream CA transition",
+                           "a source-bound CA review for the exact upstream commit",
+                           self.policy["upstream_commit"])
             return {}
         check = {"status": "fail", "scope": "two fixed emSign G3 records at fixed B source",
                  "review_sha256": SECURITY_REMOVAL_REVIEW_SHA256}
@@ -1238,6 +1295,8 @@ def main(argv=None):
                                  help="requested source lock used to bind the fixed B-only package policy")
             command.add_argument("--optional-package-review", type=Path,
                                  default=B_OPTIONAL_PACKAGE_REVIEW)
+            command.add_argument("--upstream-evidence", type=Path,
+                                 help="GitHub compare evidence used for a moving 25.12 source head")
         else:
             command.add_argument("--rootfs", required=True, type=Path)
             command.add_argument("--kernel-config", required=True, type=Path)
@@ -1246,18 +1305,20 @@ def main(argv=None):
             command.add_argument("--source-lock", type=Path)
             command.add_argument("--public-key", type=Path)
             command.add_argument("--signed-feeds", type=Path)
+            command.add_argument("--upstream-evidence", type=Path,
+                                 help="GitHub compare evidence used for a moving 25.12 source head")
     args = parser.parse_args(argv)
     gate = None
     try:
         gate = Gate(args.phase, args.baseline_dir, args.approve_differences)
         if args.phase == "config":
             gate.config(args.config, args.optional_packages, args.package_info,
-                        args.source_lock, args.optional_package_review)
+                        args.source_lock, args.optional_package_review, args.upstream_evidence)
         else:
             root = args.rootfs.resolve()
             provenance_ok = gate.source_lock(args.source_lock)
             gate.b_optional_package_policy = load_b_optional_package_policy(
-                args.baseline_dir, args.source_lock)
+                args.baseline_dir, args.source_lock, upstream_evidence_path=args.upstream_evidence)
             actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy)
             gate.kernel_config(args.kernel_config)
             gate.dtb(args.dtb)

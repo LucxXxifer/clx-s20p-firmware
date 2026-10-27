@@ -592,6 +592,13 @@ BUILD_DIR=$(read_ini_by_key "BUILD_DIR")
 COMMIT_HASH=$(read_ini_by_key "COMMIT_HASH")
 COMMIT_HASH=${COMMIT_HASH:-none}
 EXPECTED_KERNEL=$(read_ini_by_key "EXPECTED_KERNEL")
+if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+    [[ ${S20P_UPSTREAM_COMMIT:-} =~ ^[0-9a-f]{40}$ ]] || {
+        echo 'Automated S20P builds require one verified exact upstream commit SHA.' >&2
+        exit 1
+    }
+    COMMIT_HASH=$S20P_UPSTREAM_COMMIT
+fi
 
 resolve_config_fragments
 
@@ -638,17 +645,23 @@ verify_honk_config .config "$HONK_PACKAGES_ENABLED"
 if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
     [[ $Dev == S20P-WIFI-YES && -z ${REMOVE_CONFIG_FRAGMENTS:-} ]] || exit 1
     mkdir -p "$S20P_CAPTURE_DIR/provenance"
+    upstream_evidence_args=()
+    if [[ -n ${S20P_UPSTREAM_EVIDENCE:-} ]]; then
+        upstream_evidence_args+=(--upstream-evidence "$S20P_UPSTREAM_EVIDENCE")
+    fi
     python3 "$REPO_ROOT/ci/verify_go_host_deps.py" --config .config \
         --package-info "$PWD/tmp/.packageinfo" --source-root "$PWD" \
         --output "$S20P_CAPTURE_DIR/provenance/go-host-dependencies.json"
     python3 "$REPO_ROOT/ci/preservation.py" config --config .config \
-        --baseline-dir "$REPO_ROOT/ci/baseline" \
+        --baseline-dir "${S20P_BASELINE_DIR:-$REPO_ROOT/ci/baseline}" \
         --optional-packages "$REPO_ROOT/ci/mobile-usb-packages.txt" \
         --package-info "$PWD/tmp/.packageinfo" \
         --source-lock "$S20P_SOURCE_LOCK" \
+        "${upstream_evidence_args[@]}" \
         --output "$S20P_CAPTURE_DIR/provenance/config-gate.json"
     python3 "$REPO_ROOT/ci/provenance.py" "$PWD" \
         --lock "$S20P_SOURCE_LOCK" --wrapper "$REPO_ROOT" \
+        "${upstream_evidence_args[@]}" \
         --output "$S20P_CAPTURE_DIR/provenance/source-lock.json"
 fi
 

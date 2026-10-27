@@ -610,7 +610,7 @@ else:
         self.assertNotIn("secrets: inherit", source)
         self.assertIn("needs.build.result == 'success'", source)
         self.assertIn("github.event_name == 'workflow_dispatch'", source)
-        self.assertIn("github.ref == 'refs/heads/codex/s20p-b-25-12'", source)
+        self.assertIn("github.ref == 'refs/heads/main'", source)
         self.assertIn('expected_digest="${GH_EXPECTED_ARTIFACT_DIGEST#sha256:}"', source)
         self.assertIn('[[ $expected_digest =~ ^[0-9a-f]{64}$ ]]', source)
         self.assertIn('[[ $api_digest == "sha256:$expected_digest" ]]', source)
@@ -628,8 +628,17 @@ class BuildPolicyTests(unittest.TestCase):
         for name in ("build.sh", "capture.sh"):
             shutil.copy2(REPO / "ci" / name, self.repo / "ci" / name)
         shutil.copy2(REPO / "ci/public-test-keys.json", self.repo / "ci/public-test-keys.json")
-        for name in ("source_lock.py", "provenance.py", "sources.lock.json", "mobile-usb-packages.txt"):
+        for name in ("source_lock.py",):
+            shutil.copy2(REPO / "ci" / name, self.repo / "ci" / name)
+        for name in ("provenance.py", "mobile-usb-packages.txt"):
             (self.repo / "ci" / name).write_text("")
+        (self.repo / "ci/sources.lock.json").write_text(json.dumps({
+            "schema_version": 1,
+            "sources": [{"role": "main-source",
+                         "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git",
+                         "ref": "25.12",
+                         "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d"}],
+        }))
         (self.repo / "ci/baseline/policy.json").write_text("{}")
         (self.repo / "wrt_core/pre_clone_action.sh").write_text('''#!/usr/bin/env bash
 set -eu

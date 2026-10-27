@@ -1,17 +1,23 @@
-# CLX-S20P 每日自動編譯
+# CLX-S20P 每日上游候選編譯
 
-本分支是 B 候選建置配置：保留 dqsq2e2 `26.10.17_15.32.58_S20P-WIFI-YES` 的原功能基準及 wrapper `d46704afb327fce99e7d770c08fc46b48d5bb1b7` 流程，只將主 source 固定到 chasey 25.12 `9f397975c7b47ce6986a6e39529d2f72fd5c729d`。Linux 6.12.112、其餘38個 Git source pins、原 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置保持原要求。
+GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，以已審查起點 `9f397975c7b47ce6986a6e39529d2f72fd5c729d` 驗證上游是其後代，再把該次精確 head SHA 傳給編譯器。只追蹤上游，不自動同步或放寬其餘38個 Git source pins、原 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置。
 
-A 候選的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。A 的成品與來源證據獨立保留；B 必須重新建置、驗收並審查新差異。兩者均未經本機硬體／遷移驗收，不宣稱 stable。來源差異、CA 安全移除門檻及驗證要求見 [B source transition](docs/SOURCE-TRANSITION-B.md)。
+既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。
 
-原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保留已恢復的來源與其餘固定來源及 B 的明確主 source 更新紀錄，不能還原10/17版本的完整輸入。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用 A 或原 ROM 的 hash。
+既有 A build 的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。新 rolling 流程由固定 B 初始基準 `9f397975...` 逐次前進；每個 artifact、repository signing key、kernel ABI 及同批套件 feed 均只屬於自己的 run，不能套用 A 或其他候選的值。歷史 source 差異、CA 安全移除門檻及驗證要求見 [source transition record](docs/SOURCE-TRANSITION-B.md)。
+
+原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保存已審查的初始輸入；Actions 只在 runner 暫存目錄產生本次上游 SHA 的 lock 和基線，避免提交動態 lock 或變更受審基線。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用 A 或其他 run 的值。
 
 ## 觸發方式
 
-- `.github/workflows/s20p-daily.yml`：每日 **04:20 Asia/Shanghai（20:20 UTC）**，另支援 Actions → Run workflow。
-- 排程只從 repository 的 default branch 執行；GitHub 可能延遲排程，公共庫長期無活動可能停用排程，請留意 Actions 狀態。
-- 編譯不會自動刷機。原 watcher 和其他排程移至 `docs/upstream-workflows/` 保留，不再默默追蹤上游 HEAD。
+- `.github/workflows/s20p-daily.yml`：每日 **04:20 Asia/Shanghai（20:20 UTC）**，並支援 Actions → Run workflow；定時 workflow 僅在 repository 的 default branch 上運行，所以 rolling `main` 必須設為 default branch 並啟用此 workflow，排程才會生效。
+- 每次執行先讀取上游完整 head SHA 並以 GitHub compare 證明其為已審查基準的 fast-forward descendant。排程遇到相同 head 且找到同 wrapper commit 的完整 state 記錄時略過編譯；新 head 才建置。手動 `force=true` 可在修正 build policy 後重試同一 head。無法取得或驗證前次 state 時會以「重新建置」處理，不會因此錯誤略過候選。
+- 若有可信的前次 state 且 head 改變，另以 GitHub compare 驗證其仍為前次 head 的後代；回退或分歧即拒絕，`force` 不能繞過。缺少可信歷史時只依固定起點驗證，不宣稱已證明歷史上未回退。
+- 需要重試時使用 Actions → **Run workflow → force=true** 建立新 run；不使用 **Re-run jobs**。後者重用舊 run identity，會被明確拒絕。即使某次執行被拒絕或中斷，仍會向前查找完整的可信 state，不會遺忘較早已驗證的 head。
+- 編譯不會自動刷機。新上游版本如出現未審查的 package、ABI、檔案、安全或來源差異，只保存失敗／審查證據，不建立 prerelease。原 watcher 和其他排程移至 `docs/upstream-workflows/` 保留。
 - 新 checkout 執行 `bash ci/build.sh`。完整建置需 Linux／Ubuntu 24.04 和至少50GiB可用空間；runner環境安裝由已審查的 `ci/setup-runner.sh` 處理，不執行遠端 root 初始化腳本。
+
+本公開庫使用 GitHub-hosted 標準 Linux runner，可使用[公開庫免費 Actions](https://docs.github.com/en/billing/concepts/product-billing/github-actions)；排程、解析、編譯與候選發布都在 GitHub，無須本機開機或執行 AI 任務。GitHub 排程可能延遲，公開庫連續60天無 repository activity 時可能自動停用排程；可在 Actions 重新啟用。artifact 保留7天，release 成品另行保存；不使用付費 larger runner。
 
 ## 原功能與新增內容
 
@@ -38,9 +44,11 @@ A 候選的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Acti
 - 編譯成功後、原流程清理前保存完整 `bin/`、所有 APK／已簽名 `packages.adb`、公開key、kernel config／Module.symvers、final config、buildinfo、來源與HTTP輸入紀錄、logs與SHA256。
 - 使用同批 host apk 驗證 signed index，再核 APK payload 與 index identity。沿用原 `CONFIG_SIGN_EACH_PACKAGE=n` 的模型，不假裝 unsigned APK 有單獨簽章，不降低安裝信任要求。
 - 全部自動檢查通過時僅發佈 **prerelease candidate**；仍需上機驗證 USB／Wi-Fi／加速／重啟及遷移，不能宣稱 stable。
-- evidence artifact 保留30天；通過的候選包會連同完整same-build feed放入prerelease，避免只剩ROM而失去配套kmod。
+- evidence 與未發布的候選 artifact 保留7天；發布成功的候選以 GitHub prerelease 保存，並附上完整 same-build feed，避免只剩 ROM 而失去配套 kmod。
 
-每日預設重建固定來源。要更新上游或套件，先修改 source lock／明列差異，再跑同一檢查流程。不可把不同ABI現成kmod混入此ROM，也不可 force dependencies。
+每日排程線上解析上游 head；只有新增 head 才啟動完整編譯。每次建置均對解析出的精確 SHA 建立暫存 source lock，再跑同一套既有檢查。套件源 pin 仍固定，除非明確審查並更新；不可把不同 ABI 的現成 kmod 混入此 ROM，也不可 force dependencies。人工 `force` 只是重試目前已確認的 SHA，不會批准差異或改變來源。
+
+目前 CA 安全移除與已批准差異仍綁定已審查 SHA `9f397975...`。新上游可以自動編譯，但即使 CA 配方看似相同，也須取得該精確 source 的審查紀錄才可發布；workflow 不會自行擴大批准範圍。
 
 為讓原流程能在已鎖定來源上執行，另有三項具體修正：完整核心版本由 series `6.12` 與 patch `.112` 合併核對；WeeChat LuCI 的 virtual provider 改為原預設 `weechat-minimal`，解除 Kconfig 循環；S20P CI 保留固定 packages feed 的 Go 1.27.1／1.26 compiler recipes，避免原腳本以單一 Go 1.26 override 刪掉新版 Tailscale 必需的 1.27.1。這些變更都有回歸檢查，不宣稱與原歷史 feeds 完全相同。原 fragment 的無效 TurboACC selector 亦有[單獨政策說明](docs/preservation-gates.md)。Tailscale／AdGuardHome 的私人設定與服務安裝仍由後續遷移處理，並未因工具鏈可用就自動預裝或啟動。
 

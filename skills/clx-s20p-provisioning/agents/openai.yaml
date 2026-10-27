@@ -1,0 +1,4 @@
+interface:
+  display_name: "CLX-S20P 從 0 到 1 刷機"
+  short_description: "S20P 原廠開 SSH、eMMC 健康檢查、逐機備份與 U-Boot 驗證"
+  default_prompt: "使用 $clx-s20p-provisioning 為這臺 CLX-S20P 從原廠系統完成識別、開 SSH、eMMC 健康檢查、必要備份及已授權的 FIP U-Boot 寫入驗證，再交由我手動進入 U-Boot 刷 GPT 和系統。"

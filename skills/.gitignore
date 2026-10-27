@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+*.bin
+*.img
+*.tar
+*.tar.gz
+*.tgz
+*.key
+*.pem
+clx-s20-*/
+capture-*/

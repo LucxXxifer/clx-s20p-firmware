@@ -1,3 +1,15 @@
+# CLX-S20P 從 0 到 1：首次刷機與固件
+
+本倉庫集中管理 CLX-S20P 原廠首次刷機的 Codex skill、固定下載固件與每日上游候選編譯。
+
+| 用途 | 入口 |
+| --- | --- |
+| 首次刷機：Telnet／SSH → eMMC 健康檢查 → 逐機原廠備份 → FIP U-Boot 寫入及讀回驗證 | [Skill 使用及安裝指南](skills/README.md) · [下載 .skill 安裝包](skills/clx-s20p-provisioning.skill) · [Skill 原始碼](skills/clx-s20p-provisioning/SKILL.md) |
+| 固定下載版 A（10/17） | [Release、固件與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) |
+| 每日 ImmortalWrt 25.12 候選 | [編譯及驗收規則](README_AUTOBUILD.md) · [所有 Releases](https://github.com/LucxXxifer/clx-s20p-firmware/releases) |
+
+Skill 會先檢查 eMMC 壽命並保留每臺機器自己的原廠資料；預設不做 100+ GB 的 p6 原始映像克隆。完成 FIP 驗證後，斷電／Reset、進入 U-Boot 及刷 GPT／系統由使用者手動完成。備份驗證、七個實體網口測試與原廠還原實測會分別記錄；詳見[驗證範圍與限制](skills/README.md#驗證範圍與限制)。
+
 > **CLX-S20P 固件線**：GitHub `main` 是 chasey ImmortalWrt 25.12 的每日上游候選編譯線；每日 04:20（Asia/Shanghai）檢查，僅在上游有新提交時建置，且只有全部差異、安全、套件與簽章檢查通過才建立 prerelease。公開庫使用 GitHub-hosted 標準 Linux runner，無須付費會員或本機 AI 任務。
 >
 > **固定下載版 A（10/17）**：[GitHub release 與下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)／[固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17)。此 release 保留原成品、校驗碼及說明；rolling `main` 不會改寫它。既有 B 候選也保留：[B 25.12 candidate](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。

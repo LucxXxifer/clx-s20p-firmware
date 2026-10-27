@@ -4,6 +4,8 @@ GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immor
 
 既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。
 
+首輪 rolling A 已由 [Actions run 40488248986](https://github.com/LucxXxifer/clx-s20p-firmware/actions/runs/40488248986) 完成，對應 [2026-10-27 prerelease 與完整下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40488248986-1-9f397975)。此輪是 `force=true` 的流程驗證，上游仍為 `9f397975...`，build wrapper 為 `1a52a567...`。ROM、同批完整 feed、API digest、ZIP CRC、內外校驗碼及原生離線套件驗證均通過；492個已安裝套件、535 APK、153個同ABI kmods、28個USB/mobile可選包齊備。使用 `sha256sum -c SHA256SUMS` 前請下載該 release 的全部六個 assets 到同一目錄；manifest 列出另外五個檔案，僅下載 `.bin` 會回報缺檔。本候選尚未實機刷入驗收。
+
 既有 A build 的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。新 rolling 流程由固定 B 初始基準 `9f397975...` 逐次前進；每個 artifact、repository signing key、kernel ABI 及同批套件 feed 均只屬於自己的 run，不能套用 A 或其他候選的值。歷史 source 差異、CA 安全移除門檻及驗證要求見 [source transition record](docs/SOURCE-TRANSITION-B.md)。
 
 原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保存已審查的初始輸入；Actions 只在 runner 暫存目錄產生本次上游 SHA 的 lock 和基線，避免提交動態 lock 或變更受審基線。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用 A 或其他 run 的值。

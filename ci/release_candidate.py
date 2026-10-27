@@ -466,11 +466,13 @@ Keep the current router online until you have read the release notes and verifie
 
 ## Verify the download
 
-Download `SHA256SUMS` and the `.bin` from this release, then run:
+Download all six assets from this release into the same directory, then run:
 
 ```sh
 sha256sum -c SHA256SUMS
 ```
+
+`SHA256SUMS` lists the five other assets; downloading only the `.bin` will make this full check report missing files.
 
 ## Install
 

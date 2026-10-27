@@ -73,7 +73,7 @@ Files: modify `README.md`, `README_AUTOBUILD.md`, `docs/SOURCE-TRANSITION-B.md`.
 - [x] Run `python3 -m unittest discover -s ci/tests -v`, `bash ci/tests/test_network.sh`, shell syntax checks, `actionlint`, and all existing deterministic public-artifact verification commands.
 - [x] Review the complete diff for unrelated user files; do not stage `docs/superpowers/` user content or `work/` evidence except the named plan/spec files.
 - [x] Confirm A fixed release assets and checksums remain untouched, and B's published candidate release remains unchanged.
-- [ ] Execute the reviewed branch operations: create `s20p-a-10-17` at A commit `2e6371c4...`, fast-forward `main` to the rolling workflow implementation, update the public repo description, enable the schedule, and run one manual cloud validation.
+- [x] Execute the reviewed branch operations: create `s20p-a-10-17` at A commit `2e6371c4...`, fast-forward `main` to the rolling workflow implementation, update the public repo description, enable the schedule, and run one manual cloud validation.
 - [x] External promotion, repository description, schedule activation, and one manual cloud validation are authorized by the user’s explicit approval of the design and implementation.
 
 ## Local verification record (2026-10-27)
@@ -81,4 +81,17 @@ Files: modify `README.md`, `README_AUTOBUILD.md`, `docs/SOURCE-TRANSITION-B.md`.
 - 274 Python tests passed; network failure-propagation test passed; shell syntax, actionlint v1.7.7, and diff whitespace checks passed.
 - Two independent read-only reviews passed after regressions for rollback across rejected runs, old Actions rerun identities, and pre/post-build runtime-policy integrity.
 - A and B release IDs, assets, API digests, and tag objects recorded under local `work/daily-promotion-20261027/`; these evidence files are not staged.
-- Full firmware compilation and first rolling release verification remain GitHub Actions work. No router operation is included.
+- Full firmware compilation ran only on GitHub Actions. No router operation is included.
+
+## Cloud and downloaded-artifact acceptance (2026-10-27)
+
+- Run `40488248986`, attempt `1`, completed successfully at `2026-10-27T13:36:31Z`, including both build and prerelease publication jobs. Exact build wrapper: `1a52a56785ce1aac0cf5b30c446ac8c8e4a7d74d`; upstream: `9f397975c7b47ce6986a6e39529d2f72fd5c729d`. No duplicate dispatch or Actions rerun was used.
+- Published prerelease/tag: `s20p-a-25.12-candidate-40488248986-1-9f397975`, release ID `425507061`, target exactly the build wrapper. All six release assets were downloaded and matched their GitHub API sizes/digests and `SHA256SUMS`.
+- Candidate artifact ID `12737264624`: API SHA256 `0aa4c5267757af90bde15cb104974ac621c4296ab570d6775360fc367136b7a8`, complete ZIP CRC and outer checksum checks passed. Its archive is byte-identical to the release archive, SHA256 `11ab7b0786d7747d10f52f7fdaf0d143fcbe7a6cde8a1b3a25af7e07477581ce`; all 605 inner checksum entries passed.
+- ROM SHA256 `0fc7b65add8e4581c37822c5aa93c1f83bf088ec81c78b0f5271bcb3c929714f`; S20P metadata and kernel/root payloads match preserved inspection files and partition limits. ABI `6.12.112~72e3a8ab0aca96e402ef58ded8a13618-r1`.
+- Five same-build signed feeds contain 535 APKs, 153 kmods with the exact ABI, all 492 installed package versions, and 28 optional USB/mobile packages. Independent native `apk-tools 3.0.7-r0` verified every index signature and fetched every payload offline, with exact metadata and byte hashes; an empty keyring correctly rejected the index. The cloud separately used its same-build `apk-tools 3.0.5`.
+- Independent source/preservation review verified the 39 requested source pins (other 38 unchanged), selected DTB/payloads, exact Lucky-only omission and CA reviews, no pending/errors, and publication privacy scan. Existing A/B releases, asset IDs/digests and tags remain unchanged.
+- Daily workflow stays active at `20 20 * * *` (04:20 Asia/Shanghai). The first real scheduled firing has not yet occurred. The manual run establishes the current-head build/publication path; unit and executed-shell tests cover skip, failed-state recovery, and rollback rejection.
+- Download guidance is clarified in release notes and the generator: a full `SHA256SUMS` check requires all six release assets. The artifact bytes remain tied to the exact build above; this documentation-only follow-up requires no new firmware dispatch.
+- Hardware boot, Wi-Fi/USB behavior, private configuration migration, and Lucky runtime compatibility remain untested for this candidate; `live_acceptance=not-run`, `stable_eligible=false`.
+- Local evidence is retained under `work/daily-promotion-20261027/`; it is not committed. The temporary `s20p-rolling-a` heartbeat is removed only after final remote verification; daily GitHub Actions continues independently.

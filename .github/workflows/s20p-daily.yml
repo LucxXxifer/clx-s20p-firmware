@@ -314,8 +314,9 @@ jobs:
 
           Upstream commit: ${GH_UPSTREAM_COMMIT}
           Wrapper commit: ${GH_BUILD_COMMIT}
-          The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, Go x509 and preservation checks. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
+          The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, scoped Go x509 and preservation checks. The verified installation guide below discloses the exact Go security status and all retained unpatched prebuilts. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
           NOTES
+          cat "$assets_dir/INSTALLATION.md" >> release-notes.md
           shopt -s nullglob
           assets=("$assets_dir"/*)
           [[ ${#assets[@]} == 6 ]]

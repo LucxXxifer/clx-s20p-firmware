@@ -375,7 +375,9 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
         "upstream_commit": upstream_commit,
         "source_lock_sha256": source.get("source_lock_sha256"),
         "public_key_sha256": signed["image_trust"]["public_key_sha256"],
-        "go_security": {"policy_sha256": go_report["policy_sha256"],
+        "go_security": {"status": go_report["status"],
+                        "known_exceptions": go_report["known_exceptions"],
+                        "policy_sha256": go_report["policy_sha256"],
                         "binary_count": len(go_report["binaries"]),
                         "versions": sorted({row["go_version"] for row in go_report["binaries"]})},
     }
@@ -444,6 +446,18 @@ def checksum_lines(directory, exclude=()):
     return "\n".join(rows) + "\n"
 
 
+def security_exception_notice(security):
+    return "\n\n".join(
+        "QuickStart remains unpatched for GO-2026-6809 (CVE-2026-111943). "
+        f"The retained official 0.13.0 prebuilt at `{row['path']}` embeds `{row['go_version']}` "
+        f"and has SHA256 `{row['sha256']}`. It is the sole exact-byte legacy exception; "
+        "other image Go executables must pass the patched-version and linked-x509 checks. "
+        "The CA trust-store update only protects TLS calls that use that store and does not patch this binary. "
+        f"Official source archive: {row['source_archive_url']} (SHA256 `{row['source_archive_sha256']}`). "
+        "This candidate is not fully patched for this advisory."
+        for row in security["known_exceptions"])
+
+
 def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, build_commit, upstream_commit):
     outer = Path(artifact_dir)
     archive = verify_outer_artifact(outer, run_id, run_attempt)
@@ -486,7 +500,11 @@ Use only on the S20P (`clx,s20p`) running the matching 25.12/APK family. In LuCI
 
 ## Validation limits
 
-The exact run passed its same-build package, signed-feed, source, ABI, image-safety, CA revocation, Go x509 and preservation checks. Go checks cover image ELF build metadata and linked verifier constants; post-install downloads and private service binaries are outside this image audit. This does not establish stable operation, Wi-Fi/USB behavior, private service compatibility, or configuration migration. This build is not bit-identical to the historical image.
+The exact run passed its same-build package, signed-feed, source, ABI, image-safety, CA revocation, scoped Go x509 and preservation checks. Go checks cover image ELF build metadata and linked verifier constants, with every known exception disclosed below; post-install downloads and private service binaries are outside this image audit. This does not establish stable operation, Wi-Fi/USB behavior, private service compatibility, or configuration migration. This build is not bit-identical to the historical image.
+
+## Go x509 security status: {verified['go_security']['status']}
+
+{security_exception_notice(verified['go_security']) or 'No legacy prebuilt exception is present in this image Go inventory.'}
 """
     (output / "INSTALLATION.md").write_text(guide)
     metadata = {
@@ -540,6 +558,9 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
     guide = (output / "INSTALLATION.md").read_text()
     if str(run_id) not in guide or build_commit not in guide or "not a stable release" not in guide.lower():
         raise ValueError("release installation guidance lacks candidate provenance/limits")
+    notice = security_exception_notice(verified["go_security"])
+    if notice and notice not in guide:
+        raise ValueError("release installation guidance hides a known security exception")
     return {"pass": True, "image_sha256": verified["image_sha256"], "kernel_abi": verified["kernel_abi"]}
 
 

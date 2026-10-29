@@ -2,6 +2,19 @@
   "schema_version": 1,
   "advisory": "https://pkg.go.dev/vuln/GO-2026-6809",
   "cve": "CVE-2026-111943",
+  "legacy_prebuilt_exceptions": [
+    {
+      "id": "quickstart-0.13.0-arm64-go1.25.0",
+      "path": "/usr/sbin/quickstart",
+      "sha256": "64d4fc08abbc6be1689ea278d2db83c14e5a129ba69e0c8153eb07446f48fc11",
+      "go_version": "go1.25.0",
+      "x509_verify_linked": true,
+      "distrusted_spki_count": 0,
+      "source_archive_url": "https://github.com/linkease/istore-packages/releases/download/prebuilt/quickstart-binary-0.13.0.tar.gz",
+      "source_archive_sha256": "40eeaba1fbb4cfb732cb5c4759103d9307cb46b83f98b4514934d3e13e8c945b",
+      "reason": "Retain the existing dashboard prebuilt; it remains unpatched for GO-2026-6809. No reviewed rebuilt upstream binary is available."
+    }
+  ],
   "feed_repository": "https://github.com/immortalwrt/packages",
   "feed_commit": "d200499b31751dc5c72905f37a747712f009f155",
   "upstream_repository": "https://github.com/openwrt/packages",

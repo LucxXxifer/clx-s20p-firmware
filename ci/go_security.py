@@ -79,6 +79,17 @@ def require_patched(version):
         raise ValueError("unpatched or unreviewed Go version: " + version)
 
 
+def binary_security(row):
+    for exception in POLICY.get("legacy_prebuilt_exceptions", []):
+        if all(row.get(key) == exception[key] for key in
+               ("path", "sha256", "go_version", "x509_verify_linked", "distrusted_spki_count")):
+            return {"security_status": "legacy-unpatched-prebuilt", "exception_id": exception["id"]}
+    require_patched(row.get("go_version"))
+    if row["x509_verify_linked"] and row["distrusted_spki_count"] != 8:
+        raise ValueError("linked x509 verifier lacks all eight distrust constants: " + row["path"])
+    return {"security_status": "patched"}
+
+
 def inspect_elf(data, name):
     if data[:4] != b"\x7fELF":
         return None
@@ -106,13 +117,12 @@ def inspect_elf(data, name):
         offset = data.find(MAGIC, offset + 1)
     if version is None:
         raise ValueError("malformed/unsupported Go build info: " + name)
-    require_patched(version)
     linked = data.find(b"crypto/x509.(*Certificate).Verify") >= 0
     hashes = sum(data.find(value.encode()) >= 0 for value in DISTRUSTED_SPKI)
-    if linked and hashes != 8:
-        raise ValueError("linked x509 verifier lacks all eight distrust constants: " + name)
-    return {"path": name, "sha256": hashlib.sha256(data).hexdigest(), "go_version": version,
-            "x509_verify_linked": linked, "distrusted_spki_count": hashes}
+    row = {"path": name, "sha256": hashlib.sha256(data).hexdigest(), "go_version": version,
+           "x509_verify_linked": linked, "distrusted_spki_count": hashes}
+    row.update(binary_security(row))
+    return row
 
 
 def inspect_rootfs(root, payload):
@@ -128,7 +138,10 @@ def inspect_rootfs(root, payload):
                 row = inspect_elf(data, "/" + path.relative_to(root).as_posix())
                 if row is not None:
                     binaries.append(row)
-    report = {"schema_version": 1, "status": "pass", "policy_sha256": sha256(POLICY_PATH),
+    exceptions = [item for item in POLICY.get("legacy_prebuilt_exceptions", [])
+                  if any(row.get("exception_id") == item["id"] for row in binaries)]
+    report = {"schema_version": 2, "status": "pass_with_known_exception" if exceptions else "pass",
+              "policy_sha256": sha256(POLICY_PATH), "known_exceptions": exceptions,
               "rootfs_sha256": sha256(payload), "binaries": binaries,
               "scope": "image ELF Go build info and linked x509 constants; no target execution or post-install downloads"}
     verify_report(report, report["rootfs_sha256"])
@@ -136,7 +149,7 @@ def inspect_rootfs(root, payload):
 
 
 def verify_report(report, rootfs_sha256):
-    if (report.get("schema_version") != 1 or report.get("status") != "pass"
+    if (report.get("schema_version") != 2
             or report.get("policy_sha256") != sha256(POLICY_PATH)
             or report.get("rootfs_sha256") != rootfs_sha256 or not SHA256.fullmatch(rootfs_sha256)):
         raise ValueError("Go security report policy/payload/status mismatch")
@@ -152,13 +165,20 @@ def verify_report(report, rootfs_sha256):
                 or not SHA256.fullmatch(str(row.get("sha256")))
                 or type(row.get("x509_verify_linked")) is not bool
                 or type(row.get("distrusted_spki_count")) is not int
-                or not 0 <= row["distrusted_spki_count"] <= 8
-                or (row["x509_verify_linked"] and row["distrusted_spki_count"] != 8)):
+                or not 0 <= row["distrusted_spki_count"] <= 8):
             raise ValueError("invalid Go binary security evidence")
         names.add(name)
-        require_patched(row.get("go_version"))
+        expected = binary_security(row)
+        actual = {key: row[key] for key in ("security_status", "exception_id") if key in row}
+        if actual != expected:
+            raise ValueError("Go security report binary classification mismatch")
     if not set(REQUIRED_BINARIES) <= names:
         raise ValueError("required Docker Go binaries missing from image/security evidence")
+    exceptions = [item for item in POLICY.get("legacy_prebuilt_exceptions", [])
+                  if any(row.get("exception_id") == item["id"] for row in rows)]
+    expected_status = "pass_with_known_exception" if exceptions else "pass"
+    if report.get("status") != expected_status or report.get("known_exceptions") != exceptions:
+        raise ValueError("Go security report known exception disclosure/status mismatch")
 
 
 def main():

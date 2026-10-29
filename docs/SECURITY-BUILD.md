@@ -12,12 +12,28 @@
 
 既有來源鎖定、套件保存、APK signed feed、kernel ABI、CA 撤信及映像容量檢查全部保留。新增檢查在完整編譯及 rootfs 抽取後執行：
 
-1. 掃描 image 內全部 ELF 的 Go build info；只接受已審核系列的安全版本（Go 1.26.10+／1.27.3+）。未知系列及 development／RC 版本需另行審核。
+1. 掃描 image 內全部 ELF 的 Go build info；除下述唯一精確的 QuickStart 例外外，只接受已審核系列的安全版本（Go 1.26.10+／1.27.3+）。未知系列及 development／RC 版本需另行審核。
 2. 如連入 `crypto/x509.(*Certificate).Verify`，必須找到官方的全部 8 個 SPKI 拒絕清單常數。沒有連入 verifier 的程式仍須使用安全 Go 版本。
 3. `docker`、`dockerd`、`containerd`、`runc` 四個既有程式都必須在檢查清單內；不以移除 Docker 來避過檢查。
-4. `reports/go-x509-security.json` 保存每個程式的 SHA256、Go 版本、verifier／常數證據，並綁定原始 SquashFS SHA256 與檢查政策 SHA256。缺報告、版本不合格或 payload 不同，均不得發佈候選版。
+4. `reports/go-x509-security.json` schema 2 保存每個程式的 SHA256、Go 版本、verifier／常數證據及分類，並綁定原始 SquashFS SHA256 與檢查政策 SHA256。缺報告、未審核的舊版本或 payload 不同，均不得發佈候選版。存在例外時只可標為 `pass_with_known_exception`，並列出完整 `known_exceptions`；發佈驗證拒絕隱藏或改寫此狀態。
 
 報告與所有原有證據進入同次編譯 archive 及其 checksum。每日排程仍是上海時間 04:20；手動安全建置使用單次 `force=true`，沒有設定循環重試。全部檢查通過後只發佈 rolling prerelease，保留歷史 A／B。
+
+## 保留 QuickStart 的已知安全例外
+
+保留 `quickstart`、`luci-app-quickstart`、`luci-i18n-quickstart-zh-cn`，不移除既有首頁功能。各 Go 程式使用各自內嵌的 runtime，並不要求全系統 Go 版本相同；沒有證據顯示此次 toolchain 更新會造成 QuickStart 的 Go 版本相容性衝突，但候選的實機功能仍須另行驗收。
+
+固定來源 `kenzok8/small-package@a5fb03c51b55e0627c55ef9fe158003119a6f2bc` 的 QuickStart 0.13.0 使用[官方預編譯 archive](https://github.com/linkease/istore-packages/releases/download/prebuilt/quickstart-binary-0.13.0.tar.gz)，`Build/Compile` 為空。至 2026-10-29 查核時，官方同名 asset 尚未更新，也未找到可公開重編的後端來源；因此升級 Go recipes 無法修補這個預編譯檔。
+
+唯一例外必須同時符合：
+
+- 路徑 `/usr/sbin/quickstart`；SHA256 `64d4fc08abbc6be1689ea278d2db83c14e5a129ba69e0c8153eb07446f48fc11`。
+- build info 為 `go1.25.0`、已連入 x509 verifier，八項新版 SPKI 常數均不存在。
+- 官方 archive SHA256 為 `40eeaba1fbb4cfb732cb5c4759103d9307cb46b83f98b4514934d3e13e8c945b`，同時由鎖定 recipe 的 `PKG_HASH` 核對。
+
+報告將它標為 `legacy-unpatched-prebuilt`；不同 bytes、路徑、版本或其他舊版 Go 程式均不適用此例外。`BUILD-VERIFICATION.json`、`INSTALLATION.md` 及 GitHub release 內文同步揭露它未修補 GO-2026-6809／CVE-2026-111943，不宣稱全機已全面修補。
+
+原版 init script 以 Unix socket `/var/run/quickstart/local.sock` 啟動，並非直接新增公開 TCP listener；這是來源檢查，不代表所有 LuCI 轉接 API 都沒有風險。binary 連入系統 roots 支援；系統 CA 撤信只可保護實際採用該 trust store 的 TLS 呼叫，無法代替 binary 修補，也尚未逐一確認其應用呼叫使用的 roots。
 
 ## 範圍與限制
 

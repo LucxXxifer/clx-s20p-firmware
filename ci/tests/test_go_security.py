@@ -4,8 +4,28 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from ci import go_security
+
+
+QUICKSTART_EXCEPTION = {
+    "id": "quickstart-0.13.0-arm64-go1.25.0",
+    "path": "/usr/sbin/quickstart",
+    "sha256": "64d4fc08abbc6be1689ea278d2db83c14e5a129ba69e0c8153eb07446f48fc11",
+    "go_version": "go1.25.0", "x509_verify_linked": True,
+    "distrusted_spki_count": 0,
+    "source_archive_url": "https://github.com/linkease/istore-packages/releases/download/prebuilt/quickstart-binary-0.13.0.tar.gz",
+    "source_archive_sha256": "40eeaba1fbb4cfb732cb5c4759103d9307cb46b83f98b4514934d3e13e8c945b",
+    "reason": "Retain the existing dashboard prebuilt; it remains unpatched for GO-2026-6809. No reviewed rebuilt upstream binary is available.",
+}
+
+
+def legacy_row():
+    row = {key: QUICKSTART_EXCEPTION[key] for key in
+           ("path", "sha256", "go_version", "x509_verify_linked", "distrusted_spki_count")}
+    row.update(security_status="legacy-unpatched-prebuilt", exception_id=QUICKSTART_EXCEPTION["id"])
+    return row
 
 
 def elf(version="go1.26.10", verify=True, hashes=True):
@@ -20,6 +40,54 @@ def elf(version="go1.26.10", verify=True, hashes=True):
 
 
 class GoSecurityTests(unittest.TestCase):
+    def test_legacy_exception_policy_is_one_exact_pinned_official_prebuilt(self):
+        self.assertEqual(go_security.POLICY.get("legacy_prebuilt_exceptions"), [QUICKSTART_EXCEPTION])
+
+    def test_exact_legacy_elf_is_reported_unpatched_and_every_changed_fact_is_rejected(self):
+        data = elf("go1.25.0", hashes=False)
+        exception = dict(QUICKSTART_EXCEPTION, sha256=hashlib.sha256(data).hexdigest())
+        with patch.dict(go_security.POLICY, legacy_prebuilt_exceptions=[exception]):
+            try:
+                row = go_security.inspect_elf(data, exception["path"])
+            except ValueError as error:
+                self.fail("exact reviewed prebuilt must be explicitly classified: " + str(error))
+            self.assertEqual(row["security_status"], "legacy-unpatched-prebuilt")
+            self.assertEqual(row["exception_id"], exception["id"])
+            for binary, path in ((data + b"changed", exception["path"]),
+                                 (data, "/usr/bin/other"),
+                                 (elf("go1.25.1", hashes=False), exception["path"]),
+                                 (elf("go1.25.0", verify=False, hashes=False), exception["path"])):
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    go_security.inspect_elf(binary, path)
+
+    def test_legacy_report_requires_exact_facts_status_and_full_disclosure(self):
+        binaries = [{"path": name, "sha256": "a" * 64, "go_version": "go1.26.10",
+                     "x509_verify_linked": True, "distrusted_spki_count": 8,
+                     "security_status": "patched"} for name in go_security.REQUIRED_BINARIES]
+        valid = {"schema_version": 2, "status": "pass_with_known_exception",
+                 "policy_sha256": go_security.sha256(go_security.POLICY_PATH),
+                 "rootfs_sha256": "b" * 64, "binaries": binaries + [legacy_row()],
+                 "known_exceptions": [QUICKSTART_EXCEPTION]}
+        try:
+            go_security.verify_report(valid, valid["rootfs_sha256"])
+        except ValueError as error:
+            self.fail("disclosed exact prebuilt must pass the scoped policy: " + str(error))
+        edits = [lambda d: d.update(status="pass"), lambda d: d.update(known_exceptions=[]),
+                 lambda d: d["known_exceptions"][0].update(source_archive_sha256="0" * 64),
+                 lambda d: d["binaries"][-1].update(security_status="patched"),
+                 lambda d: d["binaries"][-1].update(exception_id="other"),
+                 lambda d: d["binaries"][-1].update(sha256="0" * 64),
+                 lambda d: d["binaries"][-1].update(go_version="go1.25.1"),
+                 lambda d: d["binaries"][-1].update(path="/usr/bin/other"),
+                 lambda d: d["binaries"][-1].update(x509_verify_linked=False),
+                 lambda d: d["binaries"][-1].update(distrusted_spki_count=1),
+                 lambda d: d["binaries"][0].update(go_version="go1.26.9")]
+        for edit in edits:
+            report = json.loads(json.dumps(valid))
+            edit(report)
+            with self.subTest(report=report), self.assertRaises(ValueError):
+                go_security.verify_report(report, valid["rootfs_sha256"])
+
     def test_patched_both_series_and_later_patch_versions_pass(self):
         for version in ("go1.26.10", "go1.26.11", "go1.27.3", "go1.27.4"):
             with self.subTest(version=version):

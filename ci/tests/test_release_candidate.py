@@ -84,6 +84,29 @@ class ReleaseCandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Go security report"):
             self.prepare()
 
+    def test_legacy_quickstart_is_explicit_in_release_metadata_and_guide(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, "reports/go-x509-security.json", add_legacy_quickstart)
+        result = self.prepare()
+        security = result["verified"]["go_security"]
+        self.assertEqual(security.get("status"), "pass_with_known_exception")
+        self.assertEqual(security.get("known_exceptions"), go_security.POLICY["legacy_prebuilt_exceptions"])
+        guide = (self.output / "INSTALLATION.md").read_text()
+        self.assertIn("QuickStart remains unpatched for GO-2026-6809", guide)
+        self.assertIn("go1.25.0", guide)
+        self.assertIn(go_security.POLICY["legacy_prebuilt_exceptions"][0]["sha256"], guide)
+
+    def test_release_rejects_hidden_legacy_warning_even_with_new_checksums(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, "reports/go-x509-security.json", add_legacy_quickstart)
+        self.prepare()
+        guide = self.output / "INSTALLATION.md"
+        guide.write_text(guide.read_text().replace("QuickStart remains unpatched for GO-2026-6809", "All binaries patched"))
+        (self.output / "SHA256SUMS").write_text(release.checksum_lines(self.output, exclude={"SHA256SUMS"}))
+        with self.assertRaisesRegex(ValueError, "exception"):
+            release.verify_release_assets(self.output, run_id="1234", run_attempt="2",
+                build_commit=TEST_WRAPPER_COMMIT, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
     def test_rejects_a_bundle_with_invalid_internal_checksum(self):
         release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, tamper_checksum=True)
         with self.assertRaisesRegex(ValueError, "SHA256SUMS"):
@@ -290,6 +313,14 @@ class ReleaseCandidateTests(unittest.TestCase):
             )
 
 
+def add_legacy_quickstart(report):
+    exception = go_security.POLICY["legacy_prebuilt_exceptions"][0]
+    report.update(status="pass_with_known_exception", known_exceptions=[exception])
+    report["binaries"].append({**{key: exception[key] for key in
+        ("path", "sha256", "go_version", "x509_verify_linked", "distrusted_spki_count")},
+        "security_status": "legacy-unpatched-prebuilt", "exception_id": exception["id"]})
+
+
 def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                     upstream_commit=None, preservation_status="pass", signed_feed_status="pass",
                     package_count_delta=0, include_lucky=False, unsafe_member=None,
@@ -342,11 +373,11 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
             }},
         }),
         "reports/go-x509-security.json": json_bytes({
-            "schema_version": 1, "status": "pass",
+            "schema_version": 2, "status": "pass", "known_exceptions": [],
             "policy_sha256": go_security.sha256(go_security.POLICY_PATH),
             "rootfs_sha256": hashlib.sha256(TEST_ROOTFS_PAYLOAD).hexdigest(),
             "binaries": [{"path": name, "sha256": "a" * 64, "go_version": "go1.26.10",
-                          "x509_verify_linked": True, "distrusted_spki_count": 8}
+                          "x509_verify_linked": True, "distrusted_spki_count": 8, "security_status": "patched"}
                          for name in go_security.REQUIRED_BINARIES],
         }),
         "reports/capture.json": json_bytes({

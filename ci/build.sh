@@ -78,6 +78,9 @@ fi
     echo 'Build did not produce the required pre-clean capture.' >&2; exit 1;
 }
 verify_runtime_inputs
+python3 ci/go_security.py inspect \
+    --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
+    --output output/reports/go-x509-security.json
 set +e
 gate_command=(python3)
 if [[ $(id -u) != 0 && -z ${FAKEROOTKEY:-} ]]; then

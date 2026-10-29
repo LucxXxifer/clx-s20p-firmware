@@ -1,5 +1,7 @@
 # CLX-S20P 每日上游候選編譯
 
+2026-10-29 安全建置更新：沿用上游 CA `20260816-r2` 撤信修補，精確回補 OpenWrt 官方 Go 1.26.10／1.27.3 compiler recipes，並以實際 image ELF 的 Go build info／x509 拒絕清單阻擋未修補候選。來源、檢查範圍與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。歷史候選不因新檢查加入而自動成為已驗證的修補版。
+
 GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，以已審查起點 `9f397975c7b47ce6986a6e39529d2f72fd5c729d` 驗證上游是其後代，再把該次精確 head SHA 傳給編譯器。只追蹤上游，不自動同步或放寬其餘38個 Git source pins、原 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置。
 
 既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。

@@ -667,11 +667,17 @@ path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
 path.write_text(json.dumps({'status': {0:'pass', 1:'fail', 2:'review_required'}[status]}))
 sys.exit(status)
 ''')
+        (self.repo / "ci/go_security.py").write_text('''import json, os, pathlib, sys
+status = int(os.environ.get('S20P_TEST_GO_EXIT', '0'))
+path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
+path.write_text(json.dumps({'status': 'pass' if status == 0 else 'fail'}))
+sys.exit(status)
+''')
         self.github_output = self.repo / "github-output"
 
-    def build(self, gate=0, compile_exit=0):
+    def build(self, gate=0, compile_exit=0, go_exit=0):
         environment = dict(os.environ, S20P_TEST_GATE_EXIT=str(gate),
-                           S20P_TEST_BUILD_EXIT=str(compile_exit), GITHUB_RUN_ID="123",
+                           S20P_TEST_BUILD_EXIT=str(compile_exit), S20P_TEST_GO_EXIT=str(go_exit), GITHUB_RUN_ID="123",
                            GITHUB_RUN_ATTEMPT="1", GITHUB_OUTPUT=str(self.github_output))
         return subprocess.run(["bash", str(self.repo / "ci/build.sh")],
                               capture_output=True, text=True, env=environment)
@@ -705,6 +711,12 @@ sys.exit(status)
         self.assertEqual(result.returncode, 7, result.stderr + result.stdout)
         status = json.loads((self.repo / "output/reports/build-status.json").read_text())
         self.assertEqual(status["build_exit"], 7)
+        self.assertFalse(self.github_output.exists())
+        self.assertFalse((self.repo / "output/release").exists())
+
+    def test_go_security_failure_propagates_and_cannot_publish(self):
+        result = self.build(go_exit=1)
+        self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertFalse(self.github_output.exists())
         self.assertFalse((self.repo / "output/release").exists())
 

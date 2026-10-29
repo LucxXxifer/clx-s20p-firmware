@@ -3,21 +3,10 @@
 
 update_golang() {
     if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
-        local go_tree=./feeds/packages/lang/golang
-        local compiler="$go_tree/golang1.27/Makefile"
-        # The locked packages feed already supplies the compiler required by
-        # Tailscale 1.104.1 (go.mod: go 1.27.1). The generic 26.x override removes
-        # this versioned host recipe and cannot build that selected package.
-        if [[ ! -f $compiler || ! -f $go_tree/golang/Makefile ]] ||
-           ! grep -Fxq 'PKG_NAME:=golang1.27' "$compiler" ||
-           ! grep -Fxq 'GO_VERSION_MAJOR_MINOR:=1.27' "$compiler" ||
-           ! grep -Fxq 'GO_VERSION_PATCH:=1' "$compiler" ||
-           ! grep -Fxq 'HOST_BUILD_DEPENDS:=golang$(PKG_VERSION)/host' "$go_tree/golang/Makefile"; then
-            echo 'Error: locked S20P feed lacks the required Go 1.27.1 host recipe.' >&2
-            return 1
-        fi
-        echo 'S20P CI: preserving the locked feed Go 1.27.1 host compiler and default Go alias.'
-        return 0
+        # Retain versioned host recipes needed by Tailscale. Backport only the
+        # exact upstream security recipes; never replace the entire Go tree.
+        python3 "${S20P_CI_DIR:?}/go_security.py" prepare --source-root "$PWD"
+        return $?
     fi
     if [[ -d ./feeds/packages/lang/golang ]]; then
         echo "正在更新 golang 软件包..."

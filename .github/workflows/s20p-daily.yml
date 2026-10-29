@@ -314,7 +314,7 @@ jobs:
 
           Upstream commit: ${GH_UPSTREAM_COMMIT}
           Wrapper commit: ${GH_BUILD_COMMIT}
-          The candidate passed same-build package, signed-feed, source, ABI, image-safety and preservation checks. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
+          The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, Go x509 and preservation checks. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
           NOTES
           shopt -s nullglob
           assets=("$assets_dir"/*)

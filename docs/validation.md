@@ -1,5 +1,13 @@
 # 本地驗證記錄
 
+## 2026-10-29 CA／Go 安全建置更新
+
+- `python3 -m unittest discover -s ci/tests -q`：286 tests，PASS。新增來源 recipe 漂移／default alias／先驗證後寫入、舊 Go／不完整 x509 拒絕清單／錯誤 rootfs 報告／不合格產物禁止發佈的驗證。
+- 兩個實際 locked recipe 經回補後，逐位元等於 OpenWrt 官方 Go 1.26.10／1.27.3 的固定提交。來源 tarball SHA256 與 Go 官方下載清單一致；兩個官方 `verify.go` 均含相同 8 個 SPKI hashes。
+- 真實 Linux ARM64 ELF 負對照：Go 1.27.1 產物被拒絕，解析結果與 `go version -m` 一致；沒有執行目標程式。韌體完整編譯只在 GitHub Actions 執行。
+- `bash ci/tests/test_network.sh`、變更 shell 的 `bash -n`、workflow actionlint、`git diff --check` 通過。`ci/build.sh` ShellCheck warning 檢查通過；原 package module 的既有 warning 未擴大處理。
+- 驗證方法與範圍見 [SECURITY-BUILD.md](SECURITY-BUILD.md)。本地測試不等同雲端產物或實機驗收；沒有改動現用 S20P。
+
 日期：2026-10-24。範圍是建立可審查的 S20P GitHub Actions 專用建置庫，沒有修改路由器、ER01 或 Mac 網路設定。
 
 ## 已驗證

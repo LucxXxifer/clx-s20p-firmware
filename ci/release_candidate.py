@@ -12,6 +12,7 @@ import tarfile
 import tempfile
 import zipfile
 import upstream_sync
+import go_security
 
 
 UPSTREAM_BASE_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
@@ -357,6 +358,8 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     for payload in (kernel_payload, rootfs_payload):
         if payload.is_symlink() or not payload.is_file():
             raise ValueError("captured S20P partition payload is missing: " + str(payload.relative_to(root)))
+    go_report = read_json(root, "reports/go-x509-security.json")
+    go_security.verify_report(go_report, sha256_file(rootfs_payload))
     verify_sysupgrade_payload(image_path, kernel_payload, rootfs_payload, safety)
     images = [path for path in root.rglob("*.bin") if IMAGE_RE.fullmatch(path.relative_to(root).as_posix())]
     if len(images) != 1 or images[0] != image_path:
@@ -372,6 +375,9 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
         "upstream_commit": upstream_commit,
         "source_lock_sha256": source.get("source_lock_sha256"),
         "public_key_sha256": signed["image_trust"]["public_key_sha256"],
+        "go_security": {"policy_sha256": go_report["policy_sha256"],
+                        "binary_count": len(go_report["binaries"]),
+                        "versions": sorted({row["go_version"] for row in go_report["binaries"]})},
     }
 
 
@@ -480,7 +486,7 @@ Use only on the S20P (`clx,s20p`) running the matching 25.12/APK family. In LuCI
 
 ## Validation limits
 
-The exact run passed its same-build package, signed-feed, source, ABI, image-safety and preservation checks. This does not establish stable operation, Wi-Fi/USB behavior, private service compatibility, or configuration migration. This build is not bit-identical to the historical image.
+The exact run passed its same-build package, signed-feed, source, ABI, image-safety, CA revocation, Go x509 and preservation checks. Go checks cover image ELF build metadata and linked verifier constants; post-install downloads and private service binaries are outside this image audit. This does not establish stable operation, Wi-Fi/USB behavior, private service compatibility, or configuration migration. This build is not bit-identical to the historical image.
 """
     (output / "INSTALLATION.md").write_text(guide)
     metadata = {
@@ -492,6 +498,7 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
         "kmod_count": verified["kmod_count"], "luci_app_count": verified["luci_app_count"],
         "source_lock_sha256": verified["source_lock_sha256"],
         "public_key_sha256": verified["public_key_sha256"],
+        "go_security": verified["go_security"],
         "live_acceptance": "not-run", "stable_eligible": False,
     }
     (output / "BUILD-VERIFICATION.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
@@ -527,6 +534,7 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
             metadata.get("wrapper_commit") != build_commit or
             metadata.get("image_sha256") != verified["image_sha256"] or
             metadata.get("upstream_commit") != upstream_commit or
+            metadata.get("go_security") != verified["go_security"] or
             metadata.get("live_acceptance") != "not-run" or metadata.get("stable_eligible") is not False):
         raise ValueError("release build verification record does not match exact candidate")
     guide = (output / "INSTALLATION.md").read_text()

@@ -18,6 +18,7 @@ import zipfile
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
 import upstream_sync
+import go_security
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
@@ -67,6 +68,20 @@ class ReleaseCandidateTests(unittest.TestCase):
     def test_rejects_a_bundle_from_another_wrapper_commit(self):
         release_fixture(self.artifact, commit="a" * 40)
         with self.assertRaisesRegex(ValueError, "wrapper commit"):
+            self.prepare()
+
+    def test_rejects_unpatched_go_evidence_even_with_recomputed_archive_checksums(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, "reports/go-x509-security.json",
+                             lambda data: data["binaries"][0].update(go_version="go1.26.9"))
+        with self.assertRaisesRegex(ValueError, "unpatched"):
+            self.prepare()
+
+    def test_rejects_go_report_for_another_rootfs(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, "reports/go-x509-security.json",
+                             lambda data: data.update(rootfs_sha256="0" * 64))
+        with self.assertRaisesRegex(ValueError, "Go security report"):
             self.prepare()
 
     def test_rejects_a_bundle_with_invalid_internal_checksum(self):
@@ -325,6 +340,14 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                 "kmods": 0, "luci_apps": 0,
                 "reviewed_optional_absent": [] if include_lucky else sorted(release.B_OPTIONAL_PACKAGE_NAMES),
             }},
+        }),
+        "reports/go-x509-security.json": json_bytes({
+            "schema_version": 1, "status": "pass",
+            "policy_sha256": go_security.sha256(go_security.POLICY_PATH),
+            "rootfs_sha256": hashlib.sha256(TEST_ROOTFS_PAYLOAD).hexdigest(),
+            "binaries": [{"path": name, "sha256": "a" * 64, "go_version": "go1.26.10",
+                          "x509_verify_linked": True, "distrusted_spki_count": 8}
+                         for name in go_security.REQUIRED_BINARIES],
         }),
         "reports/capture.json": json_bytes({
             "status": "captured", "image": IMAGE_PATH, "kernel_abi": TEST_KERNEL_ABI,

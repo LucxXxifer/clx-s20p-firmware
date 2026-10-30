@@ -41,7 +41,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Resolve exact upstream head and prepare run-local inputs
+      - name: Resolve system, security and plugin sources and prepare run-local inputs
         id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
@@ -116,10 +116,17 @@ jobs:
             fi
           done <<<"$previous_runs"
 
+          component_args=(resolve --output "$RUNNER_TEMP/s20p-components.json")
+          if [[ -n $previous_state ]]; then
+            component_args+=(--previous-state "$previous_state" --wrapper-commit "$GITHUB_SHA")
+          fi
+          python3 ci/components.py "${component_args[@]}"
+
           prepare_args=(
             prepare --lock ci/sources.lock.json --baseline ci/baseline
             --head "$head" --status "$status" --merge-base "$merge_base"
             --wrapper-commit "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/s20p-inputs"
+            --components "$RUNNER_TEMP/s20p-components.json"
           )
           [[ $FORCE == true ]] && prepare_args+=(--force)
           if [[ -n $previous_state ]]; then
@@ -148,6 +155,13 @@ jobs:
           bash ci/tests/test_network.sh
           bash -n ci/build.sh ci/capture.sh ci/setup-runner.sh build.sh
 
+      - name: Run dashboard Lua and frontend regression checks
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lua5.1
+          node ci/dashboard/frontend-test.cjs
+          for test in ci/dashboard/tests/test_*.lua; do lua5.1 "$test"; done
+
       - name: Install reviewed runner dependencies
         if: ${{ steps.resolve.outputs.should_build == 'true' }}
         run: bash ci/setup-runner.sh
@@ -161,6 +175,7 @@ jobs:
           S20P_BASELINE_DIR: ${{ steps.resolve.outputs.inputs_dir }}/baseline
           S20P_UPSTREAM_EVIDENCE: ${{ steps.resolve.outputs.inputs_dir }}/upstream-resolution.json
           S20P_UPSTREAM_COMMIT: ${{ steps.resolve.outputs.upstream_commit }}
+          S20P_COMPONENT_INPUTS: ${{ steps.resolve.outputs.inputs_dir }}/component-resolution.json
         run: |
           echo 'build_started=true' >> "$GITHUB_OUTPUT"
           bash ci/build.sh
@@ -230,6 +245,7 @@ jobs:
             --upstream-commit "${{ steps.resolve.outputs.upstream_commit }}" \
             --build-started "$started" --outcome "$outcome" \
             --previous-attempted '${{ steps.resolve.outputs.previous_attempted }}' \
+            --components '${{ steps.resolve.outputs.inputs_dir }}/component-resolution.json' \
             --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
 
       - name: Upload exact run state

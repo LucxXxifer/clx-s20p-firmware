@@ -617,7 +617,8 @@ DOCKER_STACK_PATCHES_ENABLED="$DOCKER_STACK_PATCHES_ENABLED" \
     HONK_PACKAGES_ENABLED="$HONK_PACKAGES_ENABLED" \
     "$BASE_PATH/update.sh" "$REPO_URL" "$REPO_BRANCH" "$BUILD_DIR" "$COMMIT_HASH"
 
-if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+if [[ ${S20P_AUTOBUILD:-0} == 1 && -z ${S20P_COMPONENT_INPUTS:-} ]]; then
+    # Exact historical recovery only. Daily inputs retain their resolved recipes.
     python3 "$REPO_ROOT/ci/original_recipe_pins.py" --lock "$S20P_SOURCE_LOCK" \
         --feed "$BASE_PATH/../$BUILD_DIR/custom_feed"
 fi
@@ -653,6 +654,7 @@ if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
         --package-info "$PWD/tmp/.packageinfo" --source-root "$PWD" \
         --output "$S20P_CAPTURE_DIR/provenance/go-host-dependencies.json"
     python3 "$REPO_ROOT/ci/preservation.py" config --config .config \
+        --application-selection \
         --baseline-dir "${S20P_BASELINE_DIR:-$REPO_ROOT/ci/baseline}" \
         --optional-packages "$REPO_ROOT/ci/mobile-usb-packages.txt" \
         --package-info "$PWD/tmp/.packageinfo" \

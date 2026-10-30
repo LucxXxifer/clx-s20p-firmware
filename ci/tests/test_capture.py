@@ -640,6 +640,10 @@ class BuildPolicyTests(unittest.TestCase):
                          "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d"}],
         }))
         (self.repo / "ci/baseline/policy.json").write_text("{}")
+        (self.repo / "ci/components.py").write_text('''import json, pathlib, sys
+path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
+path.write_text(json.dumps({'fixture': 'resolved without network'}))
+''')
         (self.repo / "wrt_core/pre_clone_action.sh").write_text('''#!/usr/bin/env bash
 set -eu
 [[ $S20P_AUTOBUILD == 1 && $S20P_CAPTURE_DIR == "$PWD/output" ]]
@@ -657,6 +661,7 @@ printf '%s\n' raw-root > output/inspection/rootfs.squashfs
 printf '%s\n' extracted-root > output/inspection/rootfs/example
 ''')
         (self.repo / "ci/preservation.py").write_text('''import json, os, pathlib, sys
+assert '--application-selection' in sys.argv
 status = int(os.environ.get('S20P_TEST_GATE_EXIT', '0'))
 approval = pathlib.Path('ci/approved-differences.json')
 if approval.exists():
@@ -673,10 +678,17 @@ path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
 path.write_text(json.dumps({'status': 'pass' if status == 0 else 'fail'}))
 sys.exit(status)
 ''')
+        (self.repo / "ci/dashboard.py").write_text('''import json, os, pathlib, sys
+status = int(os.environ.get('S20P_TEST_DASHBOARD_EXIT', '0'))
+path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
+path.write_text(json.dumps({'status': 'pass' if status == 0 else 'fail'}))
+sys.exit(status)
+''')
         self.github_output = self.repo / "github-output"
 
-    def build(self, gate=0, compile_exit=0, go_exit=0):
+    def build(self, gate=0, compile_exit=0, go_exit=0, dashboard_exit=0):
         environment = dict(os.environ, S20P_TEST_GATE_EXIT=str(gate),
+                           S20P_TEST_DASHBOARD_EXIT=str(dashboard_exit),
                            S20P_TEST_BUILD_EXIT=str(compile_exit), S20P_TEST_GO_EXIT=str(go_exit), GITHUB_RUN_ID="123",
                            GITHUB_RUN_ATTEMPT="1", GITHUB_OUTPUT=str(self.github_output))
         return subprocess.run(["bash", str(self.repo / "ci/build.sh")],
@@ -716,6 +728,12 @@ sys.exit(status)
 
     def test_go_security_failure_propagates_and_cannot_publish(self):
         result = self.build(go_exit=1)
+        self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
+        self.assertFalse(self.github_output.exists())
+        self.assertFalse((self.repo / "output/release").exists())
+
+    def test_dashboard_failure_propagates_and_cannot_publish(self):
+        result = self.build(dashboard_exit=1)
         self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertFalse(self.github_output.exists())
         self.assertFalse((self.repo / "output/release").exists())

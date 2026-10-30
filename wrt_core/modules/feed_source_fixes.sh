@@ -33,6 +33,9 @@ remove_unwanted_packages() {
         packages_net+=("honk")
     fi
     for pkg in "${luci_packages[@]}"; do
+        if [[ ${S20P_AUTOBUILD:-0} == 1 && $pkg == luci-app-adguardhome ]]; then
+            continue
+        fi
         if [[ -d ./feeds/luci/applications/$pkg ]]; then
             \rm -rf ./feeds/luci/applications/$pkg
         fi

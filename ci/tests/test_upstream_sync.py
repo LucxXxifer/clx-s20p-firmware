@@ -223,6 +223,8 @@ class UpstreamResolutionTests(unittest.TestCase):
                              "mobile-usb-packages.txt", "preservation.py", "provenance.py"):
                     shutil.copyfile(CI / name, wrapper / "ci" / name)
                 shutil.copytree(self.baseline, wrapper / "ci/baseline")
+                (wrapper / "ci/components.py").write_text(
+                    "import pathlib,sys\npathlib.Path(sys.argv[sys.argv.index('--output')+1]).write_text('{}')\n")
                 resolved = upstream_sync.resolve_head(
                     self.base_commit, self.base_commit, "identical", self.base_commit, force=True)
                 lock, baseline, evidence = upstream_sync.prepare(

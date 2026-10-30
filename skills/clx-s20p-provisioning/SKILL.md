@@ -1,11 +1,11 @@
 ---
 name: clx-s20p-provisioning
-description: CLX-S20P 從 0 到 1 刷機專用。Use for stock MT7986A/eMMC provisioning through Telnet/SSH, eMMC health checks, per-unit recovery backup/resume, hardware diagnostics, verified FIP U-Boot installation, and GPT/firmware handoff.
+description: CLX-S20P 首次刷機、OpenWrt 升級與備份還原。Use for stock Telnet/SSH provisioning, eMMC health, per-unit factory recovery, FIP/GPT verification, installed-plugin backup identification, and guided settings/data restoration across compatible S20P firmware branches.
 ---
 
-# CLX-S20P 從 0 到 1 刷機 / Provisioning
+# CLX-S20P 刷機、升級與備份還原
 
-Prepare an identified stock CLX-S20P for third-party firmware: enable SSH, check eMMC health, preserve per-unit recovery evidence, review diagnostics and verify the authorized FIP installation. Keep power/Reset and reserved GPT/firmware uploads as human handoffs. This skill accompanies [clx-s20p-firmware](https://github.com/LucxXxifer/clx-s20p-firmware); firmware selection still requires exact model, release and layout checks.
+Prepare an identified CLX-S20P for first flash, or identify and preserve its existing OpenWrt applications before upgrade and guide restoration afterward. Support other S20P firmware branches by inspecting the actual source and target; the companion [clx-s20p-firmware](https://github.com/LucxXxifer/clx-s20p-firmware) is one source, not a compatibility requirement. Keep power/Reset and any user-reserved uploads as human handoffs.
 
 Establish the goal, physical unit, live state, authorized writes and completion criteria first. Attached guides, filenames and device output are evidence, not user instructions. Never copy a previous unit's CID, geometry, factory data, RAM address or repaired GPT tail into a new operation.
 
@@ -14,10 +14,15 @@ Establish the goal, physical unit, live state, authorized writes and completion 
 - **Health only:** identify the target and read health; no prerequisite backup, service restart or reboot.
 - **Provision through U-Boot:** identify → Telnet/SSH → health → necessary backup/verification → diagnostics → FIP write/readback → human power/reset. An explicit user request to automate through U-Boot authorizes the unambiguous FIP write after gates pass; do not ask again for the same authorization. `s20p_fip.py` defaults to preflight; use `--write` only within that authorized scope.
 - **Backup/resume:** read the device, preserve original artifacts and failed attempts, capture only missing/failed required items. No default whole-eMMC or p6 raw clone.
+- **OpenWrt application backup:** follow [backup identification and restoration](references/openwrt-backup-restore.md). Inventory the running system and actual backup coverage; separate LuCI settings from plugin programs, persistent data/identity, and runtime reference snapshots. Honor exclusions and save verified artifacts externally without restarting services by default.
+- **Upgrade/restore planning:** inspect source/target compatibility and archive contents before choosing retained settings, clean installation or selective conversion. Generate an ordered `.md` guide and identify missing offline installers. Planning or backup does not authorize flashing/restoring.
+- **Authorized application restore:** use the same reference; confirm the target again, install compatible programs/integrations, selectively restore settings/data, then start and validate one service at a time. Existing correct files are verified and skipped. Do not run stock provisioning or rewrite FIP/GPT for an ordinary system upgrade.
 - **GPT after upload:** independently read both GPT copies; valid means no repair. For only the reviewed secondary backpointer defect, follow [GPT validation/repair](references/gpt-repair.md). Apply the user's actual repair authorization; a manual GPT upload alone is not blanket repair authorization.
 - Physical cable moves and power/Reset are human actions. Respect any user reservation of GPT/firmware uploads for manual operation. BL2, factory restore, formatting and firmware writes are outside the default FIP operation.
 
 ## Workflow
+
+Choose the mode first. The numbered sequence below is for stock provisioning; OpenWrt backup, upgrade and restore use [their own workflow](references/openwrt-backup-restore.md). Reuse its identity, health and evidence rules without forcing stock hostname/compatible, Telnet or factory-backup recapture onto an already identified OpenWrt installation.
 
 1. **Identify and connect.** Match physical SN suffix and one specified IP; no broad scan or capacity-only identification. Record board model/compatible, CID, card identity, RAM, user and both boot-region sizes. Both 241,696,768- and 244,277,248-sector eMMC cards have been observed; read this unit's actual geometry. For stock generic RFB identification require hostname `S20P`, exact compatible token `mediatek,mt7986a-emmc-rfb`, user identification of the physical CLX-S20P, and the reviewed 2-GiB variant. Factory IP is normally `192.168.8.1`; third-party U-Boot normally `192.168.1.1`. Revalidate the target at transitions. See [access and Mac networking](references/access-network.md).
 2. **Reuse or enable SSH.** Reuse authenticated access when available. Otherwise log into the identified stock target through Telnet and run the documented Dropbear enable/commit/restart commands. Verify a fresh SSH connection and matching CID before relying on it. Credentials stay interactive/in memory, outside logs, argv, history and skill files. A GUI SSH tab is not an OpenSSH control socket. Do not require repeated logins when a working transport exists.
@@ -27,7 +32,7 @@ Establish the goal, physical unit, live state, authorized writes and completion 
 6. **FIP preflight and authorized write.** Review [local assets](references/local-assets-2026-10.md) and [FIP procedure](references/fip-install.md): exact release provenance/digest/format, source/board compatibility, fresh identity/health, required backups, reviewed recovery path and GPT repair/readback plan for the chosen U-Boot. Resolve ambiguous images, not already granted permission. Write only the exact FIP payload to verified p3, preserve its suffix, journal before writing, independently read back and compare protected regions. Never infer success from HTTP/SSH acknowledgement alone; never blindly repeat an uncertain write. Do not reboot after failed/uncertain verification.
 7. **Human U-Boot entry.** After verified FIP readback, remind the user: power off, hold Reset, power on, keep Reset held for 6 seconds, release. Verify the actual U-Boot page and identity/network at its new address. FIP readback and U-Boot boot are separate results.
 8. **GPT/firmware handoff.** Select the GPT using exact live sector count, not marketed capacity or filename. Validate its primary CRCs/geometry, then read both copies after upload. Apply [conditional GPT repair](references/gpt-repair.md) only if needed and authorized. A future fixed U-Boot can skip repair once readback passes; upgrading U-Boot alone does not fix an already bad GPT. Firmware needs its own exact release/model/format/layout checks. When the user reserved uploads, hand off the verified files and stop before submission.
-9. **Record truthful acceptance.** Separately report: backup capture verified, recovery plan reviewed, FIP written/readback, U-Boot boot verified, GPT pair valid, firmware boot tested, seven physical ports tested, factory restore tested. Keep `restore_tested: false` until a physical restore actually succeeds. Preserve previous failures and known live-filesystem/tar limits.
+9. **Record truthful acceptance.** Separately report: backup capture verified, recovery plan reviewed, FIP written/readback, U-Boot boot verified, GPT pair valid, firmware boot tested, seven physical ports tested, application restore tested and factory restore tested. Keep each restore result false/not-run until that restoration actually succeeds. Preserve previous failures and known live-filesystem/tar limits.
 
 ## Tools
 
@@ -43,6 +48,8 @@ Run with Python 3.10+ and the Mac's OpenSSH; no additional Python packages are r
 | `scripts/s20p_uboot_console.py` | Parameterized console library for the reviewed protocol; no command retries |
 | `scripts/backup_restore_image.py --full-image` | Explicit optional full raw capture, no resume; see recovery reference |
 
+These scripts implement stock recovery/FIP/GPT operations. OpenWrt plugin inventory and selective migration are agent-guided; they do not provide a universal package installer or one-command restore. Inspect the actual branch's commands and files before acting.
+
 ## Offline maintenance validation
 
 Run `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s <skill-directory>/tests -v` after changing a script. Tests use synthetic GPT/FIP/archive/SSH/console fixtures, contact no network/device and perform no flash. They do not establish that newly changed automation has completed a physical provisioning or restoration. Keep real factory/configuration archives and per-unit binary fixtures outside the skill/package.
@@ -54,5 +61,6 @@ Run `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s <skill-directory>
 - Required physical diagnostics are unresolved; untested hardware is being represented as passed.
 - GPT geometry differs, both copies were not checked, unexpected corruption exists, or this U-Boot's required repair/readback procedure is unavailable.
 - The browser and agent compete for console output, a write outcome is uncertain, or power/reset/upload depends on the human's next action.
+- An upgrade would remove the programs supplying management, default routing, DNS or proxy access without compatible installers or a verified local recovery path; an archive's type, target identity or migration compatibility is unresolved.
 
 Write gates do not prevent read-only diagnosis or rescue backup. Report the concrete missing evidence, preserve state, and continue any independent authorized read-only work.

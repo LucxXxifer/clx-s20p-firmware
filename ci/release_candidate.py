@@ -13,6 +13,10 @@ import tempfile
 import zipfile
 import upstream_sync
 import go_security
+import dashboard
+import component_gate
+from preservation import (OMITTED_APPLICATION_PACKAGES, REQUIRED_APPLICATION_PACKAGES, load_application_selection,
+                          application_selection_evidence)
 
 
 UPSTREAM_BASE_COMMIT = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
@@ -222,23 +226,11 @@ def verify_upstream_resolution(root, expected_commit):
     if not re.fullmatch(r"[0-9a-f]{40}", str(expected_commit or "")):
         raise ValueError("exact resolved upstream commit SHA is required")
     evidence = read_json(Path(root), "provenance/upstream-resolution.json")
-    expected = {
-        "schema_version": 1,
-        "repository": UPSTREAM_URL,
-        "ref": UPSTREAM_REF,
-        "base_commit": UPSTREAM_BASE_COMMIT,
-        "head_commit": expected_commit,
-        "compare_status": "identical" if expected_commit == UPSTREAM_BASE_COMMIT else "ahead",
-        "merge_base": UPSTREAM_BASE_COMMIT,
-        "should_build": True,
-    }
-    if (any(evidence.get(key) != value for key, value in expected.items()) or
-            type(evidence.get("forced")) is not bool or
-            type(evidence.get("previous_attempted")) is not bool or
-            (expected_commit == UPSTREAM_BASE_COMMIT and evidence.get("forced") is not True) or
-            (evidence.get("previous_attempted") is True and evidence.get("forced") is not True)):
-        raise ValueError("upstream resolution evidence does not match the candidate SHA")
-    upstream_sync.validate_previous_comparison(expected_commit, evidence.get("previous_comparison"))
+    try:
+        upstream_sync.validate_build_evidence(evidence, expected_commit,
+                                             Path(root) / "provenance/component-resolution.json")
+    except ValueError as error:
+        raise ValueError("upstream resolution evidence does not match the candidate SHA: " + str(error)) from error
     return evidence
 
 
@@ -263,6 +255,9 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
             preservation.get("pending_review_count") != 0):
         raise ValueError("image preservation gate did not pass")
     pkg_check = preservation.get("checks", {}).get("packages", {})
+    requested_omission = application_selection_evidence(load_application_selection(Path(__file__).parent / "baseline"))
+    if preservation.get("checks", {}).get("application_selection") != requested_omission:
+        raise ValueError("preservation report lacks the exact reviewed application selection")
     if (pkg_check.get("original_count") != 483 or
             pkg_check.get("reviewed_optional_absent") != sorted(B_OPTIONAL_PACKAGE_NAMES)):
         raise ValueError("preservation report does not show exactly the reviewed Lucky package omission")
@@ -283,6 +278,8 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
             row.get("index_metadata") != "matches-all-packages" for row in feeds):
         raise ValueError("same-build signed feed inventory is incomplete")
     config_check = config.get("checks", {}).get("config", {})
+    if config.get("checks", {}).get("application_selection") != requested_omission:
+        raise ValueError("config report lacks the exact reviewed application selection")
     omission = config_check.get("b_optional_package_omission", {})
     if (config.get("status") != "pass" or config.get("errors") != [] or
             config_check.get("b_optional_packages") != list(B_OPTIONAL_PACKAGE_NAMES) or
@@ -316,7 +313,8 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     resolution = upstream_sync.Resolution(
         upstream_commit, True, upstream_resolution["compare_status"],
         upstream_resolution["merge_base"], upstream_resolution["forced"],
-        upstream_resolution["previous_attempted"], upstream_resolution.get("previous_comparison"))
+        upstream_resolution["previous_attempted"], upstream_resolution.get("previous_comparison"),
+        upstream_resolution.get("component_fingerprint"), upstream_resolution.get("plugin_sources"))
     if requested != upstream_sync.update_lock(committed_lock, resolution):
         raise ValueError("requested lock differs from reviewed source pins and exact upstream SHA")
     if (safety.get("status") != "pass" or safety.get("supported_devices") != ["clx,s20p"] or
@@ -333,6 +331,10 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
         raise ValueError("installed package inventory is malformed or duplicated")
     if set(names) & set(B_OPTIONAL_PACKAGE_NAMES):
         raise ValueError("one of the three reviewed Lucky packages remains in the B image")
+    if set(names) & set(OMITTED_APPLICATION_PACKAGES):
+        raise ValueError("omitted application package remains in the image")
+    if not set(REQUIRED_APPLICATION_PACKAGES) <= set(names):
+        raise ValueError("required AdGuard application package is missing from the image")
     package_count = len(packages)
     if package_count != pkg_check.get("actual_count") or package_count != signed.get("installed_packages_matched"):
         raise ValueError("installed package inventory count disagrees across build gates")
@@ -360,6 +362,13 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
             raise ValueError("captured S20P partition payload is missing: " + str(payload.relative_to(root)))
     go_report = read_json(root, "reports/go-x509-security.json")
     go_security.verify_report(go_report, sha256_file(rootfs_payload))
+    dashboard.verify_report(read_json(root, "reports/dashboard.json"), sha256_file(rootfs_payload))
+    if upstream_resolution.get("schema_version") == 2:
+        report = read_json(root, "reports/components.json")
+        component_gate.verify_release(root / "provenance", report, sha256_file(rootfs_payload),
+                                      {row["name"]: row for row in packages})
+        if report != preservation.get("checks", {}).get("daily_components"):
+            raise ValueError("release component report differs from preservation evidence")
     verify_sysupgrade_payload(image_path, kernel_payload, rootfs_payload, safety)
     images = [path for path in root.rglob("*.bin") if IMAGE_RE.fullmatch(path.relative_to(root).as_posix())]
     if len(images) != 1 or images[0] != image_path:

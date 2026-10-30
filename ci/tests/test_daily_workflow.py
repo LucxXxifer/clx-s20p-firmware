@@ -13,6 +13,7 @@ import zipfile
 
 
 WORKFLOW = Path(__file__).resolve().parents[2] / ".github/workflows/s20p-daily.yml"
+sys.path.insert(0, str(WORKFLOW.parents[2] / 'ci'))
 
 
 class DailyWorkflowTests(unittest.TestCase):
@@ -88,6 +89,20 @@ class DailyWorkflowTests(unittest.TestCase):
                     print(value if isinstance(value, str) else json.dumps(value))
                 '''))
             gh.chmod(0o755)
+            # Component resolution is tested separately. This shell fixture must
+            # remain offline while checking previous-head rejection ordering.
+            from component_fixtures import inputs
+            (root / 'components.json').write_text(json.dumps(inputs()))
+            python = root / 'python3'
+            python.write_text('#!' + sys.executable + '\n' + textwrap.dedent('''\
+                import os, pathlib, shutil, sys
+                if sys.argv[1:3] == ['ci/components.py', 'resolve']:
+                    target = sys.argv[sys.argv.index('--output') + 1]
+                    shutil.copyfile(pathlib.Path(os.environ['TEST_GH_FIXTURES']) / 'components.json', target)
+                else:
+                    os.execv(sys.executable, [sys.executable, *sys.argv[1:]])
+                '''))
+            python.chmod(0o755)
             env = {**os.environ, 'PATH': str(root) + os.pathsep + os.environ['PATH'],
                    'TEST_GH_FIXTURES': str(root), 'RUNNER_TEMP': str(root),
                    'GITHUB_REPOSITORY': 'test/firmware', 'GITHUB_SHA': wrapper,

@@ -2,6 +2,12 @@
 # 服务包与运行时默认配置修正。
 
 update_adguardhome() {
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        # The old third-party GUI manages an incompatible AdGuardHome service.
+        # Keep the official LuCI feed package that depends on adguardhome.
+        [[ -f $BUILD_DIR/package/feeds/luci/luci-app-adguardhome/Makefile ]] || return 1
+        return 0
+    fi
     local adguardhome_dir="$(get_custom_feed_package_dir)/luci-app-adguardhome"
     local repo_url="https://github.com/ZqinKing/luci-app-adguardhome.git"
 

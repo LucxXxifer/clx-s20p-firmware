@@ -1,4 +1,4 @@
 interface:
-  display_name: "CLX-S20P 從 0 到 1 刷機"
-  short_description: "S20P 原廠開 SSH、eMMC 健康檢查、逐機備份與 U-Boot 驗證"
-  default_prompt: "使用 $clx-s20p-provisioning 為這臺 CLX-S20P 從原廠系統完成識別、開 SSH、eMMC 健康檢查、必要備份及已授權的 FIP U-Boot 寫入驗證，再交由我手動進入 U-Boot 刷 GPT 和系統。"
+  display_name: "CLX-S20P 刷機與備份還原"
+  short_description: "S20P 首次刷機、eMMC 健康、插件備份辨識及跨分支升級還原引導"
+  default_prompt: "使用 $clx-s20p-provisioning，先辨識這臺 S20P 的現有系統與目標，核對 eMMC 健康、備份範圍及分支相容性，再依我授權的範圍執行首次刷機、備份或逐項還原，並生成操作指南。"

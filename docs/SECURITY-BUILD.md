@@ -1,5 +1,9 @@
 # S20P CA 與 Go x509 安全建置
 
+2026-10-30 起，每日模式採用[每日元件政策](../README_AUTOBUILD.md)：系統及已選插件來源每日解析；CA／Go 保留本文件安全下限並接受較新的相容穩定版本。CA 輸出改由保存的官方 source archive 獨立重建驗證，Go 保留 recipe 結構及實際 ELF 檢查。AdGuard Home 現已納入映像及檢查。QuickStart 的精確舊版例外不擴張；新版若已修補可通過，若仍未修補且 bytes 不同則停止發布。
+
+以下保留 2026-10-29 固定來源安全建置的查核紀錄；其中固定版本及來源描述不是每日更新的上限。
+
 本輪沿用 rolling A 的固定主來源 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`。截至 2026-10-29，上游 25.12 head 沒有前進；沒有把整個 packages feed 換成未審核的新版本。
 
 ## 來源修補

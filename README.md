@@ -1,16 +1,17 @@
-# CLX-S20P 從 0 到 1：首次刷機與固件
+# CLX-S20P 從 0 到 1：刷機、備份還原與固件
 
-本倉庫集中管理 CLX-S20P 原廠首次刷機的 Codex skill、固定下載固件與每日上游候選編譯。
+本倉庫集中管理 CLX-S20P 首次刷機、OpenWrt 升級／備份還原的 Codex skill、固定下載固件與每日上游候選編譯。Skill 也可用於其他 S20P 分支，須逐次核對相容性。
 
 | 用途 | 入口 |
 | --- | --- |
 | 首次刷機：Telnet／SSH → eMMC 健康檢查 → 逐機原廠備份 → FIP U-Boot 寫入及讀回驗證 | [Skill 使用及安裝指南](skills/README.md) · [下載 .skill 安裝包](skills/clx-s20p-provisioning.skill) · [Skill 原始碼](skills/clx-s20p-provisioning/SKILL.md) |
+| OpenWrt 升級／還原：辨識備份範圍與分支相容性 → 安裝插件 → 還原設定／資料 → 逐項驗收 | [備份與還原流程](skills/clx-s20p-provisioning/references/openwrt-backup-restore.md) |
 | 固定下載版 A（10/17） | [Release、固件與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) |
 | 每日 ImmortalWrt 25.12 候選 | [編譯及驗收規則](README_AUTOBUILD.md) · [所有 Releases](https://github.com/LucxXxifer/clx-s20p-firmware/releases) |
 
 Skill 會先檢查 eMMC 壽命並保留每臺機器自己的原廠資料；預設不做 100+ GB 的 p6 原始映像克隆。完成 FIP 驗證後，斷電／Reset、進入 U-Boot 及刷 GPT／系統由使用者手動完成。備份驗證、七個實體網口測試與原廠還原實測會分別記錄；詳見[驗證範圍與限制](skills/README.md#驗證範圍與限制)。
 
-> **CLX-S20P 固件線**：GitHub `main` 是 chasey ImmortalWrt 25.12 的每日上游候選編譯線；每日 04:20（Asia/Shanghai）檢查，僅在上游有新提交時建置，且只有全部差異、安全、套件與簽章檢查通過才建立 prerelease。公開庫使用 GitHub-hosted 標準 Linux runner，無須付費會員或本機 AI 任務。
+> **CLX-S20P 固件線**：GitHub `main` 每日 04:20（Asia/Shanghai）追蹤 chasey ImmortalWrt 25.12、已選第三方插件來源（包括 iStore、OpenClash、Docker）及官方 CA／Go／AdGuard 更新。來源組合有變才編譯，全部差異、安全、套件與簽章檢查通過才建立 prerelease。預裝 AdGuard Home，移除 Honk／TingReader，並納入控制面板修復。公開庫使用 GitHub-hosted 標準 Linux runner。
 >
 > **固定下載版 A（10/17）**：[GitHub release 與下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)／[固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17)。此 release 保留原成品、校驗碼及說明；rolling `main` 不會改寫它。既有 B 候選也保留：[B 25.12 candidate](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。
 >
@@ -83,7 +84,7 @@ REMOVE_CONFIG_FRAGMENTS=proxy ./build.sh x64_immwrt config_preview
 
 ### 自动云编译
 
-本仓库現行的自動編譯是上方說明的 S20P rolling workflow：每日追蹤 chasey 25.12，僅在精確上游 SHA 前進時執行 build，通過全部 gates 後發 prerelease。原多設備 `upstream_watch`、`build_wrt`、`release_wrt` 與維護 workflow 已移到 `docs/upstream-workflows/` 並改為 `.disabled` 保存，不會在 GitHub Actions 中執行。
+本仓库現行的自動編譯是上方說明的 S20P rolling workflow：每日追蹤系統、插件及安全元件的精確來源組合，通過全部 gates 後發 prerelease。原多設備 `upstream_watch`、`build_wrt`、`release_wrt` 與維護 workflow 已移到 `docs/upstream-workflows/` 並改為 `.disabled` 保存，不會在 GitHub Actions 中執行。
 
 ## 5. 支持设备
 
@@ -137,7 +138,7 @@ REMOVE_CONFIG_FRAGMENTS=proxy ./build.sh x64_immwrt config_preview
 
 不同设备会使用不同上游源码，例如 `VIKINGYFY/immortalwrt`、`immortalwrt/immortalwrt`、`LiBwrt/openwrt-6.x`、`padavanonly/immortalwrt-mt798x` 或本仓库维护的特定分支。`BUILD_TARGET_SDK` 未配置时，容器构建默认使用 `immortalwrt/sdk:openwrt-25.12`。
 
-`S20L-WIFI-YES`、`S20P-WIFI-YES` 和 `S20-WIFI-NO` 均使用 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12` 分支。两个 WiFi 配置分别只构建 S20L（AX4200）和 S20P（AX6000），避免不同无线规格共用全局 SKU；无 WiFi 配置继续一次构建 S20L、S20M、S20P。三项配置均保留 `docker_deps,honk` 默认片段，并独立监听上游变更、记录成功构建标记和发布固件。
+`S20L-WIFI-YES`、`S20P-WIFI-YES` 和 `S20-WIFI-NO` 均使用 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12` 分支。两个 WiFi 配置分别只构建 S20L（AX4200）和 S20P（AX6000），避免不同无线规格共用全局 SKU；无 WiFi 配置继续一次构建 S20L、S20M、S20P。S20P 使用 `docker_deps,migration,mobile_usb`，不包含 Honk／TingReader；其他机型片段保持各自配置，只有 S20P 启用本仓库每日 workflow。
 
 `jdcloud_ax6000_immwrt_honk` 使用 `VIKINGYFY/immortalwrt` 的 `owrt` 分支，目标为 `jdcloud_re-cp-03`，通过 `EXPECTED_KERNEL=6.18` 检查内核主次版本，构建目录为 `immortalwrt-honk/`。原来的 `jdcloud_ax6000_immwrt` 继续使用 6.12 厂商驱动，两者独立保留。
 

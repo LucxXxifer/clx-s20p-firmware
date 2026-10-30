@@ -1,8 +1,22 @@
 # CLX-S20P 每日上游候選編譯
 
-2026-10-29 安全建置更新：沿用上游 CA `20260816-r2` 撤信修補，精確回補 OpenWrt 官方 Go 1.26.10／1.27.3 compiler recipes，並檢查實際 image ELF 的 Go build info／x509 拒絕清單。保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。其他舊版 Go 程式仍阻擋發佈。這不是全機修補完成；來源、例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。歷史候選不因新檢查加入而自動成為已驗證的修補版。
+2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，預裝 AdGuard Home，移除 Honk／TingReader，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
-GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，以已審查起點 `9f397975c7b47ce6986a6e39529d2f72fd5c729d` 驗證上游是其後代，再把該次精確 head SHA 傳給編譯器。只追蹤上游，不自動同步或放寬其餘38個 Git source pins、原 patches、Docker nftables 修補、Honk/eBPF/BTF、MTK Wi-Fi 7.6.7.3、HNAT/WARP/eQoS/TurboACC 配置。
+保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。每日會追蹤 QuickStart 更新，新版修補後可通過；不同 bytes 的未修補新版會阻擋發佈，不會擴張舊例外。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。
+
+GitHub `main` 每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，並追蹤 `ci/plugin_sources.py` 選出的 31 個插件／feed 來源。保留原相容分支，使用完整 commit 及 GitHub compare 證明來源前進，拒絕倒退／分叉。原 patches、Docker nftables、MTK Wi-Fi、HNAT/WARP/eQoS/TurboACC 和共用 BPF/BTF 配置仍受原驗收門檻保護。
+
+| 元件 | 每日追蹤來源 |
+| --- | --- |
+| iStore、taskd、xterm | `linkease/istore`，原 `main` 分支 |
+| OpenClash、QuickStart 及其他自訂包 | `kenzok8/small-package`，原相容分支 |
+| Docker／dockerd／containerd／runc | `immortalwrt/packages`，原相容分支 |
+| Dockerman、Docker LuCI library | `lisaac/luci-app-dockerman`、`lisaac/luci-lib-docker` |
+| 其他已編入插件及 LuCI | `ci/sources.lock.json` 的已選來源，完整清單由 resolver 驗證 |
+| AdGuard Home | `AdguardTeam/AdGuardHome` 最新穩定 release，核心及前端均核對 SHA256；LuCI 使用官方同名服務 |
+| CA／Go | 官方 CA recipe／Debian source 與 `go.dev` 穩定目錄，保留安全下限 |
+
+Honk、TingReader、Lucky 等未編入的來源不會觸發 S20P 重編。Docker 容器內的應用映像不屬於韌體套件更新；路由器上自行安裝的軟體也不會被此 workflow 遠端自動更新。
 
 既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。
 
@@ -15,7 +29,7 @@ GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immor
 ## 觸發方式
 
 - `.github/workflows/s20p-daily.yml`：每日 **04:20 Asia/Shanghai（20:20 UTC）**，並支援 Actions → Run workflow；定時 workflow 僅在 repository 的 default branch 上運行，所以 rolling `main` 必須設為 default branch 並啟用此 workflow，排程才會生效。
-- 每次執行先讀取上游完整 head SHA 並以 GitHub compare 證明其為已審查基準的 fast-forward descendant。排程遇到相同 head 且找到同 wrapper commit 的完整 state 記錄時略過編譯；新 head 才建置。手動 `force=true` 可在修正 build policy 後重試同一 head。無法取得或驗證前次 state 時會以「重新建置」處理，不會因此錯誤略過候選。
+- 每次執行解析系統完整 head SHA、插件來源及安全元件，產生組合 fingerprint。同 wrapper＋系統 SHA＋元件 fingerprint 已嘗試過時跳過編譯；系統未更新而插件有更新也會建置。失敗後不盲目重編相同輸入，手動 `force=true` 可在修正原因後重試。無法取得或驗證前次 state 時會重新建置，不會錯誤略過候選。
 - 若有可信的前次 state 且 head 改變，另以 GitHub compare 驗證其仍為前次 head 的後代；回退或分歧即拒絕，`force` 不能繞過。缺少可信歷史時只依固定起點驗證，不宣稱已證明歷史上未回退。
 - 需要重試時使用 Actions → **Run workflow → force=true** 建立新 run；不使用 **Re-run jobs**。後者重用舊 run identity，會被明確拒絕。即使某次執行被拒絕或中斷，仍會向前查找完整的可信 state，不會遺忘較早已驗證的 head。
 - 編譯不會自動刷機。新上游版本如出現未審查的 package、ABI、檔案、安全或來源差異，只保存失敗／審查證據，不建立 prerelease。原 watcher 和其他排程移至 `docs/upstream-workflows/` 保留。
@@ -30,7 +44,7 @@ GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immor
 1. `S20P-WIFI-YES.config`
 2. `compile_base.config`
 3. `docker_deps.config`
-4. `honk.config`
+4. 不再載入 `honk.config`；保留已有共用核心／BPF/BTF 依賴，避免無關 ABI 改動。
 5. `migration.config`：HiLink CDC Ethernet、ipset、ArkBridge Python3 base/urllib/openssl。
 6. `mobile_usb.config`：RNDIS、NCM、Huawei NCM、QMI、MBIM、AT/ACM、USB模式切換，以及 Realtek RTL8156 系列／ASIX／AQC111／Microchip 等 USB Ethernet 驅動，新增項目選 `m`，編成同批可選套件。
 
@@ -38,25 +52,28 @@ GitHub `main` 承載 rolling 25.12 build policy：每天查詢 `chasey-dev/immor
 
 不包含私人設定、訂閱、factory、GPT或 SSH 私鑰。
 
+AdGuard Home 核心、官方 LuCI 介面及中文翻譯會編入映像。服務預設停用，須完成 DNS／ShellCrash／Tailscale 的端口規劃後啟用。過濾資料 `work_dir` 為 `/etc/adguardhome/work`，`/etc/adguardhome/` 和 UCI 加入 sysupgrade keep 清單；查詢紀錄及統計位置仍須按個人使用量配置。ShellCrash、ArkBridge、私人 YAML、訂閱、Tailscale 身分及其他插件資料不會放進公開映像；LuCI 設定備份也不等於插件程式或完整資料備份，需按 skill 的還原指引另行處理。
+
 ## 自動檢查與產物
 
 `ci/baseline/` 僅包含原廠公開 ROM 衍生的檔案清單、hash、DTB、套件資料和原四層配置，無設備的私密 overlay。
 
-- `.config` 檢查原483包可編譯、124個原 kmod、24個 LuCI app、103個 MTK 配置、新增 root 與28個可選套件沒有被 defconfig 丟棄。
-- 原始成品 SquashFS 抽出後，再驗483包實際安裝、kmod exact kernel dependency、全部4334項原路徑、critical資料與DTB硬體語義。包名齊全不足以代表全部功能等效。
+- `.config` 與成品保留原套件基準，僅允許已審查的 Lucky／Honk／TingReader 缺席，並要求三個 AdGuard 套件、新增 root 與28個可選套件。共同核心功能不能因移除 Honk 而丟失。
+- SquashFS 抽出後檢查完整原路徑（只接受精確審查的移除）、kmod exact kernel dependency、critical 資料與 DTB 語義。新增 AdGuard 路徑須屬於 signed feed 驗證過的必需套件依賴閉包。
+- CA 以保存的 hash-pinned Debian archive 和完整 patches 獨立重建，不執行下載的 Makefile／Python。成品的完整 trust set、bundle、aliases、版本及撤銷 DER 都須符合重建；來源 manifests 與組合 fingerprint 綁定同一次 build。五個 dashboard 安裝檔亦須符合已審查 payload，Lua／Node 回歸檢查列入 Actions。
 - 版本、預設／資產／檔案差異須精確審核；未批准差異只保留 evidence，阻止候選發佈，不能以 allow-all 取消檢查。
 - 編譯成功後、原流程清理前保存完整 `bin/`、所有 APK／已簽名 `packages.adb`、公開key、kernel config／Module.symvers、final config、buildinfo、來源與HTTP輸入紀錄、logs與SHA256。
 - 使用同批 host apk 驗證 signed index，再核 APK payload 與 index identity。沿用原 `CONFIG_SIGN_EACH_PACKAGE=n` 的模型，不假裝 unsigned APK 有單獨簽章，不降低安裝信任要求。
 - 全部自動檢查通過時僅發佈 **prerelease candidate**；仍需上機驗證 USB／Wi-Fi／加速／重啟及遷移，不能宣稱 stable。
 - evidence 與未發布的候選 artifact 保留7天；發布成功的候選以 GitHub prerelease 保存，並附上完整 same-build feed，避免只剩 ROM 而失去配套 kmod。
 
-每日排程線上解析上游 head；只有新增 head 才啟動完整編譯。每次建置均對解析出的精確 SHA 建立暫存 source lock，再跑同一套既有檢查。套件源 pin 仍固定，除非明確審查並更新；不可把不同 ABI 的現成 kmod 混入此 ROM，也不可 force dependencies。人工 `force` 只是重試目前已確認的 SHA，不會批准差異或改變來源。
+每日解析後建立暫存 source lock，固定當次精確來源；不提交動態 lock、不混入其他 ABI 的 kmod、不 force dependencies。人工 `force` 只是重試，不會批准差異或改變來源。追蹤更新、編譯成功和通過發佈驗收是三個不同結果；未知設定／依賴／來源結構差異會保存報告並停止發佈。
 
-目前 CA 安全移除與已批准差異仍綁定已審查 SHA `9f397975...`。新上游可以自動編譯，但即使 CA 配方看似相同，也須取得該精確 source 的審查紀錄才可發布；workflow 不會自行擴大批准範圍。
+歷史固定版保留原 CA 精確審查。每日模式改由來源綁定及獨立重建驗證更新後 CA；只有重建證明的憑證差異可自動接受，不是整個 `/etc/ssl` 的豁免。Dashboard 上游三個輸入有變時停止套用舊修復，須重新整合並通過測試，避免覆蓋上游新版。
 
-為讓原流程能在已鎖定來源上執行，另有三項具體修正：完整核心版本由 series `6.12` 與 patch `.112` 合併核對；WeeChat LuCI 的 virtual provider 改為原預設 `weechat-minimal`，解除 Kconfig 循環；S20P CI 保留固定 packages feed 的 Go 1.27.1／1.26 compiler recipes，避免原腳本以單一 Go 1.26 override 刪掉新版 Tailscale 必需的 1.27.1。這些變更都有回歸檢查，不宣稱與原歷史 feeds 完全相同。原 fragment 的無效 TurboACC selector 亦有[單獨政策說明](docs/preservation-gates.md)。Tailscale／AdGuardHome 的私人設定與服務安裝仍由後續遷移處理，並未因工具鏈可用就自動預裝或啟動。
+原流程的核心版本合併核對、WeeChat virtual provider 修正及版本化 Go host tree 仍保留。Go recipe 的版本／官方 archive hash 可隨穩定 patch 更新；未知 recipe 結構或 host alias 會停止，不能用整棵 Go override 刪除 Tailscale 所需工具鏈。每日模式停用歷史復刻用的舊 geodata／AxonHub recipe pin，避免把新來源降回舊版。原 fragment 的無效 TurboACC selector 亦有[政策說明](docs/preservation-gates.md)。
 
-Git 來源已固定，但原 wrapper 仍讀取部分可變 HTTP 發布資訊及資產。本分支記錄其 URL、payload hash 與準備後來源 hash；Honk 亦核對發布 metadata、recipe 與資產 hash。這不等於所有歷史 HTTP／runner 輸入均已還原或凍結。動態內容改變可能要求更新相容 pin，或產生待審差異／建置失敗；不會自動繞過檢查。
+每次 Git 來源均已固定，但 wrapper 仍讀取部分 HTTP 發布資訊及資產；記錄 URL、payload hash 與準備後來源 hash。這不等於所有歷史 HTTP／runner 輸入均已還原或凍結。動態內容改變可能產生待審差異／建置失敗，不會繞過檢查。
 
 ## 首輪差異審查與配套安裝
 

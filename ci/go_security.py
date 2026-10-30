@@ -26,14 +26,20 @@ def sha256(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def prepare(source_root):
+def prepare(source_root, component_inputs=None):
     root = Path(source_root)
     alias = root / "feeds/packages/lang/golang/golang/Makefile"
     if alias.is_symlink() or not alias.is_file():
         raise ValueError("required default Go host alias is missing")
     if sha256(alias) != POLICY["default_alias_sha256"]:
         raise ValueError("unexpected default Go host alias")
+    selected = {}
+    if component_inputs:
+        import components
+        selected = {'.'.join(row['version'].removeprefix('go').split('.')[:2]): row
+                    for row in components.load(component_inputs)['go']}
     changes = []
+    evidence = []
     # Validate both complete recipes before replacing either. An upstream
     # change needs explicit review, even if its version string looks familiar.
     for recipe in POLICY["recipes"]:
@@ -42,19 +48,39 @@ def prepare(source_root):
             raise ValueError("required versioned Go recipe is missing: " + recipe["path"])
         data = path.read_bytes()
         digest = hashlib.sha256(data).hexdigest()
-        if digest == recipe["after_sha256"]:
-            continue
-        if digest != recipe["before_sha256"]:
-            raise ValueError("unreviewed Go recipe: " + recipe["path"])
-        for old, new in (("GO_VERSION_PATCH:=" + recipe["old_patch"], "GO_VERSION_PATCH:=" + recipe["new_patch"]),
-                         ("PKG_HASH:=" + recipe["old_source_sha256"], "PKG_HASH:=" + recipe["new_source_sha256"])):
+        major = re.search(r'golang(1\.\d+)/', recipe['path'])[1]
+        candidate = selected.get(major, {'version': 'go' + major + '.' + recipe['new_patch'],
+                                          'sha256': recipe['new_source_sha256']})
+        match = re.search(rb'^GO_VERSION_PATCH:=(\d+)\n', data, re.MULTILINE)
+        hash_match = re.search(rb'^PKG_HASH:=([0-9a-f]{64})\n', data, re.MULTILINE)
+        if not match or not hash_match:
+            raise ValueError('missing Go recipe version/hash')
+        current_patch = match[1].decode()
+        current_hash = hash_match[1].decode()
+        normalized = data.replace(b'GO_VERSION_PATCH:=' + match[1] + b'\n',
+                                  ('GO_VERSION_PATCH:=' + recipe['old_patch'] + '\n').encode())
+        normalized = normalized.replace(b'PKG_HASH:=' + hash_match[1] + b'\n',
+                                        ('PKG_HASH:=' + recipe['old_source_sha256'] + '\n').encode())
+        if sha256_bytes(normalized) != recipe['before_sha256']:
+            raise ValueError('unreviewed Go recipe structure: ' + recipe['path'])
+        target_patch = candidate['version'].split('.')[-1]
+        if int(current_patch) > int(target_patch):
+            raise ValueError('upstream Go is newer than resolved official evidence; refusing downgrade')
+        if int(current_patch) == int(target_patch) and current_hash != candidate['sha256']:
+            raise ValueError('official Go archive hash differs from upstream recipe')
+        if not component_inputs and current_patch not in (recipe['old_patch'], recipe['new_patch'], target_patch):
+            raise ValueError('unreviewed older Go recipe: ' + recipe['path'])
+        for old, new in (("GO_VERSION_PATCH:=" + current_patch, "GO_VERSION_PATCH:=" + target_patch),
+                         ("PKG_HASH:=" + current_hash, "PKG_HASH:=" + candidate['sha256'])):
             before, after = (old + "\n").encode(), (new + "\n").encode()
             if data.count(before) != 1:
                 raise ValueError("ambiguous Go recipe field: " + recipe["path"])
             data = data.replace(before, after)
-        if hashlib.sha256(data).hexdigest() != recipe["after_sha256"]:
+        if not component_inputs and hashlib.sha256(data).hexdigest() != recipe["after_sha256"]:
             raise ValueError("backport differs from exact upstream Go recipe")
         changes.append((path, data))
+        evidence.append({'path': recipe['path'], 'sha256': sha256_bytes(data),
+                         'version': candidate['version'], 'source_sha256': candidate['sha256']})
     for path, data in changes:
         with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
             temporary = Path(stream.name)
@@ -66,8 +92,11 @@ def prepare(source_root):
             finally:
                 temporary.unlink(missing_ok=True)
     return {"status": "pass", "policy_sha256": sha256(POLICY_PATH),
-            "recipes": [{"path": row["path"], "sha256": row["after_sha256"],
-                         "upstream_commit": row["upstream_commit"]} for row in POLICY["recipes"]]}
+            "recipes": evidence}
+
+
+def sha256_bytes(data):
+    return hashlib.sha256(data).hexdigest()
 
 
 def require_patched(version):
@@ -75,7 +104,7 @@ def require_patched(version):
     if not match:
         raise ValueError("stable Go release build info required: " + str(version))
     minor, patch = map(int, match.groups())
-    if minor not in (26, 27) or patch < {26: 10, 27: 3}[minor]:
+    if minor < 26 or (minor in (26, 27) and patch < {26: 10, 27: 3}[minor]):
         raise ValueError("unpatched or unreviewed Go version: " + version)
 
 
@@ -186,6 +215,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     prepare_parser = sub.add_parser("prepare")
     prepare_parser.add_argument("--source-root", type=Path, required=True)
+    prepare_parser.add_argument("--components", type=Path, default=os.environ.get('S20P_COMPONENT_INPUTS'))
     inspect = sub.add_parser("inspect")
     inspect.add_argument("--rootfs", type=Path, required=True)
     inspect.add_argument("--payload", type=Path, required=True)
@@ -193,7 +223,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "prepare":
-            result = prepare(args.source_root)
+            result = prepare(args.source_root, args.components)
         else:
             result = inspect_rootfs(args.rootfs, args.payload)
             args.output.parent.mkdir(parents=True, exist_ok=True)

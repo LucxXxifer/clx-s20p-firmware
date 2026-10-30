@@ -74,25 +74,12 @@ def validate_upstream_resolution(lock, path):
             result[key] = value
         return result
     evidence = json.loads(evidence_path.read_text(), object_pairs_hook=unique)
-    expected_status = "identical" if commit == UPSTREAM_BASE else "ahead"
-    expected = {
-        "schema_version": 1,
-        "repository": UPSTREAM_URL,
-        "ref": UPSTREAM_REF,
-        "base_commit": UPSTREAM_BASE,
-        "head_commit": commit,
-        "compare_status": expected_status,
-        "merge_base": UPSTREAM_BASE,
-        "should_build": True,
-    }
-    if (not isinstance(evidence, dict) or
-            any(evidence.get(key) != value for key, value in expected.items()) or
-            type(evidence.get("forced")) is not bool or
-            type(evidence.get("previous_attempted")) is not bool or
-            (commit == UPSTREAM_BASE and evidence.get("forced") is not True) or
-            (commit != UPSTREAM_BASE and evidence.get("previous_attempted") is True and
-             evidence.get("forced") is not True)):
-        raise ValueError("upstream resolution evidence does not bind the exact reviewed descendant SHA")
+    import upstream_sync
+    try:
+        upstream_sync.validate_build_evidence(evidence, commit,
+                                             evidence_path.with_name("component-resolution.json"))
+    except ValueError as error:
+        raise ValueError("upstream resolution evidence does not bind the exact reviewed descendant SHA: " + str(error)) from error
     return commit, evidence
 
 

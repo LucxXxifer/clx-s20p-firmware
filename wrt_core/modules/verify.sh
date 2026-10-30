@@ -78,14 +78,20 @@ verify_custom_feed_installed_paths() {
     local custom_feed_package_dir
     # install_feeds 后必须存在的 custom_feed 包路径。
     local required_package_dirs=(
-        luci-app-adguardhome luci-app-mosdns v2ray-geodata luci-app-easytier
+        luci-app-mosdns v2ray-geodata luci-app-easytier
         luci-app-passwall nikki luci-app-nikki mihomo-meta luci-app-emmc-health
         luci-app-wolultra luci-app-mini-diskmanager luci-app-homeproxy sing-box
         axonhub luci-app-axonhub gecoosac luci-app-gecoosac
-        luci-app-tingreader
         taskd luci-lib-xterm luci-lib-taskd luci-app-store
     )
     local missing_package_dirs=()
+
+    if [[ ${S20P_AUTOBUILD:-0} != 1 ]]; then
+        required_package_dirs+=(luci-app-tingreader luci-app-adguardhome)
+    elif [[ ! -f $BUILD_DIR/package/feeds/luci/luci-app-adguardhome/Makefile ]]; then
+        echo 'Error: matching official adguardhome LuCI package is missing.' >&2
+        return 1
+    fi
 
     if [[ ${DAED_PACKAGES_ENABLED:-0} == "1" ]]; then
         required_package_dirs+=(dae daed luci-app-daede vmlinux-btf)

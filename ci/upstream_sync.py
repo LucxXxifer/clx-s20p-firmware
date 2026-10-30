@@ -33,6 +33,8 @@ class Resolution:
     forced: bool
     previous_attempted: bool = False
     previous_comparison: dict | None = None
+    component_fingerprint: str | None = None
+    plugin_sources: list | None = None
 
 
 def canonical_hash(value):
@@ -62,13 +64,19 @@ def strict_json(raw):
 
 
 def validate_state(state, wrapper_commit):
-    if (not isinstance(state, dict) or state.get("schema_version") != 1 or
+    if (not isinstance(state, dict) or state.get("schema_version") not in (1, 2) or
             state.get("wrapper_commit") != wrapper_commit or
             not COMMIT_RE.fullmatch(str(state.get("upstream_commit", ""))) or
             type(state.get("build_started")) is not bool or
             type(state.get("previous_attempted", False)) is not bool or
             state.get("outcome") not in {"skipped", "success", "failure"}):
         raise UpstreamSyncError("state is invalid or belongs to another wrapper commit")
+    if state["schema_version"] == 2:
+        if (not re.fullmatch(r"[0-9a-f]{64}", str(state.get("component_fingerprint"))) or
+                not isinstance(state.get("plugin_heads"), dict) or not state["plugin_heads"] or
+                any(not re.fullmatch(r"[a-z0-9_.-]+/[a-z0-9_.-]+", key) or
+                    not COMMIT_RE.fullmatch(str(value)) for key, value in state["plugin_heads"].items())):
+            raise UpstreamSyncError("invalid component identity in previous state")
     return state
 
 
@@ -116,7 +124,7 @@ def validate_previous_comparison(head_commit, comparison):
 
 def resolve_head(base_commit, head_commit, status, merge_base, *, force,
                  previous_state=None, wrapper_commit=None,
-                 previous_status=None, previous_merge_base=None):
+                 previous_status=None, previous_merge_base=None, component_inputs=None):
     if base_commit != BASE_COMMIT:
         raise UpstreamSyncError("committed S20P upstream base changed; review the new base before tracking")
     if not COMMIT_RE.fullmatch(str(head_commit)):
@@ -140,21 +148,30 @@ def resolve_head(base_commit, head_commit, status, merge_base, *, force,
                 "merge_base": previous_merge_base,
             }
             validate_previous_comparison(head_commit, previous_comparison)
+    component_fingerprint, plugins = None, None
+    if component_inputs is not None:
+        import components
+        components.validate(component_inputs)
+        component_fingerprint = component_inputs["fingerprint"]
+        plugins = component_inputs["plugin_sources"]
     already_attempted = (
         isinstance(previous_state, dict) and wrapper_commit is not None and
         previous_state.get("wrapper_commit") == wrapper_commit and
         previous_state.get("upstream_commit") == head_commit and
+        (component_fingerprint is None or previous_state.get("component_fingerprint") == component_fingerprint) and
         (previous_state.get("build_started") is True or
          previous_state.get("previous_attempted") is True)
     )
     return Resolution(
         commit=head_commit,
-        should_build=bool(force or (head_commit != base_commit and not already_attempted)),
+        should_build=bool(force or ((component_fingerprint is not None or head_commit != base_commit) and not already_attempted)),
         status=status,
         merge_base=merge_base,
         forced=bool(force),
         previous_attempted=already_attempted,
         previous_comparison=previous_comparison,
+        component_fingerprint=component_fingerprint,
+        plugin_sources=plugins,
     )
 
 
@@ -180,6 +197,9 @@ def update_lock(lock, resolution):
             resolution.status + ", merge-base=" + resolution.merge_base +
             ", reviewed starting pin=" + BASE_COMMIT
         )
+    if resolution.plugin_sources is not None:
+        import plugin_sources
+        updated = plugin_sources.update_lock(updated, resolution.plugin_sources)
     return updated
 
 
@@ -235,7 +255,7 @@ def prepare_baseline(source, destination, commit):
     return destination
 
 
-def prepare(lock_path, baseline_path, output_dir, resolution):
+def prepare(lock_path, baseline_path, output_dir, resolution, component_inputs=None):
     lock_path, baseline_path, output_dir = Path(lock_path), Path(baseline_path), Path(output_dir)
     if output_dir.exists():
         raise UpstreamSyncError("runtime input destination already exists")
@@ -245,12 +265,17 @@ def prepare(lock_path, baseline_path, output_dir, resolution):
         raise UpstreamSyncError("committed source lock is invalid") from error
     updated = update_lock(lock, resolution)
     output_dir.mkdir(parents=True)
+    if resolution.component_fingerprint is not None:
+        import components
+        if components.validate(component_inputs)["fingerprint"] != resolution.component_fingerprint:
+            raise UpstreamSyncError("prepared component inputs differ from the selected identity")
+        (output_dir / "component-resolution.json").write_text(json.dumps(component_inputs, indent=2, sort_keys=True) + "\n")
     runtime_lock = output_dir / "sources.lock.json"
     runtime_lock.write_text(json.dumps(updated, indent=2) + "\n")
     runtime_baseline = output_dir / "baseline"
     prepare_baseline(baseline_path, runtime_baseline, resolution.commit)
     evidence = {
-        "schema_version": 1,
+        "schema_version": 2 if resolution.component_fingerprint is not None else 1,
         "repository": UPSTREAM_URL.removesuffix(".git"),
         "ref": UPSTREAM_REF,
         "base_commit": BASE_COMMIT,
@@ -262,6 +287,9 @@ def prepare(lock_path, baseline_path, output_dir, resolution):
         "previous_attempted": resolution.previous_attempted,
         "previous_comparison": resolution.previous_comparison,
     }
+    if resolution.component_fingerprint is not None:
+        evidence.update(component_fingerprint=resolution.component_fingerprint,
+                        plugin_sources=resolution.plugin_sources)
     (output_dir / "upstream-resolution.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
     verify_prepared(lock_path, baseline_path, runtime_lock, runtime_baseline,
                     output_dir / "upstream-resolution.json")
@@ -277,7 +305,7 @@ def verify_prepared(committed_lock_path, baseline_path, runtime_lock_path,
     runtime = strict_json(Path(runtime_lock_path).read_bytes())
     evidence = strict_json(Path(evidence_path).read_bytes())
     expected = {
-        "schema_version": 1,
+        "schema_version": evidence.get("schema_version"),
         "repository": UPSTREAM_URL.removesuffix(".git"),
         "ref": UPSTREAM_REF,
         "base_commit": BASE_COMMIT,
@@ -285,7 +313,8 @@ def verify_prepared(committed_lock_path, baseline_path, runtime_lock_path,
         "compare_status": evidence.get("compare_status"),
         "merge_base": BASE_COMMIT,
     }
-    if (any(evidence.get(key) != value for key, value in expected.items()) or
+    if (evidence.get("schema_version") not in (1, 2) or
+            any(evidence.get(key) != value for key, value in expected.items()) or
             not COMMIT_RE.fullmatch(str(evidence.get("head_commit", ""))) or
             evidence.get("compare_status") not in {"identical", "ahead"} or
             type(evidence.get("should_build")) is not bool or
@@ -293,14 +322,16 @@ def verify_prepared(committed_lock_path, baseline_path, runtime_lock_path,
             type(evidence.get("previous_attempted")) is not bool):
         raise UpstreamSyncError("upstream resolution evidence is not a valid descendant comparison")
     expected_build = evidence["forced"] or (
-        evidence["head_commit"] != BASE_COMMIT and not evidence["previous_attempted"]
+        (evidence["schema_version"] == 2 or evidence["head_commit"] != BASE_COMMIT) and not evidence["previous_attempted"]
     )
     if evidence["should_build"] != expected_build:
         raise UpstreamSyncError("upstream resolution build decision does not match verified state")
     validate_previous_comparison(evidence["head_commit"], evidence.get("previous_comparison"))
     resolution = Resolution(evidence["head_commit"], evidence["should_build"],
                             evidence["compare_status"], evidence["merge_base"], evidence["forced"],
-                            evidence["previous_attempted"], evidence.get("previous_comparison"))
+                            evidence["previous_attempted"], evidence.get("previous_comparison"),
+                            evidence.get("component_fingerprint"), evidence.get("plugin_sources"))
+    validate_component_evidence(evidence, Path(evidence_path).with_name("component-resolution.json"))
     if runtime != update_lock(committed, resolution):
         raise UpstreamSyncError("prepared source lock differs from reviewed pins and resolved head")
     verify_baseline(baseline_path)
@@ -328,8 +359,38 @@ def verify_prepared(committed_lock_path, baseline_path, runtime_lock_path,
     return resolution
 
 
+def validate_component_evidence(evidence, path):
+    if evidence.get("schema_version") == 2:
+        import components
+        value = components.load(path)
+        if (value["fingerprint"] != evidence.get("component_fingerprint") or
+                value["plugin_sources"] != evidence.get("plugin_sources")):
+            raise UpstreamSyncError("component resolution differs from the daily source evidence")
+        return value
+    if evidence.get("component_fingerprint") is not None or evidence.get("plugin_sources") is not None:
+        raise UpstreamSyncError("legacy source evidence cannot authorize plugin pin changes")
+    return None
+
+
+def validate_build_evidence(evidence, commit, component_path):
+    expected = {"repository": UPSTREAM_URL.removesuffix(".git"), "ref": UPSTREAM_REF,
+                "base_commit": BASE_COMMIT, "head_commit": commit,
+                "compare_status": "identical" if commit == BASE_COMMIT else "ahead",
+                "merge_base": BASE_COMMIT, "should_build": True}
+    if (not isinstance(evidence, dict) or evidence.get("schema_version") not in (1, 2) or
+            not COMMIT_RE.fullmatch(str(commit)) or
+            any(evidence.get(key) != value for key, value in expected.items()) or
+            type(evidence.get("forced")) is not bool or
+            type(evidence.get("previous_attempted")) is not bool or
+            (evidence["previous_attempted"] and not evidence["forced"]) or
+            (evidence["schema_version"] == 1 and commit == BASE_COMMIT and not evidence["forced"])):
+        raise UpstreamSyncError("upstream resolution does not bind a buildable reviewed descendant SHA")
+    validate_previous_comparison(commit, evidence.get("previous_comparison"))
+    return validate_component_evidence(evidence, component_path)
+
+
 def write_state(path, *, wrapper_commit, upstream_commit, build_started, outcome, run_id, run_attempt,
-                previous_attempted=False):
+                previous_attempted=False, component_inputs=None):
     if not COMMIT_RE.fullmatch(str(wrapper_commit)) or not COMMIT_RE.fullmatch(str(upstream_commit)):
         raise UpstreamSyncError("state commits must be full lowercase Git commit SHAs")
     if (type(build_started) is not bool or type(previous_attempted) is not bool or
@@ -345,6 +406,12 @@ def write_state(path, *, wrapper_commit, upstream_commit, build_started, outcome
         "run_id": str(run_id),
         "run_attempt": str(run_attempt),
     }
+    if component_inputs is not None:
+        import components
+        components.validate(component_inputs)
+        state.update(schema_version=2, component_fingerprint=component_inputs["fingerprint"],
+                     plugin_heads={row["repository"]: row["head_commit"]
+                                   for row in component_inputs["plugin_sources"]})
     state_path = Path(path)
     state_path.parent.mkdir(parents=True, exist_ok=True)
     if state_path.exists() or state_path.is_symlink():
@@ -366,6 +433,7 @@ def main():
     command.add_argument("--previous-state", type=Path)
     command.add_argument("--previous-status")
     command.add_argument("--previous-merge-base")
+    command.add_argument("--components", type=Path)
     command.add_argument("--force", action="store_true")
     command.add_argument("--output-dir", type=Path, required=True)
     command.add_argument("--github-output", type=Path)
@@ -389,6 +457,7 @@ def main():
     record.add_argument("--outcome", choices=("skipped", "success", "failure"), required=True)
     record.add_argument("--run-id", required=True)
     record.add_argument("--run-attempt", required=True)
+    record.add_argument("--components", type=Path)
     args = parser.parse_args()
     if args.command == "verify-prepared":
         try:
@@ -411,25 +480,34 @@ def main():
         return
     if args.command == "record-state":
         try:
+            inputs = None
+            if args.components:
+                import components
+                inputs = components.load(args.components)
             state = write_state(args.output, wrapper_commit=args.wrapper_commit,
                                 upstream_commit=args.upstream_commit,
                                 build_started=args.build_started == "true", outcome=args.outcome,
                                 previous_attempted=args.previous_attempted == "true",
-                                run_id=args.run_id, run_attempt=args.run_attempt)
+                                run_id=args.run_id, run_attempt=args.run_attempt, component_inputs=inputs)
         except (OSError, UpstreamSyncError) as error:
             parser.exit(1, "state write rejected: " + str(error) + "\n")
         print(json.dumps(state, sort_keys=True))
         return
     previous_state = None
     try:
+        inputs = None
+        if args.components:
+            import components
+            inputs = components.load(args.components)
         if args.previous_state:
             previous_state = read_state(args.previous_state, args.wrapper_commit)
         resolution = resolve_head(
             BASE_COMMIT, args.head, args.status, args.merge_base, force=args.force,
             previous_state=previous_state, wrapper_commit=args.wrapper_commit,
             previous_status=args.previous_status, previous_merge_base=args.previous_merge_base,
+            component_inputs=inputs,
         )
-        lock, baseline, evidence = prepare(args.lock, args.baseline, args.output_dir, resolution)
+        lock, baseline, evidence = prepare(args.lock, args.baseline, args.output_dir, resolution, inputs)
     except (OSError, UpstreamSyncError) as error:
         parser.exit(1, "upstream sync rejected: " + str(error) + "\n")
     result = {

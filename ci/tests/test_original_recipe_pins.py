@@ -99,6 +99,7 @@ class OriginalRecipePinsTests(unittest.TestCase):
         self.assertEqual(row['previous_lock']['commit'], '61e876e98f91446fd8968dfede721b98ddf80a32')
         hook = (ROOT / 'build.sh').read_text()
         self.assertLess(hook.index('original_recipe_pins.py'), hook.index('\napply_config\n'))
+        self.assertIn('-z ${S20P_COMPONENT_INPUTS:-}', hook)
 
     def test_patch_directory_symlink_rejected_before_write(self):
         patches = self.feed / 'axonhub/patches'

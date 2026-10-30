@@ -19,6 +19,7 @@ CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
 import upstream_sync
 import go_security
+import dashboard
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
@@ -220,6 +221,33 @@ class ReleaseCandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Lucky package omission"):
             self.prepare()
 
+    def test_rejects_retained_tingreader_with_recomputed_checksums(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, "inspection/installed-packages.json",
+                             lambda data: data['packages'][1].update(
+                                 name='luci-app-tingreader', version='2.0.6-r1'))
+        with self.assertRaisesRegex(ValueError, 'omitted application package remains'):
+            self.prepare()
+
+    def test_rejects_missing_adguard_with_recomputed_checksums(self):
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        rewrite_archive_json(archive, 'inspection/installed-packages.json',
+                             lambda data: data['packages'][2].update(name='unrelated-app'))
+        with self.assertRaisesRegex(ValueError, 'required AdGuard'):
+            self.prepare()
+
+    def test_rejects_missing_or_tampered_application_selection_evidence(self):
+        for path in ('provenance/config-gate.json', 'reports/preservation-image.json'):
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as name:
+                self.artifact = Path(name)
+                self.output = Path(name) / 'release-assets'
+                archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+                rewrite_archive_json(archive, path,
+                                     lambda data: data['checks']['application_selection'].update(
+                                         removed_path_count=0))
+                with self.assertRaisesRegex(ValueError, 'reviewed application selection'):
+                    self.prepare()
+
     def test_rejects_tar_path_traversal_and_symlink_members(self):
         release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, unsafe_member="../outside")
         with self.assertRaisesRegex(ValueError, "unsafe archive path"):
@@ -330,6 +358,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         {"name": "kernel", "version": TEST_KERNEL_ABI},
         {"name": "base-files", "version": "1~b25.12"},
     ]
+    packages.extend({'name': name, 'version': '0.107.79-r1'} for name in release.REQUIRED_APPLICATION_PACKAGES)
     if include_lucky:
         packages.extend([
             {"name": "lucky", "version": "3.4.0-r3"},
@@ -366,7 +395,8 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         }),
         "reports/preservation-image.json": json_bytes({
             "status": preservation_status, "errors": [], "pending_review_count": 0,
-            "checks": {"packages": {
+            "checks": {"application_selection": release.application_selection_evidence(
+                release.load_application_selection(CI / "baseline")), "packages": {
                 "original_count": 483, "actual_count": actual_count, "kernel": TEST_KERNEL_ABI,
                 "kmods": 0, "luci_apps": 0,
                 "reviewed_optional_absent": [] if include_lucky else sorted(release.B_OPTIONAL_PACKAGE_NAMES),
@@ -380,6 +410,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                           "x509_verify_linked": True, "distrusted_spki_count": 8, "security_status": "patched"}
                          for name in go_security.REQUIRED_BINARIES],
         }),
+        "reports/dashboard.json": json_bytes(dashboard.report(hashlib.sha256(TEST_ROOTFS_PAYLOAD).hexdigest())),
         "reports/capture.json": json_bytes({
             "status": "captured", "image": IMAGE_PATH, "kernel_abi": TEST_KERNEL_ABI,
             "same_build_signed_feeds": True, "private_keys": "excluded-and-scanned",
@@ -411,7 +442,9 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         }),
         "provenance/upstream-resolution.json": json_bytes(upstream_resolution),
         "provenance/config-gate.json": json_bytes({
-            "status": "pass", "errors": [], "checks": {"config": {
+            "status": "pass", "errors": [], "checks": {
+                "application_selection": release.application_selection_evidence(
+                    release.load_application_selection(CI / "baseline")), "config": {
                 "b_optional_packages": list(release.B_OPTIONAL_PACKAGE_NAMES),
                 "b_optional_package_omission": {
                     "upstream_commit": resolved_upstream,
@@ -437,7 +470,8 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
     if package_count_delta:
         files["reports/preservation-image.json"] = json_bytes({
             "status": "pass", "errors": [], "pending_review_count": 0,
-            "checks": {"packages": {
+            "checks": {"application_selection": release.application_selection_evidence(
+                release.load_application_selection(CI / "baseline")), "packages": {
                 "original_count": 483, "actual_count": actual_count + package_count_delta,
                 "kernel": TEST_KERNEL_ABI,
                 "kmods": 0, "luci_apps": 0,

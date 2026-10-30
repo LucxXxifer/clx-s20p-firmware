@@ -541,7 +541,7 @@ register_local_feed_source() {
     local feed_name
     feed_name=$(get_custom_feed_name)
 
-    sed -i "/[[:space:]]$feed_name[[:space:]]/d" "$feeds_path"
+    sed -i "/[[:space:]]${feed_name}[[:space:]]/d" "$feeds_path"
     [ -z "$(tail -c 1 "$feeds_path")" ] || echo "" >>"$feeds_path"
     echo "src-link $feed_name $custom_feed_dir" >>"$feeds_path"
     echo "已将 $feed_name 作为本地源 (src-link) 添加到 $feeds_path"
@@ -562,7 +562,7 @@ install_custom_feed() {
         xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata geoview v2ray-plugin geo2txt \
         tuic-client chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
-        v2dat adguardhome luci-app-adguardhome ddns-go \
+        v2dat adguardhome ddns-go \
         luci-app-ddns-go quickstart \
         luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest netdata luci-app-netdata \
         lucky luci-app-lucky luci-app-openclash luci-app-homeproxy luci-app-amlogic \
@@ -577,8 +577,12 @@ install_custom_feed() {
         open-app-filter luci-app-oaf lucky luci-app-lucky luci-app-easytier
         luci-app-emmc-health luci-app-wolultra luci-app-mini-diskmanager
         axonhub luci-app-axonhub gecoosac luci-app-gecoosac sing-box
-        luci-app-tingreader luci-app-velo5x0-fan
+        luci-app-velo5x0-fan
     )
+    if [[ ${S20P_AUTOBUILD:-0} != 1 ]]; then
+        base_custom_feed_packages+=(luci-app-adguardhome)
+        required_feed_dirs+=(luci-app-tingreader)
+    fi
     local custom_feed_sources=()
     local missing_feed_dirs=()
     local source_entry
@@ -728,7 +732,7 @@ install_custom_feed() {
         return 1
     fi
 
-    if ! sync_tingreader_packages_to_feed_dir \
+    if [[ ${S20P_AUTOBUILD:-0} != 1 ]] && ! sync_tingreader_packages_to_feed_dir \
         "https://github.com/dqsq2e2/luci-app-tingreader.git" "main" \
         "$custom_feed_dir" "dqsq2e2/luci-app-tingreader"; then
         rm -rf "$custom_feed_dir"
@@ -742,6 +746,11 @@ install_custom_feed() {
         return 1
     fi
 
+    if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
+        # Use the lower-case adguardhome service and the matching official LuCI
+        # feed. VIKINGYFY's full-feed sync can otherwise reintroduce the old UI.
+        rm -rf "$custom_feed_worktree_dir/luci-app-adguardhome" "$custom_feed_dir/luci-app-adguardhome"
+    fi
     register_local_feed_source "$custom_feed_dir" "$feeds_path"
 
     echo "正在更新 $custom_feed_name 本地 feed 索引..."

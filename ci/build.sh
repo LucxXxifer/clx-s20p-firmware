@@ -11,6 +11,7 @@ export S20P_LOCK_TOOL="$repo/ci/source_lock.py"
 export S20P_SOURCE_LOCK="${S20P_SOURCE_LOCK:-$repo/ci/sources.lock.json}"
 export S20P_UPSTREAM_EVIDENCE="${S20P_UPSTREAM_EVIDENCE:-}"
 export S20P_UPSTREAM_COMMIT="${S20P_UPSTREAM_COMMIT:-}"
+export S20P_COMPONENT_INPUTS="${S20P_COMPONENT_INPUTS:-}"
 export S20P_GIT_LOG="$S20P_CAPTURE_DIR/provenance/git-clones.jsonl"
 export S20P_HTTP_LOG="$S20P_CAPTURE_DIR/provenance/http-inputs.jsonl"
 export S20P_BUILD_LOG="$S20P_CAPTURE_DIR/logs/build.log"
@@ -36,6 +37,12 @@ verify_runtime_inputs() {
 }
 verify_runtime_inputs
 mkdir -p "$S20P_CAPTURE_DIR/logs" "$S20P_CAPTURE_DIR/provenance" "$S20P_CAPTURE_DIR/reports"
+if [[ -z $S20P_COMPONENT_INPUTS ]]; then
+    export S20P_COMPONENT_INPUTS="$S20P_CAPTURE_DIR/provenance/component-resolution.json"
+    python3 ci/components.py resolve --output "$S20P_COMPONENT_INPUTS"
+elif [[ $S20P_COMPONENT_INPUTS != "$S20P_CAPTURE_DIR/provenance/component-resolution.json" ]]; then
+    cp "$S20P_COMPONENT_INPUTS" "$S20P_CAPTURE_DIR/provenance/component-resolution.json"
+fi
 cp "$S20P_SOURCE_LOCK" "$S20P_CAPTURE_DIR/provenance/requested-sources.lock.json"
 if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
     [[ -f $S20P_UPSTREAM_EVIDENCE && ! -L $S20P_UPSTREAM_EVIDENCE ]] || {
@@ -78,6 +85,14 @@ fi
     echo 'Build did not produce the required pre-clean capture.' >&2; exit 1;
 }
 verify_runtime_inputs
+python3 ci/dashboard.py inspect \
+    --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
+    --output output/reports/dashboard.json
+if [[ -f output/provenance/component-preparation.json ]]; then
+    python3 ci/component_gate.py --rootfs output/inspection/rootfs \
+        --payload output/inspection/rootfs.squashfs --provenance output/provenance \
+        --output output/reports/components.json
+fi
 python3 ci/go_security.py inspect \
     --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
     --output output/reports/go-x509-security.json
@@ -95,6 +110,7 @@ if [[ -f $repo/ci/approved-differences.json ]]; then
     gate_command+=(--approve-differences "$repo/ci/approved-differences.json")
 fi
 gate_command+=(
+    --application-selection \
     --rootfs output/inspection/rootfs \
     --kernel-config output/metadata/kernel/.config \
     --packages output/inspection/rootfs/lib/apk/db/installed \

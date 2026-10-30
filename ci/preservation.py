@@ -33,6 +33,10 @@ B_OPTIONAL_PACKAGE_NAMES = (
     "lucky", "luci-app-lucky", "luci-i18n-lucky-zh-cn",
 )
 B_LUCKY_STORE_KEY_SHA256 = "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
+OMITTED_APPLICATION_PACKAGES = ('honk', 'luci-app-honk', 'luci-app-tingreader', 'luci-i18n-tingreader-zh-cn')
+REQUIRED_APPLICATION_PACKAGES = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
+APPLICATION_REVIEW = Path(__file__).with_name("reviewed-differences") / "application-image-selection.json"
+APPLICATION_REVIEW_SHA256 = "5b0b611ce838a74180328e60381a0d9b616aec674db3fa8d28b3b3f1ae1ba8bb"
 
 
 def digest(value):
@@ -111,22 +115,12 @@ def validate_upstream_evidence(path, commit):
     if evidence_path.is_symlink() or not evidence_path.is_file():
         raise ValueError("regular upstream compare evidence is required")
     evidence = strict_json(evidence_path.read_bytes())
-    expected = {
-        "schema_version": 1,
-        "repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase",
-        "ref": "25.12",
-        "base_commit": B_SOURCE_COMMIT,
-        "head_commit": commit,
-        "compare_status": "ahead",
-        "merge_base": B_SOURCE_COMMIT,
-        "should_build": True,
-    }
-    if (not isinstance(evidence, dict) or
-            any(evidence.get(key) != value for key, value in expected.items()) or
-            type(evidence.get("forced")) is not bool or
-            type(evidence.get("previous_attempted")) is not bool or
-            (evidence.get("previous_attempted") is True and evidence.get("forced") is not True)):
-        raise ValueError("upstream compare evidence does not prove a forward update from the reviewed base")
+    import upstream_sync
+    try:
+        upstream_sync.validate_build_evidence(evidence, commit,
+                                             evidence_path.with_name("component-resolution.json"))
+    except ValueError as error:
+        raise ValueError("upstream compare evidence does not prove a forward update from the reviewed base: " + str(error)) from error
     return evidence
 
 
@@ -283,17 +277,57 @@ def load_b_optional_package_policy(baseline_dir, source_lock_path,
     return normalized
 
 
-def reviewed_b_optional_package_absences(review, original, actual):
+def load_application_selection(baseline):
+    raw = APPLICATION_REVIEW.read_bytes()
+    if APPLICATION_REVIEW.is_symlink() or digest(raw) != APPLICATION_REVIEW_SHA256:
+        raise ValueError("application selection review digest mismatch")
+    review = strict_json(raw)
+    if (review.get("schema_version") != 1 or review.get("package_names") != list(OMITTED_APPLICATION_PACKAGES)
+            or review.get("required_packages") != list(REQUIRED_APPLICATION_PACKAGES)):
+        raise ValueError("application selection must name the exact omitted and required packages")
+    baseline = Path(baseline)
+    for key, name in (("package_manifest_sha256", "original-package-manifest.json"),
+                      ("rootfs_manifest_sha256", "full-rootfs-manifest.json")):
+        if digest((baseline / name).read_bytes()) != review.get(key):
+            raise ValueError("application selection baseline digest mismatch: " + name)
+    packages = read_json(baseline / "original-package-manifest.json")
+    if [row for row in packages if row["name"] in OMITTED_APPLICATION_PACKAGES] != review["baseline_packages"]:
+        raise ValueError("application selection baseline package identity mismatch")
+    records = review.get("removed_records", [])
+    original = file_index(read_json(baseline / "full-rootfs-manifest.json")["files"])
+    if (not records or len({row["path"] for row in records}) != len(records) or
+            any(original.get(row["path"]) != row for row in records)):
+        raise ValueError("application selection baseline file record mismatch")
+    return review
+
+
+def application_file_absences(review, baseline, actual):
+    allowed = {row["path"]: row for row in review["removed_records"]}
+    if any(baseline.get(path) != row for path, row in allowed.items()):
+        raise ValueError("application selection baseline file record mismatch")
+    if set(allowed) & set(actual):
+        raise ValueError("reviewed omitted application payload files must be absent")
+    return set(allowed)
+
+
+def application_selection_evidence(review):
+    return {"packages": list(OMITTED_APPLICATION_PACKAGES), "review_sha256": APPLICATION_REVIEW_SHA256,
+            "required_packages": list(REQUIRED_APPLICATION_PACKAGES),
+            "removed_path_count": len(review["removed_records"])}
+
+
+def reviewed_b_optional_package_absences(review, original, actual, preapproved_absences=None):
     """Require exactly the reviewed B-only package set to be absent."""
     optional = set(B_OPTIONAL_PACKAGE_NAMES)
     present = optional & set(actual)
     if present:
         raise ValueError("reviewed optional Lucky package must not be installed: " + ", ".join(sorted(present)))
     missing = set(original) - set(actual)
-    unexpected = missing - optional
+    preapproved = set(preapproved_absences or ())
+    unexpected = missing - optional - preapproved
     if unexpected:
         raise ValueError("unreviewed missing baseline package: " + ", ".join(sorted(unexpected)))
-    if missing != optional:
+    if missing - preapproved != optional:
         raise ValueError("reviewed optional Lucky packages must be absent")
     for name in optional:
         old = original[name]
@@ -301,7 +335,7 @@ def reviewed_b_optional_package_absences(review, original, actual):
         if (old.get("version") != expected.get("version") or
                 old.get("depends", old.get("dependencies", "")) != expected.get("dependencies", "")):
             raise ValueError("baseline package identity differs from B optional package review: " + name)
-    return missing
+    return missing & optional
 
 
 def reviewed_b_optional_file_absences(review, baseline, actual, preapproved_absences=None):
@@ -567,12 +601,15 @@ def semantic_dtb(nodes):
 
 
 class Gate:
-    def __init__(self, phase, baseline, approval=None):
+    def __init__(self, phase, baseline, approval=None, *, application_selection=False):
         self.phase = phase
         self.baseline = Path(baseline)
         self.errors, self.differences, self.checks = [], [], {}
         self._source_evidence = None
         self.b_optional_package_policy = None
+        self.application_selection = load_application_selection(baseline) if application_selection else None
+        if self.application_selection:
+            self.checks["application_selection"] = application_selection_evidence(self.application_selection)
         self.approvals = {}
         self.policy = read_json(self.baseline / "policy.json")
         if approval:
@@ -645,6 +682,10 @@ class Gate:
         # only the actual image gate can establish that they were installed.
         for name in self.original:
             selector = "CONFIG_PACKAGE_" + name
+            if self.application_selection and name in OMITTED_APPLICATION_PACKAGES:
+                selectors[name] = selector
+                required[selector] = "n"
+                continue
             if metadata is not None:
                 if name == "kernel":
                     # kernel is implicitly emitted, not a selectable recipe.
@@ -658,6 +699,8 @@ class Gate:
             selectors[name] = selector
             required.setdefault(selector, ["y", "m"])
         required.update({"CONFIG_PACKAGE_" + name: "y" for name in self.policy["required_packages"]})
+        if self.application_selection:
+            required.update({"CONFIG_PACKAGE_" + name: "y" for name in REQUIRED_APPLICATION_PACKAGES})
         optional_policy = (load_b_optional_package_policy(
             self.baseline, source_lock, optional_package_review, upstream_evidence
         ) if source_lock else None)
@@ -774,6 +817,19 @@ class Gate:
         other missing paths remain hard errors in files(); restoring the revoked
         CA is itself a hard error, even if it would match the original baseline.
         """
+        if getattr(self, "_daily_verified_paths", None):
+            removed = {name: row for name, row in baseline.items()
+                       if PurePosixPath(name).parent.as_posix() == "/etc/ssl/certs" and
+                       row["type"] in {"file", "symlink"} and not os.path.lexists(safe_path(root, name))}
+            self.checks["security_removals"] = {
+                "status": "pass", "scope": "independently reproduced daily CA trust set",
+                "removed_paths": sorted(removed),
+                "component_fingerprint": self.checks["daily_components"]["component_fingerprint"],
+            }
+            for name, row in removed.items():
+                self.difference("security_removal", name, row, None, "expected",
+                                "source-bound independently reproduced CA trust set; revoked DER absent")
+            return removed
         if self.policy["upstream_commit"] != SECURITY_REMOVAL_COMMIT:
             if self.policy["upstream_commit"] != "03eb30617955519e35845838c6255ebe687eb717":
                 self.error("security_removal_guard", "unreviewed upstream CA transition",
@@ -979,9 +1035,17 @@ class Gate:
             self.error("package_db_mismatch", "build manifest vs actual APK DB",
                        {k: p["version"] for k, p in manifest.items()},
                        {k: p["version"] for k, p in actual.items()})
+        requested_omitted = set(OMITTED_APPLICATION_PACKAGES) if self.application_selection else set()
+        for name in requested_omitted:
+            if name in actual:
+                self.error("requested_package_omission", name, "absent", "installed")
+            else:
+                self.difference("removed_requested_package", name, self.original[name], None,
+                                "expected", "user-requested application selection; exact baseline review")
         if optional_package_policy:
             try:
-                omitted = reviewed_b_optional_package_absences(optional_package_policy, self.original, actual)
+                omitted = reviewed_b_optional_package_absences(
+                    optional_package_policy, self.original, actual, preapproved_absences=requested_omitted)
             except ValueError as error:
                 self.error("optional_package_omission", "Lucky", "exact B-only reviewed absence", str(error))
                 omitted = set()
@@ -990,7 +1054,8 @@ class Gate:
                                 "expected", "fixed B-only Lucky omission; hash-pinned review and signed compatible iStore feed")
         else:
             omitted = set()
-        for name in sorted((set(self.original) - omitted) | set(self.policy["required_packages"])):
+        applications = set(REQUIRED_APPLICATION_PACKAGES) if self.application_selection else set()
+        for name in sorted((set(self.original) - omitted - requested_omitted) | set(self.policy["required_packages"]) | applications):
             if name not in actual:
                 self.error("missing_package", name)
         kernel = actual.get("kernel", {}).get("version", "")
@@ -1017,7 +1082,7 @@ class Gate:
                     elif vermagic[1].split()[0].decode() != self.policy["kernel_version"]:
                         self.error("module_vermagic", filename, self.policy["kernel_version"],
                                    vermagic[1].decode(errors="replace"))
-        reachable = set(self.policy["required_packages"])
+        reachable = set(self.policy["required_packages"]) | applications
         pending = list(reachable)
         while pending:
             name = pending.pop()
@@ -1125,6 +1190,40 @@ class Gate:
                                       "scope": "capture verified native signed feeds, exact rootfs key binding"}
         return passed
 
+    def daily_components(self, root, provenance_ok, packages):
+        self._daily_verified_paths = set()
+        if not self._source_evidence:
+            return
+        path, source = self._source_evidence
+        if source.get("upstream_resolution", {}).get("schema_version") != 2:
+            return
+        try:
+            if not provenance_ok:
+                raise ValueError("validated daily source provenance required")
+            import component_gate
+            import dashboard
+            report = component_gate.inspect(root, path.parent,
+                                            path.parent.parent / "inspection/rootfs.squashfs", packages)
+            if report != component_gate.read(path.parent.parent / "reports/components.json"):
+                raise ValueError("component image report changed after inspection")
+            ui = dashboard.inspect_rootfs(root, path.parent.parent / "inspection/rootfs.squashfs")
+            dashboard.verify_report(component_gate.read(path.parent.parent / "reports/dashboard.json"),
+                                    report["rootfs_sha256"])
+            self.revoked_ca_absent(root, report["ca"]["revoked_der_sha256"])
+            self._daily_verified_paths = {"/etc/ssl/certs/" + row["name"] for row in report["ca"]["files"]}
+            self._daily_verified_paths.update({"/etc/ssl/certs/ca-certificates.crt", "/etc/ssl/cert.pem"})
+            self._daily_verified_paths.update(row["path"] for row in ui["files"])
+            for name in self._daily_verified_paths:
+                item = file_record(root, safe_path(root, name))
+                if (item["uid"] != 0 or item["gid"] != 0 or
+                        item["mode"] != ("0777" if item["type"] == "symlink" else "0644")):
+                    raise ValueError("verified component payload metadata changed: " + name)
+            self.checks["daily_components"] = report
+            self.checks["dashboard"] = ui
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            self._daily_verified_paths = set()
+            self.error("daily_component_guard", "source-bound CA/AdGuard/dashboard", "all image checks", str(error))
+
     def files(self, root, provenance_ok, packages, reachable, signing_key_ok=False,
               optional_package_policy=None):
         baseline = file_index(read_json(self.baseline / "full-rootfs-manifest.json")["files"])
@@ -1137,9 +1236,13 @@ class Gate:
         if self.policy.get("critical_entries") and len(critical) != self.policy["critical_entries"]:
             self.error("baseline_count", "critical_entries", self.policy["critical_entries"], len(critical))
         actual = walk_files(root)
+        self.daily_components(root, provenance_ok, packages)
+        verified_paths = self._daily_verified_paths
         removed = self.security_removals(root, provenance_ok, packages, baseline)
+        requested_removed = (application_file_absences(self.application_selection, baseline, actual)
+                             if self.application_selection else set())
         optional_removed = (reviewed_b_optional_file_absences(optional_package_policy, baseline, actual,
-                                                              preapproved_absences=set(removed))
+                                                              preapproved_absences=set(removed) | requested_removed)
                             if optional_package_policy else set())
         for name, expected in baseline.items():
             # Reject redirected parent directories even when walk() correctly
@@ -1148,6 +1251,10 @@ class Gate:
             current = actual.get(name)
             if current is None:
                 if name in removed:
+                    continue
+                if name in requested_removed:
+                    self.difference("removed_requested_file", name, expected, None, "expected",
+                                    "user-requested Honk/TingReader package-owned path; exact baseline review")
                     continue
                 if name in optional_removed:
                     self.difference("removed_optional_file", name, expected, None, "expected",
@@ -1161,7 +1268,10 @@ class Gate:
             policy = critical.get(name, {}).get("policy", "report-all-differences")
             for field in ("mode", "uid", "gid", "target", "device_major", "device_minor"):
                 if expected.get(field) != current.get(field):
-                    self.difference("file_" + field, name, expected.get(field), current.get(field))
+                    verified_target = field == "target" and name in verified_paths
+                    self.difference("file_" + field, name, expected.get(field), current.get(field),
+                                    "expected" if verified_target else "review_required",
+                                    "reproduced CA alias" if verified_target else "")
             if expected.get("sha256") == current.get("sha256"):
                 continue
             path = safe_path(root, name)
@@ -1169,7 +1279,12 @@ class Gate:
             is_elf = current["type"] == "file" and read_prefix(path, 4) == b"\x7fELF"
             generated = name.startswith("/lib/apk/") or bool(re.match(r"/lib/modules/[^/]+/modules\.", name))
             disposition, reason = "review_required", policy
-            if name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
+            if name in verified_paths:
+                disposition, reason = "expected", "source-bound CA reproduction or exact reviewed dashboard payload"
+            elif (name == "/etc/apk/world" and provenance_ok and self.application_selection and
+                    current.get("sha256") == self.application_selection["world_sha256"]):
+                disposition, reason = "expected", "exact reviewed package roots with Honk/TingReader omitted and AdGuard Home included"
+            elif name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
                 disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
             elif policy.startswith("exact-"):
                 pass
@@ -1185,11 +1300,16 @@ class Gate:
                 reason = "world roots changed; package closure checked but root selection needs explicit review"
             self.difference("file_sha256", name, expected.get("sha256"), current.get("sha256"), disposition, reason)
         additions = sorted(set(actual) - set(baseline))
+        added_package_files = {name for package, row in packages.items()
+                               if package not in self.original and package in reachable
+                               for name in row.get("files", [])}
         for name in additions:
             current = actual[name]
             generated = name.startswith("/lib/apk/") or current["type"] == "directory"
+            verified = name in verified_paths or (signing_key_ok and provenance_ok and name in added_package_files)
             self.difference("added_file", name, None, current,
-                            "expected" if generated else "review_required",
+                            "expected" if generated or verified else "review_required",
+                            "verified payload or signed required-package dependency closure" if verified else
                             "explicit new rootfs entry; verify owning added package" if not generated else "generated rootfs metadata/directory")
         self.checks["rootfs"] = {"baseline_entries": len(baseline), "actual_entries": len(actual),
                                   "critical_entries": len(critical), "added_entries": len(additions),
@@ -1285,6 +1405,8 @@ def main(argv=None):
         command.add_argument("--baseline-dir", required=True, type=Path)
         command.add_argument("--output", required=True, type=Path)
         command.add_argument("--approve-differences", type=Path)
+        command.add_argument("--application-selection", action="store_true",
+                             help="require the exact reviewed S20P application selection")
         if phase == "config":
             command.add_argument("--config", required=True, type=Path)
             command.add_argument("--optional-packages", type=Path,
@@ -1310,7 +1432,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     gate = None
     try:
-        gate = Gate(args.phase, args.baseline_dir, args.approve_differences)
+        gate = Gate(args.phase, args.baseline_dir, args.approve_differences,
+                    application_selection=args.application_selection)
         if args.phase == "config":
             gate.config(args.config, args.optional_packages, args.package_info,
                         args.source_lock, args.optional_package_review, args.upstream_evidence)

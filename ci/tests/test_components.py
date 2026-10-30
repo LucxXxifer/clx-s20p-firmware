@@ -16,6 +16,18 @@ from component_fixtures import inputs, files
 
 
 class ComponentTests(unittest.TestCase):
+    def test_quickstart_dependency_policy_is_exact_and_idempotent(self):
+        recipe = ('PKG_VERSION:=0.13.0\n\tDEPENDS:= +bash +smartmontools-helper '
+                  '+smartd +mdadm +smartmontools-drivedb\n'
+                  '\t$(INSTALL_BIN) ./files/mdadm-helper $(1)/bin\n')
+        expected = recipe.replace(' +mdadm', '').replace(' +smartmontools-drivedb', '')
+        self.assertEqual(components.quickstart_recipe(recipe), expected)
+        self.assertEqual(components.quickstart_recipe(expected), expected)
+        for invalid in ('DEPENDS += +mdadm\n', 'DEPENDS:= +mdadm\nDEPENDS:= +bash\n',
+                        'DEPENDS:= +mdadm \\\n'):
+            with self.assertRaises(ValueError):
+                components.quickstart_recipe(invalid)
+
     def test_omitted_adguard_does_not_resolve_or_download_a_release(self):
         value = inputs()
         releases = [{'stable': True, 'version': row['version'],
@@ -36,6 +48,12 @@ class ComponentTests(unittest.TestCase):
         import ca_security
         value = inputs()
         value['adguard'] = None
+        upstream_recipe = components.file_bytes(value['quickstart']['files'], 'Makefile')
+        upstream_recipe += (b'define Package/$(PKG_NAME)\n'
+                            b'\tDEPENDS:= +bash +e2fsprogs +parted \\\n'
+                            b'\t\t+smartmontools +smartd +smartmontools-drivedb +mdadm +ip-full\n'
+                            b'endef\n')
+        value['quickstart']['files'] = files(upstream_recipe)
         value['fingerprint'] = components.fingerprint(value)
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
@@ -57,6 +75,15 @@ class ComponentTests(unittest.TestCase):
             self.assertEqual(result['ca_version'], ca['version'])
             self.assertIsNone(json.loads(output.read_text())['adguard_version'])
             self.assertFalse((root / 'feeds/custom_feed/adguardhome').exists())
+            # Resolving an upstream version must not undo the wrapper's
+            # existing optional-storage dependency policy.
+            prepared = (root / 'feeds/custom_feed/quickstart/Makefile').read_text()
+            self.assertNotIn('+mdadm', prepared)
+            self.assertNotIn('+smartmontools', prepared)
+            self.assertNotIn('+e2fsprogs', prepared)
+            self.assertNotIn('+parted', prepared)
+            self.assertIn('+smartd', prepared)
+            self.assertIn('+ip-full', prepared)
 
     def test_changed_security_or_plugin_input_has_a_new_identity(self):
         original = inputs()

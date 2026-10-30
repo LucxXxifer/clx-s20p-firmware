@@ -305,6 +305,17 @@
       "squashfs_inode": 1975
     },
     {
+      "path": "/usr/bin/ting-reader",
+      "type": "file",
+      "mode": "0755",
+      "uid": 0,
+      "gid": 0,
+      "size": 444,
+      "sha256": "b981a1fc9ea22731c4d063b1b577c75299411a128fc73d5adafcc059621750fc",
+      "mtime_unix": 1792144831,
+      "squashfs_inode": 2043
+    },
+    {
       "path": "/usr/lib/lua/luci/i18n/honk.zh-cn.lmo",
       "type": "file",
       "mode": "0644",
@@ -4188,6 +4199,17 @@
       "squashfs_inode": 3435
     },
     {
+      "path": "/usr/share/licenses",
+      "type": "directory",
+      "mode": "0755",
+      "uid": 0,
+      "gid": 0,
+      "size": 0,
+      "sha256": null,
+      "mtime_unix": 1792144831,
+      "squashfs_inode": 3447
+    },
+    {
       "path": "/usr/share/licenses/honk",
       "type": "directory",
       "mode": "0755",
@@ -4586,7 +4608,7 @@
   ],
   "world_sha256": "c31f086d6118c966991bd9aba5c15f376fc7e033f8051dab1f9e80d72adf7748",
   "ownership_evidence": {
-    "method": "Each payload path matched verified same-build native APK metadata; APK bookkeeping and two init symlinks matched the original image manifest. No shared dependencies or directories removed.",
+    "method": "Original 413 payload records plus the exact native APK-owned /usr/bin/ting-reader launcher and the empty shared /usr/share/licenses parent (all original children are reviewed Honk payloads); regular payloads must be absent, shared directories may remain.",
     "reference_run": 40893380461
   },
   "scope": "S20P only; omit the four Honk/TingReader packages and their exact original payload records, and defer the three AdGuard Home packages until the official LuCI package has Chinese translation. No installed-device uninstall and no relaxation for unrelated files or packages.",
@@ -4596,5 +4618,19 @@
     "adguardhome",
     "luci-app-adguardhome",
     "luci-i18n-adguardhome-zh-cn"
-  ]
+  ],
+  "normalized_world_sha256": [
+    "76b59bd418f8aee462b7fd8b12ae04873f6539cc20830a22eb119e88b5c84768",
+    "49d5e8cd13717cc0aa4857f6daf896e6b4f1a85f0b0cf672ce3f5c577293ef07"
+  ],
+  "world_review": {
+    "reference_run": 40996021264,
+    "method": "Exact prior roots minus the four omitted applications, with the actual independently validated kernel ABI substituted. A second exact template retains the four already-installed e2fsprogs libraries when exported as roots by current package metadata. No new arbitrary roots or missing roots allowed.",
+    "additional_existing_library_roots": [
+      "libcomerr0",
+      "libe2p2",
+      "libext2fs2",
+      "libss2"
+    ]
+  }
 }

@@ -1,0 +1,2826 @@
+{
+  "differences": [
+    {
+      "actual": "20261030-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "20261016-r1",
+      "id": "97764b67fc8add11cab6103e9deee3c4f9bceb0bec3216e897bd50de5dbfefad",
+      "reason": "source/version delta",
+      "subject": "axonhub",
+      "verification": {
+        "depends": [
+          "ca-bundle",
+          "libc",
+          "zoneinfo-asia",
+          "zoneinfo-core"
+        ],
+        "owner": "axonhub",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/axonhub/Makefile",
+          "sha256": "7b437a8f81f8e1abc044ba3dabf6cf6f8884d274bcd68fa1a615a31eab7fda6e",
+          "size": 1947
+        },
+        "version": "20261030-r1"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "49307e40cb12cfe7b48f6ef10b30ab2cfe38726c412e0a03c96d12e58a3780bc",
+      "reason": "source/version delta",
+      "subject": "luci",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-package-manager",
+          "luci-light"
+        ],
+        "owner": "luci",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/collections/luci/Makefile",
+          "sha256": "84fc459378fa796b4e8e7fd867444a089d5be8cc582f0f57ade699590bda2402",
+          "size": 533
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "14b2bcd349bff468e52ca52e692f74803eecb9b82baa5e3fc3c11f80caf0cf8d",
+      "reason": "source/version delta",
+      "subject": "luci-app-autoreboot",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "luci-app-autoreboot",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-autoreboot/Makefile",
+          "sha256": "596bcd2ea0bafc73dc4aae3ccb8ff291bc07873a0084ca2d0169ec0fab875991",
+          "size": 301
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "69cb9a57e25e88af54e2877a4c78d1007b462fccab0a23092f0c03e0a59de26b",
+      "reason": "source/version delta",
+      "subject": "luci-app-firewall",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "uci-firewall"
+        ],
+        "owner": "luci-app-firewall",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-firewall/Makefile",
+          "sha256": "00badd5d4995786561b3466ce5b2b5ee4f09357b03d2452098084411552647b8",
+          "size": 412
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "d9cc01e8a2de6f69eda6219c85bce6b64089d25304d049e495a2c05156fd45ee",
+      "reason": "source/version delta",
+      "subject": "luci-app-package-manager",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base"
+        ],
+        "owner": "luci-app-package-manager",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-package-manager/Makefile",
+          "sha256": "234561b56808263cc060896e0576d15b22a624c9be288cd118e00b784d571e58",
+          "size": 401
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "0627bc610dc2e780db194641fa8b3a7f9174c41d2fa4600cc74885c9e98f7e71",
+      "reason": "source/version delta",
+      "subject": "luci-app-samba4",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "samba4-server"
+        ],
+        "owner": "luci-app-samba4",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-samba4/Makefile",
+          "sha256": "16fecc4e137ef80fad6baaf6aa858cd884658d19bc965c44ef2f69ba20cbfd73",
+          "size": 358
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "92f8660c2b9a99f3d3f51fd11db4ca324a1e9cf281a0d567e3bd91651d0972de",
+      "reason": "source/version delta",
+      "subject": "luci-app-ttyd",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "ttyd"
+        ],
+        "owner": "luci-app-ttyd",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-ttyd/Makefile",
+          "sha256": "6ca09499a2f9fcdc0900cd2ebbda64467ffe42abf59d78a263fbc67cd2b46a38",
+          "size": 357
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "20261027-r7",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "a0da163cf4c5b62f907d79fb2342aa5a160ed9519cb43d72c85b0af66fd9beda",
+      "reason": "source/version delta",
+      "subject": "luci-app-upnp",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "miniupnpd>=20261027-r7",
+          "rpcd-mod-ucode"
+        ],
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "libc luci-base miniupnpd>=20261027-r7 rpcd-mod-ucode",
+      "category": "package_dependencies",
+      "disposition": "review_required",
+      "expected": "libc luci-base miniupnpd rpcd-mod-ucode",
+      "id": "4ed2ce4b27b420c60bcc9582d45876801229791f5c268deec4043dd43b7a9324",
+      "reason": "",
+      "subject": "luci-app-upnp",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "miniupnpd>=20261027-r7",
+          "rpcd-mod-ucode"
+        ],
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "8b7c8f43cd11c889f981d6dae5ff580e3072bf152b3cd7388d2cfb29a2b4ad8a",
+      "reason": "source/version delta",
+      "subject": "luci-app-vlmcsd",
+      "verification": {
+        "depends": [
+          "libc",
+          "vlmcsd"
+        ],
+        "owner": "luci-app-vlmcsd",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-vlmcsd/Makefile",
+          "sha256": "12c757833a86a6fedbfb66f248f07690d112c45df432b70846dba406adf31e8f",
+          "size": 319
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "5ab4f5017056f0f96c1e43b940920fd127ac5b3df7149d59eeae43ee19dddb65",
+      "reason": "source/version delta",
+      "subject": "luci-base",
+      "verification": {
+        "depends": [
+          "cgi-io",
+          "libc",
+          "liblucihttp-ucode",
+          "rpcd",
+          "rpcd-mod-file",
+          "rpcd-mod-luci",
+          "rpcd-mod-ucode",
+          "ucode",
+          "ucode-mod-fs",
+          "ucode-mod-html",
+          "ucode-mod-log",
+          "ucode-mod-math",
+          "ucode-mod-ubus",
+          "ucode-mod-uci"
+        ],
+        "owner": "luci-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "9b184a59718cf07b919fe52fe08407195d23278815e05eeff1f48def550905f0",
+      "reason": "source/version delta",
+      "subject": "luci-compat",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-lua-runtime"
+        ],
+        "owner": "luci-compat",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-compat/Makefile",
+          "sha256": "4d528b4a3f910b31664dea4f14ab8ea7df6cb0756ad1ee287bd6391066fac3ba",
+          "size": 392
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "27d598c10025b3b2613b7c987b3c3e83a16a9a0d3c4ed8f0c549780f6585ea5b",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-autoreboot-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-autoreboot"
+        ],
+        "owner": "luci-i18n-autoreboot-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-autoreboot/Makefile",
+          "sha256": "596bcd2ea0bafc73dc4aae3ccb8ff291bc07873a0084ca2d0169ec0fab875991",
+          "size": 301
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "741133ed6aa0e59e54ebfcbf88e6d62db0a692c91bd934f9744a2313dd6f0aff",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-base-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base"
+        ],
+        "owner": "luci-i18n-base-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "41f9709e2d0578fd0127551cbdf7a4bfb51d40b8d3ec4c0b6e13237b8fe9dba2",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-cloudflared-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-cloudflared"
+        ],
+        "owner": "luci-i18n-cloudflared-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-cloudflared/Makefile",
+          "sha256": "6dabf2eb7d49b5dbdda58c28c2fe46ba375ec785f3143135199bab84eb516f7b",
+          "size": 507
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "4c8cf01178cc18b7ad0a9258389029c54285eaf1f84cb8892ec39c17f3b1bbcf",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-dockerman-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-dockerman"
+        ],
+        "owner": "luci-i18n-dockerman-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-dockerman/Makefile",
+          "sha256": "262def1691049ae384edea78fc38b5c5122f6a310a8e9cdd934678597d3489f2",
+          "size": 417
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "f9d417bb4f902063af55ce02724d09d6ebc60c0060c2c3950b105f8f13f85961",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-firewall-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-firewall"
+        ],
+        "owner": "luci-i18n-firewall-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-firewall/Makefile",
+          "sha256": "00badd5d4995786561b3466ce5b2b5ee4f09357b03d2452098084411552647b8",
+          "size": 412
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "77b3bb5b0212f0546e3c1c3616c93d835dcff3a2a0ca5a2fc29a86b3a345d09b",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-package-manager-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-package-manager"
+        ],
+        "owner": "luci-i18n-package-manager-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-package-manager/Makefile",
+          "sha256": "234561b56808263cc060896e0576d15b22a624c9be288cd118e00b784d571e58",
+          "size": 401
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "d12d0555c8b4f7c6843f269314998bd6c98db549d39f0f1a3aa8e3fa88b1c835",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-samba4-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-samba4"
+        ],
+        "owner": "luci-i18n-samba4-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-samba4/Makefile",
+          "sha256": "16fecc4e137ef80fad6baaf6aa858cd884658d19bc965c44ef2f69ba20cbfd73",
+          "size": 358
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "5e193115d3715a6157271667bdc62cff2695638917c8d35d3242b2ba39efe6e5",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-ttyd-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-ttyd"
+        ],
+        "owner": "luci-i18n-ttyd-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-ttyd/Makefile",
+          "sha256": "6ca09499a2f9fcdc0900cd2ebbda64467ffe42abf59d78a263fbc67cd2b46a38",
+          "size": 357
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "20261027-r7",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "203e78c24d0f31d904d055ecf8ca25db0ace64c8a52fa280e3a8de497c513d6c",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-upnp-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-upnp"
+        ],
+        "owner": "luci-i18n-upnp-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "84ac4ae87d096606ebabeb86132b025a7cc7a61c55405402839a127c0050c42d",
+      "reason": "source/version delta",
+      "subject": "luci-i18n-vlmcsd-zh-cn",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-vlmcsd"
+        ],
+        "owner": "luci-i18n-vlmcsd-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-vlmcsd/Makefile",
+          "sha256": "12c757833a86a6fedbfb66f248f07690d112c45df432b70846dba406adf31e8f",
+          "size": 319
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "f0dbf5cc425de44bcfd36792882ebc056b3a374165e193d66d9b9f22b79cc233",
+      "reason": "source/version delta",
+      "subject": "luci-lib-base",
+      "verification": {
+        "depends": [
+          "libc",
+          "liblucihttp-lua",
+          "lua",
+          "luci-lib-ip",
+          "luci-lib-jsonc",
+          "luci-lib-nixio"
+        ],
+        "owner": "luci-lib-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/libs/luci-lib-base/Makefile",
+          "sha256": "5096e95b39d23784a0307fc909832a2490179adb725f8b5efdece8e9bc97539f",
+          "size": 393
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "94089fb70c99159efcfdb868066169c0ac2572497c40f3b2fb9c2853f896c291",
+      "reason": "source/version delta",
+      "subject": "luci-lib-ip",
+      "verification": {
+        "depends": [
+          "libc",
+          "liblua5.1.5",
+          "libnl-tiny1"
+        ],
+        "owner": "luci-lib-ip",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/libs/luci-lib-ip/Makefile",
+          "sha256": "8ef52f163a97ee38915e2f69272d205264abafa447231ce0b9c906d4bb10606b",
+          "size": 367
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "462ec117150980bb4246b49594868f5341ef1f4dfd2f82d40500a401083516ae",
+      "reason": "source/version delta",
+      "subject": "luci-lib-jsonc",
+      "verification": {
+        "depends": [
+          "libc",
+          "libjson-c5",
+          "liblua5.1.5"
+        ],
+        "owner": "luci-lib-jsonc",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/libs/luci-lib-jsonc/Makefile",
+          "sha256": "a9de5a873cb3ff827cfd712218b4527241fe50608cc7418e3f877fbd3f5c4446",
+          "size": 334
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "027111b98e7624ad20b6ad10c39106c1fbf219ce91b36b755f4cc3477c21b7a5",
+      "reason": "source/version delta",
+      "subject": "luci-lib-nixio",
+      "verification": {
+        "depends": [
+          "libc",
+          "liblua5.1.5"
+        ],
+        "owner": "luci-lib-nixio",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/libs/luci-lib-nixio/Makefile",
+          "sha256": "7c977614aacec9f2d22771190a7167afbcd55945500413cab4557a408bf83972",
+          "size": 1112
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "51a47054736e329eab9c74edd68f6ece8f5f50ffc05fb0d2b429b94c6e7ada82",
+      "reason": "source/version delta",
+      "subject": "luci-lib-uqr",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "luci-lib-uqr",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/libs/luci-lib-uqr/Makefile",
+          "sha256": "8512ed53567209aec9f7fd28d8402d7cbf0eab83c64f51d5e2cb11876d907743",
+          "size": 238
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "71b7a7d69bdbb33c067a4d56dadea630688b45c6d7436b0d59733edf803e6638",
+      "reason": "source/version delta",
+      "subject": "luci-light",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-app-firewall",
+          "luci-mod-admin-full",
+          "luci-proto-ipv6",
+          "luci-proto-ppp",
+          "luci-theme-argon",
+          "rpcd-mod-rrdns",
+          "uhttpd",
+          "uhttpd-mod-ubus"
+        ],
+        "owner": "luci-light",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/collections/luci-light/Makefile",
+          "sha256": "42ee8a1a0ac274aa2103e170c2d5a9fedb47416f382e0086385aeaec20c4317e",
+          "size": 640
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "ffa9695f233cd4f28b578646d60f89e878e161038cd569673d5359abbca38a61",
+      "reason": "source/version delta",
+      "subject": "luci-lua-runtime",
+      "verification": {
+        "depends": [
+          "libc",
+          "liblucihttp-lua",
+          "libubus-lua",
+          "lua",
+          "luci-base",
+          "luci-lib-base",
+          "luci-lib-ip",
+          "luci-lib-jsonc",
+          "luci-lib-nixio",
+          "ucode-mod-lua"
+        ],
+        "owner": "luci-lua-runtime",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-lua-runtime/Makefile",
+          "sha256": "0e701fa7a837af03cc607e4860a608270a52d732cee58fe4aea2c0c70134aaef",
+          "size": 531
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "53fd9c3083b759c47fe2c0737d8adcd1d1ad9448d537bf54218df50cb7bd59fc",
+      "reason": "source/version delta",
+      "subject": "luci-mod-admin-full",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "luci-mod-network",
+          "luci-mod-status",
+          "luci-mod-system"
+        ],
+        "owner": "luci-mod-admin-full",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-admin-full/Makefile",
+          "sha256": "c64544d6700cc3068b8708f84b66dfdcdc2f49730cc99aae2d3c75fbdd130205",
+          "size": 418
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "5fee283155f56449d37b19d26d3eef92301647d81a55675d8a47b56dd8b0a90c",
+      "reason": "source/version delta",
+      "subject": "luci-mod-network",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base",
+          "luci-lib-uqr",
+          "rpcd-mod-iwinfo"
+        ],
+        "owner": "luci-mod-network",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-network/Makefile",
+          "sha256": "6655bfdd158af34233396a24fac0a3f671e543553f8c14b377ac2948932d09d6",
+          "size": 372
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "3f1a1cbbc565de5d46a4d213d8840e1a5849c9b5ba4b045b6b5d8748ab29cbd8",
+      "reason": "source/version delta",
+      "subject": "luci-mod-status",
+      "verification": {
+        "depends": [
+          "libc",
+          "libiwinfo20230701",
+          "luci-base",
+          "rpcd-mod-iwinfo"
+        ],
+        "owner": "luci-mod-status",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-status/Makefile",
+          "sha256": "912800ee5a94aa7bf70ef5fb12d1f7fa5e058d123965bc745ff5ac02e701dcdb",
+          "size": 400
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "fbf2378fd9f305a67d71cda3da6f28435adb210407dc7f0b79fde0f814d61dda",
+      "reason": "source/version delta",
+      "subject": "luci-mod-system",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base"
+        ],
+        "owner": "luci-mod-system",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-system/Makefile",
+          "sha256": "315224a6aed5598eb229533eb73cc846e79f9d1f6fba4d1e75587910ef95cfe7",
+          "size": 358
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "82459d7d89f62679c6d1c86facb19f07d6837b8d93a45339df4e56e988f7f88e",
+      "reason": "source/version delta",
+      "subject": "luci-proto-ipv6",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "luci-proto-ipv6",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/protocols/luci-proto-ipv6/Makefile",
+          "sha256": "e00c6cc2b3f7a18af1cd85406ae452ed2afe1a28dbc09e9b398869a0bb5a1967",
+          "size": 399
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "6bdd183918fda84dafce7bb199af2605a4704c746e57c72924a10eb64e0530de",
+      "reason": "source/version delta",
+      "subject": "luci-proto-ppp",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "luci-proto-ppp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/protocols/luci-proto-ppp/Makefile",
+          "sha256": "f76b0e6571895ccb6afbc99ff2a011097454965d12368f25830be645d0f49804",
+          "size": 365
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "88d2b118bef35cd329237236254ab4d92d83b7b627ca869ef911b6926e37c978",
+      "reason": "source/version delta",
+      "subject": "luci-proto-relay",
+      "verification": {
+        "depends": [
+          "libc",
+          "relayd"
+        ],
+        "owner": "luci-proto-relay",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/protocols/luci-proto-relay/Makefile",
+          "sha256": "42d4aee001df1b37dbe805a280a95191f110865a76a815a4ffe81b5bc7df12f3",
+          "size": 388
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "20f335205efbd9de919ffeb352a81702ec8b91f53109be834ac67e056b3c5b9d",
+      "reason": "source/version delta",
+      "subject": "luci-proto-wireguard",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-lib-uqr",
+          "resolveip",
+          "ucode",
+          "wireguard-tools"
+        ],
+        "owner": "luci-proto-wireguard",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/protocols/luci-proto-wireguard/Makefile",
+          "sha256": "3bb6cc8dadefb86ecf6fc71c871a211fcc97b05d2de8de2521a4f006c73e81a5",
+          "size": 422
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "26.298.29275~c84adb9",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "26.289.10016~36e3f0d",
+      "id": "1bed06b1c4b5beeca30e2c34cf131d4b2673f2f27b532bde911f4bc0afb69e6b",
+      "reason": "source/version delta",
+      "subject": "luci-theme-bootstrap",
+      "verification": {
+        "depends": [
+          "libc",
+          "luci-base"
+        ],
+        "owner": "luci-theme-bootstrap",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/themes/luci-theme-bootstrap/Makefile",
+          "sha256": "b27851b081fb50afec0f1c901dca6195191089084cd7844ac9e25cfbacbbafb5",
+          "size": 569
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "20261027-r7",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "2.3.9-r1",
+      "id": "8f6514a3a88432a86c98aa333fb3b678736d96c0ff543cbcf9351b7656da7965",
+      "reason": "source/version delta",
+      "subject": "miniupnpd-nftables",
+      "verification": {
+        "depends": [
+          "firewall4",
+          "libc",
+          "libcap-ng",
+          "libmnl0",
+          "libnftnl11",
+          "libuuid1"
+        ],
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "firewall4 libc libcap-ng libmnl0 libnftnl11 libuuid1",
+      "category": "package_dependencies",
+      "disposition": "review_required",
+      "expected": "libc libcap-ng libmnl0 libnftnl11 libuuid1",
+      "id": "3e98b5cc12330bfc43885fb05babf3660e14097c2d434a8e502b69311bccf706",
+      "reason": "",
+      "subject": "miniupnpd-nftables",
+      "verification": {
+        "depends": [
+          "firewall4",
+          "libc",
+          "libcap-ng",
+          "libmnl0",
+          "libnftnl11",
+          "libuuid1"
+        ],
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "20261028111806-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "20261015074526-r1",
+      "id": "a421428fbe2eb1e8a67d1dca3037de9f251667b76f9be27bd87063fbcff601c1",
+      "reason": "source/version delta",
+      "subject": "v2ray-geosite",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "v2ray-geosite",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/v2ray-geodata/Makefile",
+          "sha256": "ceec7331dbc7140d1648f817adbf144701bc3b0cf4b3689451594d517dd3ad90",
+          "size": 3262
+        },
+        "version": "20261028111806-r1"
+      }
+    },
+    {
+      "actual": "16ba56c3892bbc98322a064affb65a36b432cbdf3b207b34c01e584f298812e4",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "e0c1cd0bd16c584f215fbf04c7960bef85d57341cf210ffdf25bf6fc2b1e60c4",
+      "id": "b0774f84d7d9bccf6638e9826d7382fd53f9d074f76c5d6d007a9dd7dd3dcece",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/etc/config/upnpd",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 384,
+            "user": "root"
+          },
+          "hash": "16ba56c3892bbc98322a064affb65a36b432cbdf3b207b34c01e584f298812e4",
+          "mtime": 1792518528,
+          "name": "upnpd",
+          "size": 889
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0600",
+          "path": "/etc/config/upnpd",
+          "sha256": "16ba56c3892bbc98322a064affb65a36b432cbdf3b207b34c01e584f298812e4",
+          "size": 889,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "2c6607071401aa35664b6d03ec82055eeba4552a1fa8cf65ea4aa9ba27c2ded0",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "4c4bc51d323f6285c3673f6233a132483a3ac0816936d23c7a88b0389a7b14c2",
+      "id": "e7b539fa886d9cec7d5d7db501cc9bfebeb64aa260c5b275275b3cca832e3d5f",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/etc/hotplug.d/iface/50-miniupnpd",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "2c6607071401aa35664b6d03ec82055eeba4552a1fa8cf65ea4aa9ba27c2ded0",
+          "mtime": 1792518528,
+          "name": "50-miniupnpd",
+          "size": 1276
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/etc/hotplug.d/iface/50-miniupnpd",
+          "sha256": "2c6607071401aa35664b6d03ec82055eeba4552a1fa8cf65ea4aa9ba27c2ded0",
+          "size": 1276,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "6fab4a41e516ba8eef48ec1be066ef2daf13548219308bde459289d6308c5805",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "f22f0cf224effce5827085da0a34456ff7318f72350f6811f286d87c7917abaf",
+      "id": "031c3016c1a203e20e338a18ce63844cbe6cfcb597664db01820290ee1807d07",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/etc/init.d/miniupnpd",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 493,
+            "user": "root"
+          },
+          "hash": "6fab4a41e516ba8eef48ec1be066ef2daf13548219308bde459289d6308c5805",
+          "mtime": 1792518528,
+          "name": "miniupnpd",
+          "size": 6019
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0755",
+          "path": "/etc/init.d/miniupnpd",
+          "sha256": "6fab4a41e516ba8eef48ec1be066ef2daf13548219308bde459289d6308c5805",
+          "size": 6019,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "5c131dea16e3eaf03c9a327965e1d86c38b360ae743b541d8b9dfae5e47d3795",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "52bdbd3282d73905ef6ad3d663b9dd66893ebef0586aca649d3e78d277c81075",
+      "id": "b6827130a2a7cc264b52d4f245fc343b69c635a241384eee88d97b542787d125",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/controller/quickstart.lua",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "5c131dea16e3eaf03c9a327965e1d86c38b360ae743b541d8b9dfae5e47d3795",
+          "mtime": 1793330299,
+          "name": "quickstart.lua",
+          "size": 7348
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/controller/quickstart.lua",
+          "sha256": "5c131dea16e3eaf03c9a327965e1d86c38b360ae743b541d8b9dfae5e47d3795",
+          "size": 7348,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-quickstart",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-quickstart/Makefile",
+          "sha256": "b1fc9cba2a48fc0bf6ec065204fd073c725cd3de9e2f03b9383ab40f80ca7eaa",
+          "size": 447
+        },
+        "version": "0.12.10-r1"
+      }
+    },
+    {
+      "actual": "d6e1b2a7e081aa142439425d996f3a84608a359f1d7152137ebe7ac5d3133437",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "1e488701d94320cc760465d4033b6a79014274cd1e16e5afb9b66cf91663b565",
+      "id": "fe06902144bc0b5f3eefdc63bf87f14fd3561d4b4edd82f8262b053e50a16e6b",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/i18n/base.zh-cn.lmo",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "d6e1b2a7e081aa142439425d996f3a84608a359f1d7152137ebe7ac5d3133437",
+          "mtime": 1793334685,
+          "name": "base.zh-cn.lmo",
+          "size": 146344
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/i18n/base.zh-cn.lmo",
+          "sha256": "d6e1b2a7e081aa142439425d996f3a84608a359f1d7152137ebe7ac5d3133437",
+          "size": 146344,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-i18n-base-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "cc6d8d8d3b8cae68192a34a192ae01a72980776e233dd291bd818ccb2b78f3b5",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "89a98d3ef04017a36fb68406996cb1c28569690b97cbb31a5fd28210e0ff08b1",
+      "id": "b89d6d8fa543a0a57bdca86210b2c5668a3f0c461fe198b6ae3820df6179ff22",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/i18n/package-manager.zh-cn.lmo",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "cc6d8d8d3b8cae68192a34a192ae01a72980776e233dd291bd818ccb2b78f3b5",
+          "mtime": 1793330184,
+          "name": "package-manager.zh-cn.lmo",
+          "size": 3860
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/i18n/package-manager.zh-cn.lmo",
+          "sha256": "cc6d8d8d3b8cae68192a34a192ae01a72980776e233dd291bd818ccb2b78f3b5",
+          "size": 3860,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-i18n-package-manager-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-package-manager/Makefile",
+          "sha256": "234561b56808263cc060896e0576d15b22a624c9be288cd118e00b784d571e58",
+          "size": 401
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "4326b0cbf9f928e3813bf0f42c4ca30ed97c2e7510aaf1796f3a325e1cca4872",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "599d9dfa4b9a7150b00f6aabc6bc3a046557d2988a9f16a6b971b5ee8f54f6a5",
+      "id": "6908b6cdff7f3a4dccd6e266b3eacd80ac218892901021315e5e3ecdd3ed939a",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/i18n/ttyd.zh-cn.lmo",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "4326b0cbf9f928e3813bf0f42c4ca30ed97c2e7510aaf1796f3a325e1cca4872",
+          "mtime": 1793330179,
+          "name": "ttyd.zh-cn.lmo",
+          "size": 2452
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/i18n/ttyd.zh-cn.lmo",
+          "sha256": "4326b0cbf9f928e3813bf0f42c4ca30ed97c2e7510aaf1796f3a325e1cca4872",
+          "size": 2452,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-i18n-ttyd-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-ttyd/Makefile",
+          "sha256": "6ca09499a2f9fcdc0900cd2ebbda64467ffe42abf59d78a263fbc67cd2b46a38",
+          "size": 357
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "f28b4d46bf679f553251bad4883e77fdd233456cc318657ef1f241d31e650289",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "892fb2e6dc712e35a8d1f71fd75d1119975a07a4943d5c532e20d35b0795d787",
+      "id": "8c13c234de95d1d55d19ce3be15f43327506a38c19103547a7cb3718ae163ec4",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/i18n/upnp.zh-cn.lmo",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "f28b4d46bf679f553251bad4883e77fdd233456cc318657ef1f241d31e650289",
+          "mtime": 1793330224,
+          "name": "upnp.zh-cn.lmo",
+          "size": 2572
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/i18n/upnp.zh-cn.lmo",
+          "sha256": "f28b4d46bf679f553251bad4883e77fdd233456cc318657ef1f241d31e650289",
+          "size": 2572,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-i18n-upnp-zh-cn",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "ff08773b0469501c56832cab21a1170cb1055c98486b72c6c7c4b108de6f98f2",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "679850d86fc4bd28339d7d389528a9a15ac2bc3916a8b04ecc50f01945ea003a",
+      "id": "76787325dd3a4bb041a62af09dd95b0f7afe607fd308310615d62c1a8e46999f",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/sys/zoneinfo/tzdata.lua",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "ff08773b0469501c56832cab21a1170cb1055c98486b72c6c7c4b108de6f98f2",
+          "mtime": 1793330184,
+          "name": "tzdata.lua",
+          "size": 17704
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/sys/zoneinfo/tzdata.lua",
+          "sha256": "ff08773b0469501c56832cab21a1170cb1055c98486b72c6c7c4b108de6f98f2",
+          "size": 17704,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-lua-runtime",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-lua-runtime/Makefile",
+          "sha256": "0e701fa7a837af03cc607e4860a608270a52d732cee58fe4aea2c0c70134aaef",
+          "size": 531
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "3e8fd461c7ee9b05202114b450b108a656d032e07b741afc9ff217a9feea94a1",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "d4bb5227200bf7036fdc9081da1ae812330922fb75e67c349774514684e0ef95",
+      "id": "1020417dfbac7f2e6d648cf45261750f33f0174e79db2b7b6fb300da6f65fbdf",
+      "reason": "report-all-differences",
+      "subject": "/usr/lib/lua/luci/version.lua",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "3e8fd461c7ee9b05202114b450b108a656d032e07b741afc9ff217a9feea94a1",
+          "mtime": 1793330184,
+          "name": "version.lua",
+          "size": 544
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/lib/lua/luci/version.lua",
+          "sha256": "3e8fd461c7ee9b05202114b450b108a656d032e07b741afc9ff217a9feea94a1",
+          "size": 544,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-lua-runtime",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-lua-runtime/Makefile",
+          "sha256": "0e701fa7a837af03cc607e4860a608270a52d732cee58fe4aea2c0c70134aaef",
+          "size": 531
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "ee3cc6f2b3a91ff3032c4119881dd558f951c4eb3b3d6418e572635536968164",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "31f3f9154f055d4ba67b90d5f97f81f9e11267f02d1f1567c1644fb40f1f9f18",
+      "id": "992bf575acdd28f3720d74ad6a1ecfa191802f4a76f095bc9dca0c9e3d45a519",
+      "reason": "report-all-differences",
+      "subject": "/usr/libexec/quickstart/auto_setup.sh",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 493,
+            "user": "root"
+          },
+          "hash": "ee3cc6f2b3a91ff3032c4119881dd558f951c4eb3b3d6418e572635536968164",
+          "mtime": 1793330299,
+          "name": "auto_setup.sh",
+          "size": 2015
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0755",
+          "path": "/usr/libexec/quickstart/auto_setup.sh",
+          "sha256": "ee3cc6f2b3a91ff3032c4119881dd558f951c4eb3b3d6418e572635536968164",
+          "size": 2015,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-quickstart",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-quickstart/Makefile",
+          "sha256": "b1fc9cba2a48fc0bf6ec065204fd073c725cd3de9e2f03b9383ab40f80ca7eaa",
+          "size": 447
+        },
+        "version": "0.12.10-r1"
+      }
+    },
+    {
+      "actual": "edf8037c961ddc8774e5b74d8e72e965daa36ab5d57f573712a4485986294b57",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "f01e564e57709cbfac250f44c3f03e40b8adf24454a522b3a589b5410854ba82",
+      "id": "352bee276905b9bf18a186f774a3099b7ddfcd9ece7fc1f7c8fc890092d11905",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/usr/share/rpcd/acl.d/luci-app-upnp.json",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "edf8037c961ddc8774e5b74d8e72e965daa36ab5d57f573712a4485986294b57",
+          "mtime": 1793330224,
+          "name": "luci-app-upnp.json",
+          "size": 271
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/rpcd/acl.d/luci-app-upnp.json",
+          "sha256": "edf8037c961ddc8774e5b74d8e72e965daa36ab5d57f573712a4485986294b57",
+          "size": 271,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "bf29f22a6ab26e0bd48f9090b90e092c0fc4bf27dbf4d8ce97495554ba04448c",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "e149db4350cdfa2e3f3ccc529244d3a3143d72016fa4216f72cf2792f3fd202d",
+      "id": "d6014ba90a2e535f572573a13bc45ce0e8e8e8aa7b725476d87cede8c624190a",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/usr/share/rpcd/ucode/luci.upnp",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "bf29f22a6ab26e0bd48f9090b90e092c0fc4bf27dbf4d8ce97495554ba04448c",
+          "mtime": 1793330224,
+          "name": "luci.upnp",
+          "size": 9090
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/rpcd/ucode/luci.upnp",
+          "sha256": "bf29f22a6ab26e0bd48f9090b90e092c0fc4bf27dbf4d8ce97495554ba04448c",
+          "size": 9090,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "69003584c0d7232dbca1b6da8c5a0010029190b171f0b54de49733dfc54d31d6",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "5e6b67518fe8850b9f8dde4b479db59ef99665775482a6562a89d40d7ae346dd",
+      "id": "a7d7ca82493f03ab7fdd5148f930f23cdb7584b6ddaa314d075be30e718ded93",
+      "reason": "report-all-differences",
+      "subject": "/usr/share/ucode/luci/template/header.ut",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "69003584c0d7232dbca1b6da8c5a0010029190b171f0b54de49733dfc54d31d6",
+          "mtime": 1793334685,
+          "name": "header.ut",
+          "size": 1055
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/ucode/luci/template/header.ut",
+          "sha256": "69003584c0d7232dbca1b6da8c5a0010029190b171f0b54de49733dfc54d31d6",
+          "size": 1055,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "2278538f154a57ee36c143c0555f868751c05af7d72977ee963f10667cb733e4",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "c7f7e7e6d71f508d458dc992c7267d98b4f40a3d08224079ebe1cf4a1919d618",
+      "id": "c47d4af31808b6839258819b04ad98355a364d11089fd70d8e03ea4c16298a7e",
+      "reason": "report-all-differences",
+      "subject": "/usr/share/ucode/luci/template/themes/bootstrap/header.ut",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "2278538f154a57ee36c143c0555f868751c05af7d72977ee963f10667cb733e4",
+          "mtime": 1793330184,
+          "name": "header.ut",
+          "size": 3705
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/ucode/luci/template/themes/bootstrap/header.ut",
+          "sha256": "2278538f154a57ee36c143c0555f868751c05af7d72977ee963f10667cb733e4",
+          "size": 3705,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-theme-bootstrap",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/themes/luci-theme-bootstrap/Makefile",
+          "sha256": "b27851b081fb50afec0f1c901dca6195191089084cd7844ac9e25cfbacbbafb5",
+          "size": 569
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "bd07f98d939d4fe92382c8f6f6c8aca35cca3c5d2f33057dca4b42ba1fa3db95",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "4f00db415bdd572a275cec65807e0e0c3e278f11d0e58a408796cdb67fc2c9cf",
+      "id": "deba07bae4049f0cb676c0501bdabbc10cb1bb1e23165a00d1d7bc8a9b74c6e5",
+      "reason": "report-all-differences",
+      "subject": "/usr/share/ucode/luci/version.uc",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "bd07f98d939d4fe92382c8f6f6c8aca35cca3c5d2f33057dca4b42ba1fa3db95",
+          "mtime": 1793334685,
+          "name": "version.uc",
+          "size": 100
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/ucode/luci/version.uc",
+          "sha256": "bd07f98d939d4fe92382c8f6f6c8aca35cca3c5d2f33057dca4b42ba1fa3db95",
+          "size": 100,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "54162a073660ea65706aa920a10cfbd3ee4d345e1e4ab3bed8a8d56c9cab3863",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "a1af24e36179926a712eb8732ada80fc2d5edee0feb79bd23d688a60d4b5d723",
+      "id": "f93db2d1a8bb586e41b46cdb7fc875fd2251a9fb9770cb1b4644e8ad2775ef41",
+      "reason": "report-all-differences",
+      "subject": "/usr/share/ucode/luci/zoneinfo.uc",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "54162a073660ea65706aa920a10cfbd3ee4d345e1e4ab3bed8a8d56c9cab3863",
+          "mtime": 1793334685,
+          "name": "zoneinfo.uc",
+          "size": 15882
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/ucode/luci/zoneinfo.uc",
+          "sha256": "54162a073660ea65706aa920a10cfbd3ee4d345e1e4ab3bed8a8d56c9cab3863",
+          "size": 15882,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "540f9381e421493e1e26cc5e484b5feb2bd1abfe33e5d6eb3a24f60783b1b93f",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "405ad108a016ae20c4dfa94cf97384c93ed1bd688121acdc2c5a09c77cca2a4f",
+      "id": "126a4e36c78f1136dfdb250ca5cb046139ba3715bef59d4e8cb4ebadfcd2a622",
+      "reason": "exact-bytes-type-mode-owner-or-reviewed-explicit-delta",
+      "subject": "/usr/share/v2ray/geosite.dat",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "540f9381e421493e1e26cc5e484b5feb2bd1abfe33e5d6eb3a24f60783b1b93f",
+          "mtime": 1793330168,
+          "name": "geosite.dat",
+          "size": 2402357
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/v2ray/geosite.dat",
+          "sha256": "540f9381e421493e1e26cc5e484b5feb2bd1abfe33e5d6eb3a24f60783b1b93f",
+          "size": 2402357,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "v2ray-geosite",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/v2ray-geodata/Makefile",
+          "sha256": "ceec7331dbc7140d1648f817adbf144701bc3b0cf4b3689451594d517dd3ad90",
+          "size": 3262
+        },
+        "version": "20261028111806-r1"
+      }
+    },
+    {
+      "actual": "1c0278d138c62e3e7dd10fa6c5c143a595346461bee80309fe9614c87872d28d",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "fe58897119adedc5a280d49ca389e08b8a6f421a22cecb4c1317309e7a1de859",
+      "id": "596f12bc8493914e822ea0f19790a503f8e2ab46b74cd69b1c586c13f0467fe5",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/tools/views.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "1c0278d138c62e3e7dd10fa6c5c143a595346461bee80309fe9614c87872d28d",
+          "mtime": 1793334685,
+          "name": "views.js",
+          "size": 7097
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/tools/views.js",
+          "sha256": "1c0278d138c62e3e7dd10fa6c5c143a595346461bee80309fe9614c87872d28d",
+          "size": 7097,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-base",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-base/Makefile",
+          "sha256": "4a933ee77787783219bdeae45b03d89a6c3b5f1512e8ad8bc68d19f4b250c9bc",
+          "size": 1500
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "1601bac37c0132f0f5f31b4a8748065d6f32121169113e76b54b20542f56758a",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "e0ded31feb4a9fa82c8e2c362c0558a920656d7b0ae56daed9700f7d2fa524a0",
+      "id": "775c6b72bbde0ced8ad9a67e367623fdd0da7317c11a66e2fabf4747044b56b2",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/network/wireless.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "1601bac37c0132f0f5f31b4a8748065d6f32121169113e76b54b20542f56758a",
+          "mtime": 1793330184,
+          "name": "wireless.js",
+          "size": 86705
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/network/wireless.js",
+          "sha256": "1601bac37c0132f0f5f31b4a8748065d6f32121169113e76b54b20542f56758a",
+          "size": 86705,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-network",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-network/Makefile",
+          "sha256": "6655bfdd158af34233396a24fac0a3f671e543553f8c14b377ac2948932d09d6",
+          "size": 372
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "3cee9162e009e69c0c620aebc41a987a5173f3e9d95c6b1fc83f59f974f39f57",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "c96693726a6186355509913bc75012df96ab70fd8f4cb81d1167045e63a0788b",
+      "id": "1456bbc187045277bfc992bf33a50aa0b4b3c7f981e469d298f8347bb5d8ad5a",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/package-manager.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "3cee9162e009e69c0c620aebc41a987a5173f3e9d95c6b1fc83f59f974f39f57",
+          "mtime": 1793330184,
+          "name": "package-manager.js",
+          "size": 30400
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/package-manager.js",
+          "sha256": "3cee9162e009e69c0c620aebc41a987a5173f3e9d95c6b1fc83f59f974f39f57",
+          "size": 30400,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-package-manager",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/applications/luci-app-package-manager/Makefile",
+          "sha256": "234561b56808263cc060896e0576d15b22a624c9be288cd118e00b784d571e58",
+          "size": 401
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "7702905266b85bd2f9887885da8bacf43515abdf9feccbd76583f0aff7740b1e",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "53ff1ef5ee27435a4dd6db091a0185cccf3fdb0c489ac7058e5fe57c2dde3b40",
+      "id": "f089fbff4b29d57485e67055b220fede7acf03fe636478e7687f325b88fe3938",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/status/dmesg.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "7702905266b85bd2f9887885da8bacf43515abdf9feccbd76583f0aff7740b1e",
+          "mtime": 1793330244,
+          "name": "dmesg.js",
+          "size": 6099
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/status/dmesg.js",
+          "sha256": "7702905266b85bd2f9887885da8bacf43515abdf9feccbd76583f0aff7740b1e",
+          "size": 6099,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-status",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-status/Makefile",
+          "sha256": "912800ee5a94aa7bf70ef5fb12d1f7fa5e058d123965bc745ff5ac02e701dcdb",
+          "size": 400
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "3b7ba679a6cd89967a05d1ae7c5b4d59b20121297b284cd4e56145786ebd50d0",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "f607fc04ab92489580fd9d000da3f82785d2500a9ac6ea93524468aafc6a68d1",
+      "id": "286076b899d5e62f74e913056a5a3a28a25d2fb5a62dce830fb9abf84fd9a4b4",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/status/include/80_upnp.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "3b7ba679a6cd89967a05d1ae7c5b4d59b20121297b284cd4e56145786ebd50d0",
+          "mtime": 1793330224,
+          "name": "80_upnp.js",
+          "size": 224
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/status/include/80_upnp.js",
+          "sha256": "3b7ba679a6cd89967a05d1ae7c5b4d59b20121297b284cd4e56145786ebd50d0",
+          "size": 224,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": "ee1719cf9d1602312a565fbb2c8706074d81aa098ea1fddebc1b4b84bb1fa2dc",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "e16c3cea0c6cf46a6cae2552ce74751de8e6f7df41d90c609ee8b46e03faae93",
+      "id": "dd30a65ab73110e3eb910fa39e06158d325f83a46779639632f0c888cbd840d5",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/status/iptables.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "ee1719cf9d1602312a565fbb2c8706074d81aa098ea1fddebc1b4b84bb1fa2dc",
+          "mtime": 1793330244,
+          "name": "iptables.js",
+          "size": 9723
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/status/iptables.js",
+          "sha256": "ee1719cf9d1602312a565fbb2c8706074d81aa098ea1fddebc1b4b84bb1fa2dc",
+          "size": 9723,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-status",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-status/Makefile",
+          "sha256": "912800ee5a94aa7bf70ef5fb12d1f7fa5e058d123965bc745ff5ac02e701dcdb",
+          "size": 400
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "d1be9a0c33790498171e4ec6206729a8a8a978be1dd57849d1ad8cf8047f3c4f",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "ea6f5e1461e5b13a0958a309d8214923dc1a87a55b524714eac98779bdc3dff1",
+      "id": "ef37d624eac03ebd88c29ea23f3b4eddbb25581905c1af7454098c5c434245e3",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/status/nftables.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "d1be9a0c33790498171e4ec6206729a8a8a978be1dd57849d1ad8cf8047f3c4f",
+          "mtime": 1793330244,
+          "name": "nftables.js",
+          "size": 20200
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/status/nftables.js",
+          "sha256": "d1be9a0c33790498171e4ec6206729a8a8a978be1dd57849d1ad8cf8047f3c4f",
+          "size": 20200,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-status",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-status/Makefile",
+          "sha256": "912800ee5a94aa7bf70ef5fb12d1f7fa5e058d123965bc745ff5ac02e701dcdb",
+          "size": 400
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "366a9756a540ca92971d61c754b98578baf08451b7076c046b21504377c2a2bc",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "8acedd00e3d2bb14123c7a796d6ca7d4963b731e87e39a8d9cac16e4be8d39a1",
+      "id": "c9a4c6935883cb877dda0c260523b74a158152f4d9a46277c2a1267accc1d2aa",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/status/processes.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "366a9756a540ca92971d61c754b98578baf08451b7076c046b21504377c2a2bc",
+          "mtime": 1793330244,
+          "name": "processes.js",
+          "size": 1921
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/status/processes.js",
+          "sha256": "366a9756a540ca92971d61c754b98578baf08451b7076c046b21504377c2a2bc",
+          "size": 1921,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-status",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-status/Makefile",
+          "sha256": "912800ee5a94aa7bf70ef5fb12d1f7fa5e058d123965bc745ff5ac02e701dcdb",
+          "size": 400
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "71f0c82df0b47d0571ba8ab9deb9f34ea1f28416287b3527dbb241d403c5378c",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "977d63a325ba5e2e9cae1009feb1c4c4820ad8dd6678acfa8a817902c7667698",
+      "id": "d38787ce6f0d51becac9f8ce415025e0895c7c826a1404c92bc579d13a8c94ac",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/system/startup.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "71f0c82df0b47d0571ba8ab9deb9f34ea1f28416287b3527dbb241d403c5378c",
+          "mtime": 1793330184,
+          "name": "startup.js",
+          "size": 4008
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/system/startup.js",
+          "sha256": "71f0c82df0b47d0571ba8ab9deb9f34ea1f28416287b3527dbb241d403c5378c",
+          "size": 4008,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-mod-system",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/luci/modules/luci-mod-system/Makefile",
+          "sha256": "315224a6aed5598eb229533eb73cc846e79f9d1f6fba4d1e75587910ef95cfe7",
+          "size": 358
+        },
+        "version": "26.298.29275~c84adb9"
+      }
+    },
+    {
+      "actual": "ee3dbf7cb81ab73d73a213cadbd46f211613215b2e2c9116477fd01a49d48228",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "9b3ecf086cf5c06387754c6222225cb41e497f8274614db4acebed78dd3b7e94",
+      "id": "0d064979beac72c9b53d83310b99665c55c656a2de85290e3d1578f2cc685557",
+      "reason": "report-all-differences",
+      "subject": "/www/luci-static/resources/view/upnp/upnp.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "ee3dbf7cb81ab73d73a213cadbd46f211613215b2e2c9116477fd01a49d48228",
+          "mtime": 1793330224,
+          "name": "upnp.js",
+          "size": 5418
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/view/upnp/upnp.js",
+          "sha256": "ee3dbf7cb81ab73d73a213cadbd46f211613215b2e2c9116477fd01a49d48228",
+          "size": 5418,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0755",
+        "path": "/etc/uci-defaults/99-miniupnpd",
+        "sha256": "efd95cfc1a4e0ebf89f11338577e0b41827385f4065edd9682af36ca5231b2e6",
+        "size": 612,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "b2575c2d7d74874548ec724592f1385ad2c4157e19bfd0c46a8c3169182016bf",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/etc/uci-defaults/99-miniupnpd",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 493,
+            "user": "root"
+          },
+          "hash": "efd95cfc1a4e0ebf89f11338577e0b41827385f4065edd9682af36ca5231b2e6",
+          "mtime": 1792518528,
+          "name": "99-miniupnpd",
+          "size": 612
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0755",
+          "path": "/etc/uci-defaults/99-miniupnpd",
+          "sha256": "efd95cfc1a4e0ebf89f11338577e0b41827385f4065edd9682af36ca5231b2e6",
+          "size": 612,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0755",
+        "path": "/etc/uci-defaults/99-miniupnpd-migration",
+        "sha256": "b90a1e34c767ce0975810908726437fcc055b627c6bdc0f9c14eb3042d7c6ac1",
+        "size": 1163,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "523ffb58de5b35278a15b488ae18540b15d38adf2092b87308bb5d85120b2ac9",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/etc/uci-defaults/99-miniupnpd-migration",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 493,
+            "user": "root"
+          },
+          "hash": "b90a1e34c767ce0975810908726437fcc055b627c6bdc0f9c14eb3042d7c6ac1",
+          "mtime": 1792518528,
+          "name": "99-miniupnpd-migration",
+          "size": 1163
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0755",
+          "path": "/etc/uci-defaults/99-miniupnpd-migration",
+          "sha256": "b90a1e34c767ce0975810908726437fcc055b627c6bdc0f9c14eb3042d7c6ac1",
+          "size": 1163,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0644",
+        "path": "/usr/share/miniupnpd/backend",
+        "sha256": "fa8654827f789e1ba75eb5a6aa887b55134e8989319b5ee851f529b0af178bcd",
+        "size": 9,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "3fc5e62f70f03998b500d6f6b8ba8f058a1aad692733bfe3046d95023533db39",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/usr/share/miniupnpd/backend",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "fa8654827f789e1ba75eb5a6aa887b55134e8989319b5ee851f529b0af178bcd",
+          "mtime": 1792518528,
+          "name": "backend",
+          "size": 9
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/miniupnpd/backend",
+          "sha256": "fa8654827f789e1ba75eb5a6aa887b55134e8989319b5ee851f529b0af178bcd",
+          "size": 9,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0755",
+        "path": "/usr/share/miniupnpd/firewall.include",
+        "sha256": "61936652b71110f0b39bddfb1f8664f69ca061f850ee243fd7e523458f3d0186",
+        "size": 244,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "e3711564e88fd9a3b10bb0ea2d39bec2aabbcd2e11fd6f5b293fe7e65e099bff",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/usr/share/miniupnpd/firewall.include",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 493,
+            "user": "root"
+          },
+          "hash": "61936652b71110f0b39bddfb1f8664f69ca061f850ee243fd7e523458f3d0186",
+          "mtime": 1792518528,
+          "name": "firewall.include",
+          "size": 244
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0755",
+          "path": "/usr/share/miniupnpd/firewall.include",
+          "sha256": "61936652b71110f0b39bddfb1f8664f69ca061f850ee243fd7e523458f3d0186",
+          "size": 244,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0644",
+        "path": "/usr/share/miniupnpd/functions.sh",
+        "sha256": "a6446b95dce8a05bd3705242b1e11ff8aa4a5352861a5d236176479cea95f142",
+        "size": 2296,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "0b4ef9d845f970212e64103c9a0ceaddbeebd3a7465cd538d30763c944da9491",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/usr/share/miniupnpd/functions.sh",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "a6446b95dce8a05bd3705242b1e11ff8aa4a5352861a5d236176479cea95f142",
+          "mtime": 1792518528,
+          "name": "functions.sh",
+          "size": 2296
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/miniupnpd/functions.sh",
+          "sha256": "a6446b95dce8a05bd3705242b1e11ff8aa4a5352861a5d236176479cea95f142",
+          "size": 2296,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "miniupnpd-nftables",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/miniupnpd/Makefile",
+          "sha256": "9f2d23ad3334315a6ff6daba1a620fc0893141a47838428001502f6c1181e03c",
+          "size": 4088
+        },
+        "version": "20261027-r7"
+      }
+    },
+    {
+      "actual": {
+        "gid": 0,
+        "mode": "0644",
+        "path": "/www/luci-static/resources/upnp.js",
+        "sha256": "39dd6e8413674a333d01ab4ae6157c38044769a5b75cafaeabdae45882dd02ae",
+        "size": 2467,
+        "type": "file",
+        "uid": 0
+      },
+      "category": "added_file",
+      "disposition": "review_required",
+      "expected": null,
+      "id": "59869afdcbbdd83f475617736d5b05a15a6534f76c13e66e992cc978d525dd07",
+      "reason": "explicit new rootfs entry; verify owning added package",
+      "subject": "/www/luci-static/resources/upnp.js",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "39dd6e8413674a333d01ab4ae6157c38044769a5b75cafaeabdae45882dd02ae",
+          "mtime": 1793330224,
+          "name": "upnp.js",
+          "size": 2467
+        },
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/www/luci-static/resources/upnp.js",
+          "sha256": "39dd6e8413674a333d01ab4ae6157c38044769a5b75cafaeabdae45882dd02ae",
+          "size": 2467,
+          "type": "file",
+          "uid": 0
+        },
+        "owner": "luci-app-upnp",
+        "signed_feed_payload": "independently native verified; exact image hash/type/mode/uid/gid",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "custom_feed/luci-app-upnp/Makefile",
+          "sha256": "d5ad6a93e14daa016840f4fd3fecd58516810a5f7b45aeb1592e59ad7b977488",
+          "size": 642
+        },
+        "version": "20261027-r7"
+      }
+    }
+  ],
+  "evidence_artifact": {
+    "id": 12962653412,
+    "sha256": "1d7bfcd9f838f9dc27babf1cd2005c1bf5b66479d43f4c76c286ff5d7cabeac6"
+  },
+  "limitations": [
+    "No hardware or service validation",
+    "Unknown future deltas remain review_required",
+    "Source origin and same-build payload proof do not claim a byte-identical original rebuild"
+  ],
+  "method": "Exact daily feed version/dependency deltas and signed package-owned file bytes independently matched to same-run native APK metadata; 537 APKs in five feeds verified offline. Only these canonical difference IDs are approved. QuickStart storage dependency regression and its six packages/files remain unapproved and are corrected before the next build.",
+  "rootfs_sha256": "b7576a2e634e1ba5c1f5865a1e6fc8ca83420c8dccfd9c158d56dce2d5982f8a",
+  "run_attempt": 1,
+  "run_id": 40996021264,
+  "schema_version": 1,
+  "source_build_fingerprint": "c5f35533b8dad1c1561e14479cc838aaea367c37dd23853d842cb19f6f9e7963",
+  "source_lock_sha256": "7f21af14e7c8ba3f27d560b3ed7cfdcd2c0cfc77a55b127e78cd1a188024f66d",
+  "sources": [
+    {
+      "commit": "4b2b7332896063ef888f34da2187c3cc6f366037",
+      "name": "github.com/4iceg/luci-app-mini-diskmanager",
+      "tree": "582dd233cca4c9744184d960212c5023df4561d7",
+      "tree_hash": "ecc5048fa81a76b5c21d3adebf10303f69068f858d673d2972054481fca41200",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/4iceg/luci-app-mini-diskmanager"
+    },
+    {
+      "commit": "f17cbea85ebcb9071b659ac7bafd2c56a9de7b3c",
+      "name": "github.com/adminchenyu/emmc-health",
+      "tree": "56fb014c256a46a148ad7fc46f6d500d1788c112",
+      "tree_hash": "8ab0cb8f04dd2f16587b090685679edbb61d8354d22d0ed025fa5e42ee7c03fe",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/adminchenyu/emmc-health"
+    },
+    {
+      "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
+      "tree": "32cfde7e4644113871fe4fa00dc7cb2fc8efa4ec",
+      "tree_hash": "82c30f415614bb0f5aafab016250c04b1b7cac3520166dc4ba4e7f99a070da4a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+    },
+    {
+      "commit": "1e8513a69cff32da3dd82c342151cdb4a991c2b7",
+      "name": "github.com/dl12345/luci-app-mwan3",
+      "tree": "fc0ca3f5c2d2755525e7b32352a2187ad603e708",
+      "tree_hash": "e8c7b3b39b49d83870b2340df6af4d3c03490027159470e7061d2299a648dd69",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dl12345/luci-app-mwan3"
+    },
+    {
+      "commit": "cdd4fc56f4de9ccf56d40d6dc04a5b6a4e5a0ae6",
+      "name": "github.com/dl12345/mwan3",
+      "tree": "e4073bd3e1a19bfaa8c703de5440e0363848c00d",
+      "tree_hash": "ce4780c1169705e3ed996be8caeac6e9a95bc88cff461072925d82ca28464d7b",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dl12345/mwan3"
+    },
+    {
+      "commit": "54e90fe61cf52b62e7f3ecfcdb62b9d857f90309",
+      "name": "github.com/dqsq2e2/luci-app-velo5x0-fan",
+      "tree": "4aec6011466d2df5d5aba3f65b7b30c6673d6b85",
+      "tree_hash": "1d00bb74ec63751cb871011dd34c463271b715963cdf831074645827d95bcc89",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dqsq2e2/luci-app-velo5x0-fan"
+    },
+    {
+      "commit": "a5299ce0144859f47683ec3bc40805bf616f534f",
+      "name": "github.com/eamonxg/luci-app-aurora-config",
+      "tree": "d66801ec3809466630339c686ff2d53ccd58ee8c",
+      "tree_hash": "d1e829a96e3fcd77efcffb933b4ca0b04ef33d4c107f868c11cfbc4626706a81",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/eamonxg/luci-app-aurora-config"
+    },
+    {
+      "commit": "84c27b66952e6fc4be60128067a6b88bfd34afb5",
+      "name": "github.com/eamonxg/luci-theme-aurora",
+      "tree": "798f80558cc056db85106134292596cbf3268236",
+      "tree_hash": "702c34704a5f2f0cfdd8bb6cd997c9a73f36793ad2bdf367b59e11d517e9ba8a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/eamonxg/luci-theme-aurora"
+    },
+    {
+      "commit": "9449a5250c61f1aa8f16b2d8e04a9da25c26e735",
+      "name": "github.com/gdy666/luci-app-lucky",
+      "tree": "8d022a105d52b2f01160bb42fe24850ea27bf345",
+      "tree_hash": "1ef37d635e660e59d6b43fdb661311e01adc14ee447c0a2445c4897f7cccd18b",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/gdy666/luci-app-lucky"
+    },
+    {
+      "commit": "fadaa676104f59ff6ace480a780a258d846d0aec",
+      "name": "github.com/immortalwrt/homeproxy",
+      "tree": "8c64ebf0ce32677e798b31904f7efff2616e1f5c",
+      "tree_hash": "2e01d6a6b86b61a206ccc711f8264b36c986942d5de26ea5a31d89fa3983af1a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/homeproxy"
+    },
+    {
+      "commit": "c84adb975e207ae8b14982191838ec6218d632cd",
+      "name": "github.com/immortalwrt/luci",
+      "tree": "b90ee4741a73e5600bd0594ba49c8cf898fb359f",
+      "tree_hash": "c0cdcbe6250e23308247feb0f6c6150c87b52ce0d01ea06e4a2ba413c9159a83",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/luci"
+    },
+    {
+      "commit": "6f8f6461e8a6a0bbc134592d12353700fe698506",
+      "name": "github.com/immortalwrt/packages",
+      "tree": "7a488ce6e46771285740d57dd554667f12358b61",
+      "tree_hash": "e8249615322e57add1a25d420e939e793c7de3a4e5a9153c5f68c8d40934c669",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/packages"
+    },
+    {
+      "commit": "8ec823f50d2832f31f0107570451fccfd1be4f6c",
+      "name": "github.com/kenzok8/small-package",
+      "tree": "9357625bd3cdf47caf54a5f749ed194129fd3309",
+      "tree_hash": "b287cfcb9ec4b7040ec9fd95bb7fb5608ea59e93b52ddf3d59f1f086ab23ca06",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/kenzok8/small-package"
+    },
+    {
+      "commit": "a97ace34f2da358a015b094d326bba2697697f2e",
+      "name": "github.com/linkease/istore",
+      "tree": "6b034500168639ffcfb0454dd0c204ef175aa94a",
+      "tree_hash": "3e44a7d5889a297439c2903bbe3111531e444e0d9b579774dfe70d6728611970",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/linkease/istore"
+    },
+    {
+      "commit": "6fd9937954e0b080bf07967182d714ea21fe7eb1",
+      "name": "github.com/lisaac/luci-app-dockerman",
+      "tree": "e4ad2b3f8f68fcbab5b9f666b63c327aff0e96d2",
+      "tree_hash": "82e2eefea9b56194cddb90b06f6b8aca6da965b0bc0cdbe8fc4148f3e10f1778",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/lisaac/luci-app-dockerman"
+    },
+    {
+      "commit": "98a663449208b65e68702ad0f3ad61c536bfa40c",
+      "name": "github.com/lisaac/luci-lib-docker",
+      "tree": "eede4830901f9238b747aa41ecf3da82bcd5c5d3",
+      "tree_hash": "50a92a3ed44cd06542210d21872ed44e0bae9df74108d264e83782393099caa2",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/lisaac/luci-lib-docker"
+    },
+    {
+      "commit": "78e1a751d55ed0762811f054ee699049473da7b8",
+      "name": "github.com/nikkinikki-org/openwrt-nikki",
+      "tree": "89757e00ad3a091c2719b57529713f426c3eff09",
+      "tree_hash": "edf80b27fe362a7c615b4fcd2212ab1ea64ef56b6a649e5d668fb46b43382825",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/nikkinikki-org/openwrt-nikki"
+    },
+    {
+      "commit": "f8eeb3119008ac0e429fc642c125512f9253ec1b",
+      "name": "github.com/nongfah/luci-app-athena-led",
+      "tree": "05ee9a11bf84464fab00b63b8a135cffb3975a78",
+      "tree_hash": "2ec2e78006d2e2680d546385365799d86651a97f00f192692e2f179e08624d0e",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/nongfah/luci-app-athena-led"
+    },
+    {
+      "commit": "997e2f1c97c7fc50f2640480d2e0f46debe364fc",
+      "name": "github.com/openwrt-passwall/openwrt-passwall",
+      "tree": "bcc19d59932345020cb62673f85c3ac69f78d4ea",
+      "tree_hash": "5fa351db879875da1bd1464be9a00c147c0db6f3a18dffba2c693b70d475b3a4",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt-passwall/openwrt-passwall"
+    },
+    {
+      "commit": "48c808034414a2112cf9d5261a20a320e8d0d170",
+      "name": "github.com/openwrt/routing",
+      "tree": "d63de918288422164a548371cf8c1c20f627e5f5",
+      "tree_hash": "e9e8523b0a957b7172044dec6b991af777c64b244a213e43749cf33a3c670bb8",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/routing"
+    },
+    {
+      "commit": "c58ec5a6703966dcccb53d0919698c8aba3a9ef5",
+      "name": "github.com/openwrt/telephony",
+      "tree": "a936b284b85c9133973a00f9582f92aa9a9740a7",
+      "tree_hash": "3c3355898de6b16456e00b0b447a83862e4d1342745764b8d338ea192fc13e38",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/telephony"
+    },
+    {
+      "commit": "094bf58da6682f895255a35a84349a79dab4bf95",
+      "name": "github.com/openwrt/video",
+      "tree": "b6c9524578cd1b1ae16cf3ab02ceb797cabbc36d",
+      "tree_hash": "4c49bd7b3d9c77da390cc62fb5d49b37115463d933587aa4a085a689792a1de2",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/video"
+    },
+    {
+      "commit": "581e5e816d92d3a663b1b2e331e3f21685968cf1",
+      "name": "github.com/pymumu/luci-app-smartdns",
+      "tree": "87e1b80f097689ed7125ab3aff3e2887b90d428a",
+      "tree_hash": "89971e41b6afd086e5153a88ffdc3d43c98bd8210e4d00f945e3ecfa1ab2d570",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/pymumu/luci-app-smartdns"
+    },
+    {
+      "commit": "dbdd91ab8ac8b079b6a3ca1a48d99e970d17111b",
+      "name": "github.com/sbwml/luci-app-mosdns",
+      "tree": "c9a3175f90c854b6d0cabda3859bb8882da68c3c",
+      "tree_hash": "4de001963b7ffa86c33c27786fd259f2b41e2bb9739d146de46d05634b21606a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-app-mosdns"
+    },
+    {
+      "commit": "ef2ca5d16ad1156539930d8763c3069f6ac4eb12",
+      "name": "github.com/sbwml/luci-app-quickfile",
+      "tree": "1d33b982480149662e857dc44890b43ae0d0182b",
+      "tree_hash": "f44e37634f9b71d311aaf3b03f0946c4ebfb863d4620d1b45d78fd609f119f1d",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-app-quickfile"
+    },
+    {
+      "commit": "4b8b7849551c558ec905c40b0ebb864641c9fa32",
+      "name": "github.com/sbwml/luci-theme-argon",
+      "tree": "9bff6b894e852c1ca9c46a0fd5bb10e6e4efe251",
+      "tree_hash": "e8f4ffe52d78154fe88c0cc0dbdb72d9f0f4f27efafb7a814149321d1eb08f27",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-theme-argon"
+    },
+    {
+      "commit": "52b82003a9392fb2692662bb702d5610ce9ec505",
+      "name": "github.com/sirpdboy/luci-app-timecontrol",
+      "tree": "85d8d98fd8ca2c5bd38147d456423a61d1bd8ad4",
+      "tree_hash": "da813078fd3ff6a0bec6e67467f7ab151c90f5b5842136f8f4debcb8c51f4655",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sirpdboy/luci-app-timecontrol"
+    },
+    {
+      "commit": "108369b8da05f01296a3ed0210a2ab60809712e5",
+      "name": "github.com/timsaya/luci-app-bandix",
+      "tree": "3393a5807691fd271acbe4481f2441f24c1dac5b",
+      "tree_hash": "f56b58323c74fc74c6e2b793c79c8f6e1bb6e90a502988164132f43e79ffc6c7",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/timsaya/luci-app-bandix"
+    },
+    {
+      "commit": "0760d1f5b52d1a2317dfd171ab00fe6543a9a0c4",
+      "name": "github.com/timsaya/openwrt-bandix",
+      "tree": "ec380a85b03384ad9e415c07dc64b28013238452",
+      "tree_hash": "fe3838859d0a2fac51c17be5307897d51d46a2b93c520cb7fe7876a794a31ae9",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/timsaya/openwrt-bandix"
+    },
+    {
+      "commit": "e0e429b94a3f49d97f94994b0126d6aad119e5fe",
+      "name": "github.com/vikingyfy/packages",
+      "tree": "2b477f7f32ee2f472916959efc42c160b7c86d81",
+      "tree_hash": "1418fa32392ff301e8a658a6bc1800f23a41a7fc3bd39a26661c1b0430df9d76",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/vikingyfy/packages"
+    },
+    {
+      "commit": "b4a7fa1dba3ffe0c9cb17ab32c492277007cd660",
+      "name": "github.com/zqinking/openwrt-smartdns",
+      "tree": "7070ae44fe0ee6360ddeca340e50ec83bdc8e880",
+      "tree_hash": "3526a52d4ab726671a896a0f9a724a84a9003d48b8754d87b1c94909244e63a8",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/zqinking/openwrt-smartdns"
+    }
+  ],
+  "unapproved_regression_differences": [
+    {
+      "category": "added_package",
+      "id": "e86585acb3474dcf85b57dceb5f509c75f4f4edf4a27beb5183b15da6129fd1f",
+      "subject": "kmod-md-raid0"
+    },
+    {
+      "category": "added_package",
+      "id": "7c12f788ec3d6be8fe4fe7aacbef04cfdd2d64fa11399892e79a1f56e371fab8",
+      "subject": "kmod-md-raid1"
+    },
+    {
+      "category": "added_package",
+      "id": "26f5d968eb5154965b3f4bdcc9a1e07e37c13033e778059ad6dfccca7b8ab960",
+      "subject": "kmod-md-raid10"
+    },
+    {
+      "category": "added_package",
+      "id": "5ea763a8b5d20b4cbe62bc5fd9346152267e8956116f68c59e27255db0aad16e",
+      "subject": "mdadm"
+    },
+    {
+      "category": "package_dependencies",
+      "id": "f1866cca23c7ea595a17115ddd67d9670d9bb1acf3272bc6d95ec710fbdea7e1",
+      "subject": "quickstart"
+    },
+    {
+      "category": "added_package",
+      "id": "763a5f59aea876464a919870fb677c0b2b0d43e25e64a8abd8bac26214e952d4",
+      "subject": "smartmontools"
+    },
+    {
+      "category": "added_package",
+      "id": "3545bd61ae896730d5c6a9b430ddadd5d10bd9f64377e969a1448cc89b327428",
+      "subject": "smartmontools-drivedb"
+    },
+    {
+      "category": "file_sha256",
+      "id": "4179f8fe63c320b96816059c3c8b9d52046595b9c4afd2032774687aaa951984",
+      "subject": "/etc/apk/world"
+    },
+    {
+      "category": "added_file",
+      "id": "368ee512c56a0f55f9b118a6ff56aa75b693450a68ec882197867f1affb1a1ca",
+      "subject": "/etc/config/mdadm"
+    },
+    {
+      "category": "added_file",
+      "id": "f0cbb53a60662f6df19194829aa1df2ad999c8ca0c91aec8b817d9618ca86d19",
+      "subject": "/etc/init.d/mdadm"
+    },
+    {
+      "category": "added_file",
+      "id": "212c4f9ff16195525fa6b345a7b87f1c1250afcaf09d3786450ef2f9efd3030c",
+      "subject": "/etc/modules.d/28-md-raid0"
+    },
+    {
+      "category": "added_file",
+      "id": "ffdafd099ccf590444a80ab8c768f6a0f1b3255f6141ebbd19efe26765e33609",
+      "subject": "/etc/modules.d/28-md-raid1"
+    },
+    {
+      "category": "added_file",
+      "id": "eeb1fa190fb7b77cda5a163c2825e7b013431cea7b76edee6acfa5ec0ab847bc",
+      "subject": "/etc/modules.d/28-md-raid10"
+    },
+    {
+      "category": "added_file",
+      "id": "ab629772d6688b3815fb13c85e48033f93df8b43427565e289180323b80e5643",
+      "subject": "/etc/rc.d/K98mdadm"
+    },
+    {
+      "category": "added_file",
+      "id": "efebb062f7f56ab9d6b09d5054e3db041d62958b08917e3aa5810f4ee1d28e57",
+      "subject": "/etc/rc.d/S13mdadm"
+    },
+    {
+      "category": "added_file",
+      "id": "db90b5154368782d078c58d6cfeeea2132facb3873880811bedd0860b3bba6da",
+      "subject": "/lib/modules/6.12.112/raid0.ko"
+    },
+    {
+      "category": "added_file",
+      "id": "39a8fe4b655e08c9e71eb058f4863799b248c8ac81acd1fbd43d50461eaa69b9",
+      "subject": "/lib/modules/6.12.112/raid1.ko"
+    },
+    {
+      "category": "added_file",
+      "id": "b61e4c3533a746a7dea966029aaff9ff9257ee184ff52f6f0ff97a2ea28624d2",
+      "subject": "/lib/modules/6.12.112/raid10.ko"
+    },
+    {
+      "category": "added_file",
+      "id": "4ae620761641d6bd09e26fc921b8e32e0f5315bb208b7b65d309bf47b68e7835",
+      "subject": "/sbin/mdadm"
+    },
+    {
+      "category": "added_file",
+      "id": "28da343485408bb901ffe52d9d02023dc5cf87ac86f1d4ad565a1bc6445afdda",
+      "subject": "/usr/sbin/smartctl"
+    },
+    {
+      "category": "added_file",
+      "id": "563479fda683501def9201d8605dcc2b692714077c70360665c349fd19ba6d02",
+      "subject": "/usr/share/smartmontools/drivedb.h"
+    }
+  ],
+  "wrapper_commit": "aba717fd23f005ad1144f94be1e7b6d959e050eb"
+}

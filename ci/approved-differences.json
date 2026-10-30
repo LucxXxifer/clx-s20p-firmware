@@ -2035,6 +2035,306 @@
     {
       "id": "da06c767088a9e921960526cd699392e28b23f47046f8728a4903fd522e06ac6",
       "reason": "Exact B run 40347118325 world delta after the approved Lucky-only image omission: prior B world SHA256 a08d0b1eae1da43dc707dddc3635a228200c51e153aa54002bebae4712b80e64 (6649 bytes) has exactly three removed roots (lucky, luci-app-lucky, luci-i18n-lucky-zh-cn), no additions, producing current SHA256 2bbd7462e0a5bdc03f606afbbf0475f6694f9569e87dad7eed1efe85dc398b88 (6606 bytes). The immutable evidence artifact digest is sha256:6c0ec07b006d646f2579d75cd53e98c0e3a6f85c6f49163f1a58dbf1b930b7b1. This approval covers only this exact /etc/apk/world hash; package, source, signed-feed, ABI, security, and rootfs missing-file gates remain required. See ci/reviewed-differences/lucky-image-omission-b.json and the run preservation-image report."
+    },
+    {
+      "id": "97764b67fc8add11cab6103e9deee3c4f9bceb0bec3216e897bd50de5dbfefad",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "49307e40cb12cfe7b48f6ef10b30ab2cfe38726c412e0a03c96d12e58a3780bc",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "14b2bcd349bff468e52ca52e692f74803eecb9b82baa5e3fc3c11f80caf0cf8d",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "69cb9a57e25e88af54e2877a4c78d1007b462fccab0a23092f0c03e0a59de26b",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "d9cc01e8a2de6f69eda6219c85bce6b64089d25304d049e495a2c05156fd45ee",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "0627bc610dc2e780db194641fa8b3a7f9174c41d2fa4600cc74885c9e98f7e71",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "92f8660c2b9a99f3d3f51fd11db4ca324a1e9cf281a0d567e3bd91651d0972de",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "a0da163cf4c5b62f907d79fb2342aa5a160ed9519cb43d72c85b0af66fd9beda",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "4ed2ce4b27b420c60bcc9582d45876801229791f5c268deec4043dd43b7a9324",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "8b7c8f43cd11c889f981d6dae5ff580e3072bf152b3cd7388d2cfb29a2b4ad8a",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "5ab4f5017056f0f96c1e43b940920fd127ac5b3df7149d59eeae43ee19dddb65",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "9b184a59718cf07b919fe52fe08407195d23278815e05eeff1f48def550905f0",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "27d598c10025b3b2613b7c987b3c3e83a16a9a0d3c4ed8f0c549780f6585ea5b",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "741133ed6aa0e59e54ebfcbf88e6d62db0a692c91bd934f9744a2313dd6f0aff",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "41f9709e2d0578fd0127551cbdf7a4bfb51d40b8d3ec4c0b6e13237b8fe9dba2",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "4c8cf01178cc18b7ad0a9258389029c54285eaf1f84cb8892ec39c17f3b1bbcf",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "f9d417bb4f902063af55ce02724d09d6ebc60c0060c2c3950b105f8f13f85961",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "77b3bb5b0212f0546e3c1c3616c93d835dcff3a2a0ca5a2fc29a86b3a345d09b",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "d12d0555c8b4f7c6843f269314998bd6c98db549d39f0f1a3aa8e3fa88b1c835",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "5e193115d3715a6157271667bdc62cff2695638917c8d35d3242b2ba39efe6e5",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "203e78c24d0f31d904d055ecf8ca25db0ace64c8a52fa280e3a8de497c513d6c",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "84ac4ae87d096606ebabeb86132b025a7cc7a61c55405402839a127c0050c42d",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "f0dbf5cc425de44bcfd36792882ebc056b3a374165e193d66d9b9f22b79cc233",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "94089fb70c99159efcfdb868066169c0ac2572497c40f3b2fb9c2853f896c291",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "462ec117150980bb4246b49594868f5341ef1f4dfd2f82d40500a401083516ae",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "027111b98e7624ad20b6ad10c39106c1fbf219ce91b36b755f4cc3477c21b7a5",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "51a47054736e329eab9c74edd68f6ece8f5f50ffc05fb0d2b429b94c6e7ada82",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "71b7a7d69bdbb33c067a4d56dadea630688b45c6d7436b0d59733edf803e6638",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "ffa9695f233cd4f28b578646d60f89e878e161038cd569673d5359abbca38a61",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "53fd9c3083b759c47fe2c0737d8adcd1d1ad9448d537bf54218df50cb7bd59fc",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "5fee283155f56449d37b19d26d3eef92301647d81a55675d8a47b56dd8b0a90c",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "3f1a1cbbc565de5d46a4d213d8840e1a5849c9b5ba4b045b6b5d8748ab29cbd8",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "fbf2378fd9f305a67d71cda3da6f28435adb210407dc7f0b79fde0f814d61dda",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "82459d7d89f62679c6d1c86facb19f07d6837b8d93a45339df4e56e988f7f88e",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "6bdd183918fda84dafce7bb199af2605a4704c746e57c72924a10eb64e0530de",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "88d2b118bef35cd329237236254ab4d92d83b7b627ca869ef911b6926e37c978",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "20f335205efbd9de919ffeb352a81702ec8b91f53109be834ac67e056b3c5b9d",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "1bed06b1c4b5beeca30e2c34cf131d4b2673f2f27b532bde911f4bc0afb69e6b",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "8f6514a3a88432a86c98aa333fb3b678736d96c0ff543cbcf9351b7656da7965",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "3e98b5cc12330bfc43885fb05babf3660e14097c2d434a8e502b69311bccf706",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "a421428fbe2eb1e8a67d1dca3037de9f251667b76f9be27bd87063fbcff601c1",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "b0774f84d7d9bccf6638e9826d7382fd53f9d074f76c5d6d007a9dd7dd3dcece",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "e7b539fa886d9cec7d5d7db501cc9bfebeb64aa260c5b275275b3cca832e3d5f",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "031c3016c1a203e20e338a18ce63844cbe6cfcb597664db01820290ee1807d07",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "b6827130a2a7cc264b52d4f245fc343b69c635a241384eee88d97b542787d125",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "fe06902144bc0b5f3eefdc63bf87f14fd3561d4b4edd82f8262b053e50a16e6b",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "b89d6d8fa543a0a57bdca86210b2c5668a3f0c461fe198b6ae3820df6179ff22",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "6908b6cdff7f3a4dccd6e266b3eacd80ac218892901021315e5e3ecdd3ed939a",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "8c13c234de95d1d55d19ce3be15f43327506a38c19103547a7cb3718ae163ec4",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "76787325dd3a4bb041a62af09dd95b0f7afe607fd308310615d62c1a8e46999f",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "1020417dfbac7f2e6d648cf45261750f33f0174e79db2b7b6fb300da6f65fbdf",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "992bf575acdd28f3720d74ad6a1ecfa191802f4a76f095bc9dca0c9e3d45a519",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "352bee276905b9bf18a186f774a3099b7ddfcd9ece7fc1f7c8fc890092d11905",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "d6014ba90a2e535f572573a13bc45ce0e8e8e8aa7b725476d87cede8c624190a",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "a7d7ca82493f03ab7fdd5148f930f23cdb7584b6ddaa314d075be30e718ded93",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "c47d4af31808b6839258819b04ad98355a364d11089fd70d8e03ea4c16298a7e",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "deba07bae4049f0cb676c0501bdabbc10cb1bb1e23165a00d1d7bc8a9b74c6e5",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "f93db2d1a8bb586e41b46cdb7fc875fd2251a9fb9770cb1b4644e8ad2775ef41",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "126a4e36c78f1136dfdb250ca5cb046139ba3715bef59d4e8cb4ebadfcd2a622",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "596f12bc8493914e822ea0f19790a503f8e2ab46b74cd69b1c586c13f0467fe5",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "775c6b72bbde0ced8ad9a67e367623fdd0da7317c11a66e2fabf4747044b56b2",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "1456bbc187045277bfc992bf33a50aa0b4b3c7f981e469d298f8347bb5d8ad5a",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "f089fbff4b29d57485e67055b220fede7acf03fe636478e7687f325b88fe3938",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "286076b899d5e62f74e913056a5a3a28a25d2fb5a62dce830fb9abf84fd9a4b4",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "dd30a65ab73110e3eb910fa39e06158d325f83a46779639632f0c888cbd840d5",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "ef37d624eac03ebd88c29ea23f3b4eddbb25581905c1af7454098c5c434245e3",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "c9a4c6935883cb877dda0c260523b74a158152f4d9a46277c2a1267accc1d2aa",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "d38787ce6f0d51becac9f8ce415025e0895c7c826a1404c92bc579d13a8c94ac",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "0d064979beac72c9b53d83310b99665c55c656a2de85290e3d1578f2cc685557",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "b2575c2d7d74874548ec724592f1385ad2c4157e19bfd0c46a8c3169182016bf",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "523ffb58de5b35278a15b488ae18540b15d38adf2092b87308bb5d85120b2ac9",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "3fc5e62f70f03998b500d6f6b8ba8f058a1aad692733bfe3046d95023533db39",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "e3711564e88fd9a3b10bb0ea2d39bec2aabbcd2e11fd6f5b293fe7e65e099bff",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "0b4ef9d845f970212e64103c9a0ceaddbeebd3a7465cd538d30763c944da9491",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "59869afdcbbdd83f475617736d5b05a15a6534f76c13e66e992cc978d525dd07",
+      "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
     }
   ],
   "schema_version": 1

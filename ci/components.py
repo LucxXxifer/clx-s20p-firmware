@@ -238,6 +238,25 @@ def snapshot_package(directory):
     return rows
 
 
+def quickstart_recipe(data):
+    """Reapply the wrapper's storage policy after refreshing official inputs."""
+    lines = data.splitlines(keepends=True)
+    starts = [i for i, line in enumerate(lines) if re.match(r"^[ \t]*DEPENDS[ \t]*:=", line)]
+    if len(starts) != 1:
+        raise ValueError("QuickStart dependency layout changed; review the storage policy")
+    index = starts[0]
+    optional = r"[ \t]+\+(?:smartmontools-drivedb|smartmontools|mdadm|parted|e2fsprogs)(?=[ \t\\\r\n]|$)"
+    while True:
+        line = lines[index]
+        lines[index] = re.sub(optional, "", line)
+        if not line.rstrip("\r\n").endswith("\\"):
+            break
+        index += 1
+        if index == len(lines):
+            raise ValueError("Unterminated QuickStart dependency continuation")
+    return "".join(lines)
+
+
 def prepare(root, inputs, output):
     value = load(inputs)
     root, output = Path(root), Path(output)
@@ -253,6 +272,8 @@ def prepare(root, inputs, output):
     candidate = file_bytes(value["quickstart"]["files"], "Makefile").decode()
     if version(field(before, "PKG_VERSION")) <= version(field(candidate, "PKG_VERSION")):
         write_package(quick, value["quickstart"]["files"])
+    recipe_path = quick / "Makefile"
+    recipe_path.write_text(quickstart_recipe(recipe_path.read_text()))
     selected_adguard = value["adguard"]
     if selected_adguard is not None:
         adg = root / "feeds/custom_feed/adguardhome"

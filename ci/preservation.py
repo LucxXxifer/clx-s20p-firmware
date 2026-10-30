@@ -37,7 +37,7 @@ OMITTED_APPLICATION_PACKAGES = ('honk', 'luci-app-honk', 'luci-app-tingreader', 
 REQUIRED_APPLICATION_PACKAGES = ()
 EXCLUDED_APPLICATION_PACKAGES = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
 APPLICATION_REVIEW = Path(__file__).with_name("reviewed-differences") / "application-image-selection.json"
-APPLICATION_REVIEW_SHA256 = "dfc997663fa6609f4e65706d77dd1ace77c1e68c3dac212ede6eaba4604484cf"
+APPLICATION_REVIEW_SHA256 = "a2a5919a56dc21c964378e9bfa244dcb969e604997d2966cb44584ff28dc5dfb"
 
 
 def digest(value):
@@ -307,9 +307,11 @@ def application_file_absences(review, baseline, actual):
     allowed = {row["path"]: row for row in review["removed_records"]}
     if any(baseline.get(path) != row for path, row in allowed.items()):
         raise ValueError("application selection baseline file record mismatch")
-    if set(allowed) & set(actual):
+    # Shared parent directories may still be needed by another package.
+    required_absent = {path for path, row in allowed.items() if row["type"] != "directory"}
+    if required_absent & set(actual):
         raise ValueError("reviewed omitted application payload files must be absent")
-    return set(allowed)
+    return set(allowed) - set(actual)
 
 
 def application_selection_evidence(review):
@@ -317,6 +319,17 @@ def application_selection_evidence(review):
             "required_packages": list(REQUIRED_APPLICATION_PACKAGES),
             "excluded_packages": list(EXCLUDED_APPLICATION_PACKAGES),
             "removed_path_count": len(review["removed_records"])}
+
+
+def application_world_matches(review, data, kernel):
+    # The package roots are exact; only the kernel constraint may follow the
+    # independently checked same-build ABI instead of one earlier build's ABI.
+    lines = data.splitlines()
+    constraint = "kernel=" + kernel
+    if (not kernel or len(lines) != len(set(lines)) or lines.count(constraint) != 1):
+        return False
+    normalized = data.replace(constraint + "\n", "kernel=@SAME_BUILD_KERNEL@\n")
+    return digest(normalized.encode()) in review.get("normalized_world_sha256", [])
 
 
 def reviewed_b_optional_package_absences(review, original, actual, preapproved_absences=None):
@@ -1290,8 +1303,9 @@ class Gate:
             if name in verified_paths:
                 disposition, reason = "expected", "source-bound CA reproduction or exact reviewed dashboard payload"
             elif (name == "/etc/apk/world" and provenance_ok and self.application_selection and
-                    current.get("sha256") == self.application_selection["world_sha256"]):
-                disposition, reason = "expected", "exact reviewed package roots with Honk/TingReader omitted and AdGuard Home deferred"
+                    application_world_matches(self.application_selection, path.read_text(),
+                                              packages.get("kernel", {}).get("version", ""))):
+                disposition, reason = "expected", "exact reviewed package roots and verified same-build kernel ABI; Honk/TingReader omitted and AdGuard Home deferred"
             elif name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
                 disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
             elif policy.startswith("exact-"):

@@ -24,7 +24,7 @@ class ApplicationSelectionTests(unittest.TestCase):
         review = preservation.load_application_selection(CI / "baseline")
         self.assertEqual(review["package_names"], list(preservation.OMITTED_APPLICATION_PACKAGES))
         self.assertEqual(review["required_packages"], list(preservation.REQUIRED_APPLICATION_PACKAGES))
-        self.assertEqual(len(review["removed_records"]), 413)
+        self.assertEqual(len(review["removed_records"]), 415)
         paths = {row["path"] for row in review["removed_records"]}
         self.assertTrue('/usr/bin/honk-core' in paths)
         self.assertIn('/etc/init.d/tingreader', paths)
@@ -45,6 +45,30 @@ class ApplicationSelectionTests(unittest.TestCase):
             gate.config(path, source_lock=CI / 'sources.lock.json')
             self.assertTrue(any(e['subject'] == 'CONFIG_PACKAGE_adguardhome' for e in gate.errors))
         self.assertEqual(list(preservation.REQUIRED_APPLICATION_PACKAGES), [])
+
+    def test_tingreader_launcher_and_empty_license_parent_may_be_removed(self):
+        review = preservation.load_application_selection(CI / "baseline")
+        baseline = preservation.file_index(json.loads(
+            (CI / "baseline/full-rootfs-manifest.json").read_text())["files"])
+        removed = {row["path"] for row in review["removed_records"]}
+        self.assertTrue("/usr/bin/ting-reader" in removed)
+        self.assertTrue("/usr/share/licenses" in removed)
+        # This shared parent's original contents all belonged to omitted Honk.
+        self.assertTrue(all(path in removed for path in baseline
+                            if path.startswith("/usr/share/licenses/")))
+        actual = {path: row for path, row in baseline.items() if path not in removed}
+        self.assertEqual(preservation.application_file_absences(review, baseline, actual), removed)
+
+    def test_reviewed_shared_directory_can_remain_for_another_package(self):
+        review = preservation.load_application_selection(CI / "baseline")
+        baseline = preservation.file_index(json.loads(
+            (CI / "baseline/full-rootfs-manifest.json").read_text())["files"])
+        removed = {row["path"] for row in review["removed_records"]}
+        actual = {path: row for path, row in baseline.items() if path not in removed}
+        actual["/usr/share/licenses"] = baseline["/usr/share/licenses"]
+        absent = preservation.application_file_absences(review, baseline, actual)
+        self.assertNotIn("/usr/share/licenses", absent)
+        self.assertTrue("/usr/bin/ting-reader" in absent)
 
     def test_unrelated_missing_package_is_still_rejected(self):
         lucky = preservation.load_b_optional_package_policy(CI / "baseline", CI / "sources.lock.json")
@@ -100,6 +124,16 @@ class ApplicationSelectionTests(unittest.TestCase):
         baseline["/etc/config/tingreader"]["sha256"] = "a" * 64
         with self.assertRaisesRegex(ValueError, "baseline"):
             preservation.application_file_absences(review, baseline, {})
+
+    def test_world_review_binds_roots_and_actual_kernel_not_one_old_abi(self):
+        review = {"normalized_world_sha256": [preservation.digest(
+            b"curl\nkernel=@SAME_BUILD_KERNEL@\nluci\n")]}
+        kernel = "6.12.112~" + "b" * 32 + "-r1"
+        data = "curl\nkernel=" + kernel + "\nluci\n"
+        self.assertTrue(preservation.application_world_matches(review, data, kernel))
+        for changed in (data + "unknown-package\n", data.replace("curl\n", ""),
+                        data.replace(kernel, "6.12.112~wrong-r1"), data + "curl\n"):
+            self.assertFalse(preservation.application_world_matches(review, changed, kernel))
 
 
 if __name__ == "__main__":

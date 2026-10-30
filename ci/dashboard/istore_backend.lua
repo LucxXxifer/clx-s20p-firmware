@@ -16,17 +16,17 @@ function index()
     entry({"istore"}, call("istore_backend")).leaf=true
 end
 
-local function sink_socket(sock, io_err) 
-  if sock then 
-    return function(chunk, err) 
-      if not chunk then 
-        return 1 
-      else 
+local function sink_socket(sock, io_err)
+  if sock then
+    return function(chunk, err)
+      if not chunk then
+        return 1
+      else
         return sock:send(chunk)
-      end 
-    end 
-  else 
-    return ltn12.sink.error(io_err or "unable to send socket") 
+      end
+    end
+  else
+    return ltn12.sink.error(io_err or "unable to send socket")
   end
 end
 
@@ -69,7 +69,7 @@ local function chunksource(sock, buffer)
                         if not newblock then
                                 return nil, code
                         end
-                        buffer = buffer .. newblock  
+                        buffer = buffer .. newblock
                         _, endp, count = buffer:find("^([0-9a-fA-F]+);?.-\r\n")
                 end
                 count = tonumber(count, 16)
@@ -119,12 +119,12 @@ local function get_cpu_temperature()
   return 0
 end
 
-function istore_backend() 
+function istore_backend()
   -- 检查是否为 system/status 请求
   local uri = http.getenv("REQUEST_URI")
   local is_status_request = string.match(uri, "/istore/system/status/")
 
-  local sock = nixio.connect("127.0.0.1", ISTOREOS_PORT) 
+  local sock = nixio.connect("127.0.0.1", ISTOREOS_PORT)
   if not sock then
     http.status(500, "connect failed")
     return
@@ -135,11 +135,11 @@ function istore_backend()
   local start = "HTTP_"
   local start_len = string.len(start)
   local ctype = http.getenv("CONTENT_TYPE")
-  if ctype then 
-    input[#input+1] = "Content-Type: " .. ctype 
+  if ctype then
+    input[#input+1] = "Content-Type: " .. ctype
   end
   for k, v in pairs(req.message.env) do
-    if string.sub(k, 1, start_len) == start and not string.find(k, "FORWARDED") then 
+    if string.sub(k, 1, start_len) == start and not string.find(k, "FORWARDED") then
       input[#input+1] = string.sub(k, start_len+1, string.len(k)) .. ": " .. v
     end
   end
@@ -153,7 +153,7 @@ function istore_backend()
   input[#input+1] = "Content-Length: " .. tostring(num)
   input[#input+1] = "\r\n"
   local source = ltn12.source.cat(ltn12.source.string(table.concat(input, "\r\n")), http.source())
-  local ret = ltn12.pump.all(source, sink_socket(sock, "write sock error")) 
+  local ret = ltn12.pump.all(source, sink_socket(sock, "write sock error"))
   if ret ~= 1 then
     sock:close()
     http.status(500, "proxy error")
@@ -185,7 +185,7 @@ function istore_backend()
       if key == "Transfer-Encoding" and val == "chunked" then
         chunked = 1
       end
-      if key ~= "Connection" and key ~= "Transfer-Encoding" and key ~= "Content-Length" then 
+      if key ~= "Connection" and key ~= "Transfer-Encoding" and key ~= "Content-Length" then
         http.header(key, val)
       end
     end
@@ -251,12 +251,12 @@ function istore_backend()
           table.insert(chunks, chunk)
         end
       until not chunk
-      
+
       -- 修改 JSON
       local json = table.concat(chunks)
       local cpu_temp = get_cpu_temperature()
       local modified_json = json:gsub('"result":{', string.format('"result":{"cpuTemperature":%d,', cpu_temp))
-      
+
       -- 发送修改后的数据
       http.write(modified_json)
     else
@@ -269,12 +269,12 @@ function istore_backend()
       local body_source = ltn12.source.cat(ltn12.source.string(body_buffer), sock:blocksource())
       local sink = ltn12.sink.table(chunks)
       ltn12.pump.all(body_source, sink)
-      
+
       -- 修改 JSON
       local json = table.concat(chunks)
       local cpu_temp = get_cpu_temperature()
       local modified_json = json:gsub('"result":{', string.format('"result":{"cpuTemperature":%d,', cpu_temp))
-      
+
       -- 发送修改后的数据
       http.write(modified_json)
     else

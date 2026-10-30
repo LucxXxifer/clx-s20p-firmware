@@ -1,6 +1,6 @@
 # CLX-S20P 每日上游候選編譯
 
-新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart 與 5 份 wrapper HTTP 輸入。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
+新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart、5 份 wrapper HTTP 輸入及 Debian Snapshot CA 原始封存。封存 SHA256 必須與固定 CA recipe 的上游 `PKG_HASH` 一致，並核對 Snapshot SHA-1 內容位址；固定建置會將同一封存放入 OpenWrt `dl/` 快取，避免 Debian pool 原 URL 下架後編譯階段再次下載失敗。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
 
 固定模式成功後另建 `s20p-a-25.12-fixed-candidate-…` prerelease，保存完整同批套件與證據，不改寫歷史 release。這是固定來源候選，未實機驗收前不標為 stable；既有 QuickStart 精確舊版例外依然公開。一般 `fixed=false`／每日排程維持最新穩定元件政策，`force=true` 只在修正原因後要求重新建置。
 

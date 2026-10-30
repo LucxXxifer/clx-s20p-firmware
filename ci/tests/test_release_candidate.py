@@ -94,7 +94,8 @@ class ReleaseCandidateTests(unittest.TestCase):
         frozen = self.root / 'frozen'
         frozen.mkdir()
         path, manifest = fixture(frozen)
-        extras = {'provenance/fixed/' + p.name: p.read_bytes() for p in frozen.iterdir()}
+        extras = {'provenance/fixed/' + p.relative_to(frozen).as_posix(): p.read_bytes()
+                  for p in frozen.rglob('*') if p.is_file()}
         extras['provenance/component-resolution.json'] = (frozen / 'components.json').read_bytes()
         extras['provenance/http-inputs.jsonl'] = json_bytes({
             'urls': [manifest['http_inputs'][0]['url']], 'exit_code': 0,

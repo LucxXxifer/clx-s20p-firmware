@@ -7,24 +7,38 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import re
 
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
 sys.path.insert(0, str(CI / "tests"))
-from component_fixtures import inputs
+from component_fixtures import files, inputs
+import components
 
 
 def fixture(root):
     value = inputs()
+    archive = b"reviewed\x00bytes\n"
+    archive_sha256 = hashlib.sha256(archive).hexdigest()
+    archive_sha1 = hashlib.sha1(archive).hexdigest()
+    recipe = components.file_bytes(value["ca"]["files"], "Makefile").decode()
+    recipe = re.sub(r"(?m)^PKG_HASH:=.*$", "PKG_HASH:=" + archive_sha256, recipe)
+    value["ca"]["files"] = files(recipe.encode())
+    value["fingerprint"] = components.fingerprint(value)
     component = root / "components.json"
     component.write_text(json.dumps(value))
-    (root / "payload").write_bytes(b"reviewed\x00bytes\n")
+    archive_path = root / "ca/archive.tar.xz"
+    archive_path.parent.mkdir()
+    archive_path.write_bytes(archive)
+    (root / "payload").write_bytes(b"http payload")
     manifest = {
-        "schema_version": 1, "source_run": "41031102553",
+        "schema_version": 2, "source_run": "41031102553",
         "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
         "artifact": {"id": "12978132447", "sha256": "7" * 64},
         "components": {"path": "components.json", "sha256": hashlib.sha256(component.read_bytes()).hexdigest(),
                        "fingerprint": value["fingerprint"]},
+        "ca_archive": {"url": "https://snapshot.debian.org/file/" + archive_sha1,
+                       "path": "ca/archive.tar.xz", "sha256": archive_sha256},
         "http_inputs": [{"url": "https://example.com/reviewed", "path": "payload",
                          "sha256": hashlib.sha256((root / "payload").read_bytes()).hexdigest()}],
     }
@@ -56,6 +70,24 @@ class FixedInputsTests(unittest.TestCase):
                     (root / "payload").symlink_to(root / "outside")
                 else:
                     manifest["http_inputs"][0]["path"] = "../payload"
+                    path.write_text(json.dumps(manifest))
+                result = subprocess.run([sys.executable, str(CI / "fixed_inputs.py"), "select", str(path),
+                                         "--output", str(root / "selected.json")], capture_output=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse((root / "selected.json").exists())
+
+    def test_fixed_ca_archive_is_bound_to_source_hash_and_snapshot_address(self):
+        for attack in ("bytes", "address", "source_hash"):
+            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                path, manifest = fixture(root)
+                if attack == "bytes":
+                    (root / "ca/archive.tar.xz").write_bytes(b"tampered archive")
+                elif attack == "address":
+                    manifest["ca_archive"]["url"] = "https://snapshot.debian.org/file/" + "0" * 40
+                    path.write_text(json.dumps(manifest))
+                else:
+                    manifest["ca_archive"]["sha256"] = "0" * 64
                     path.write_text(json.dumps(manifest))
                 result = subprocess.run([sys.executable, str(CI / "fixed_inputs.py"), "select", str(path),
                                          "--output", str(root / "selected.json")], capture_output=True)
@@ -118,6 +150,8 @@ class FixedInputsTests(unittest.TestCase):
                                      "--capture", str(root / "captured")], capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual((root / "captured/payload").read_bytes(), (root / "payload").read_bytes())
+            self.assertEqual((root / "captured/ca/archive.tar.xz").read_bytes(),
+                             (root / "ca/archive.tar.xz").read_bytes())
             record = {"urls": [manifest["http_inputs"][0]["url"]], "exit_code": 0,
                       "stdout_sha256": manifest["http_inputs"][0]["sha256"]}
             for rows, success in (([record], True), ([], False), ([record, record], False),

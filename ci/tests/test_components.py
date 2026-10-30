@@ -1,11 +1,13 @@
 """Security floors and exact source combinations drive the daily build."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+import re
 
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
@@ -84,6 +86,65 @@ class ComponentTests(unittest.TestCase):
             self.assertNotIn('+parted', prepared)
             self.assertIn('+smartd', prepared)
             self.assertIn('+ip-full', prepared)
+
+    def test_fixed_preparation_uses_verified_local_ca_archive_without_network(self):
+        import ca_security
+        value = inputs()
+        archive = b"fixed CA archive bytes"
+        archive_sha256 = hashlib.sha256(archive).hexdigest()
+        archive_sha1 = hashlib.sha1(archive).hexdigest()
+        recipe = components.file_bytes(value['ca']['files'], 'Makefile').decode()
+        recipe = re.sub(r'(?m)^PKG_HASH:=.*$', 'PKG_HASH:=' + archive_sha256, recipe)
+        recipe += '\nPKG_NAME:=ca-certificates\nPKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz\n'
+        value['ca']['files'] = files(recipe.encode())
+        quick_recipe = components.file_bytes(value['quickstart']['files'], 'Makefile')
+        quick_recipe += b'\ndefine Package/$(PKG_NAME)\n\tDEPENDS:= +bash +ip-full\nendef\n'
+        value['quickstart']['files'] = files(quick_recipe)
+        value['adguard'] = None
+        value['fingerprint'] = components.fingerprint(value)
+        value = components.validate(value)
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            component_path = root / 'components.json'
+            component_path.write_text(json.dumps(value))
+            archive_path = root / 'ca/ca-certificates.tar.xz'
+            archive_path.parent.mkdir()
+            archive_path.write_bytes(archive)
+            quick = root / 'feeds/custom_feed/quickstart'
+            ca = root / 'package/system/ca-certificates'
+            for path, rows in ((quick, value['quickstart']['files']), (ca, value['ca']['files'])):
+                path.mkdir(parents=True)
+                components.write_package(path, rows)
+            manifest_path = root / 'manifest.json'
+            manifest_path.write_text(json.dumps({
+                'schema_version': 2, 'source_run': '41031102553',
+                'upstream_commit': '9f397975c7b47ce6986a6e39529d2f72fd5c729d',
+                'artifact': {'id': '12978132447', 'sha256': '7' * 64},
+                'components': {'path': 'components.json',
+                               'sha256': hashlib.sha256(component_path.read_bytes()).hexdigest(),
+                               'fingerprint': value['fingerprint']},
+                'ca_archive': {'url': 'https://snapshot.debian.org/file/' + archive_sha1,
+                               'path': 'ca/ca-certificates.tar.xz', 'sha256': archive_sha256},
+                'http_inputs': [{'url': 'https://example.com/reviewed', 'path': 'payload',
+                                 'sha256': hashlib.sha256(b'http payload').hexdigest()}],
+            }))
+            (root / 'payload').write_bytes(b'http payload')
+            output = root / 'evidence/preparation.json'
+            with patch('components.download', side_effect=AssertionError('network fetch in fixed mode')), \
+                    patch.object(ca_security, 'reproduce', return_value={'version': '20260816-r2'}) as reproduce:
+                result = components.prepare(root, component_path, output, fixed_manifest=manifest_path)
+            reproduce.assert_called_once_with(ca, archive)
+            self.assertEqual(result['ca_version'], '20260816-r2')
+            self.assertEqual((root / 'dl/ca-certificates_20260816.tar.xz').read_bytes(), archive)
+
+    def test_fixed_archive_staging_rejects_download_cache_symlink(self):
+        with tempfile.TemporaryDirectory() as name, tempfile.TemporaryDirectory() as outside:
+            root = Path(name)
+            (root / 'dl').symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, 'cache symlink'):
+                components.stage_download(root, 'ca-certificates_20260816.tar.xz', b'archive',
+                                          hashlib.sha256(b'archive').hexdigest())
+            self.assertEqual(list(Path(outside).iterdir()), [])
 
     def test_changed_security_or_plugin_input_has_a_new_identity(self):
         original = inputs()

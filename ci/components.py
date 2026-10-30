@@ -8,6 +8,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+import tempfile
 import plugin_sources
 
 HERE = Path(__file__).resolve().parent
@@ -205,6 +206,31 @@ def replace_field(data, name, value):
     return data.replace(name + ":=" + old + "\n", name + ":=" + value + "\n")
 
 
+def stage_download(root, filename, data, expected_sha256):
+    root = Path(root)
+    source = PurePosixPath(filename)
+    if (root.is_symlink() or not root.is_dir() or source.is_absolute()
+            or source.name != filename or filename in ("", ".", "..")
+            or digest(data) != expected_sha256):
+        raise ValueError("invalid verified OpenWrt download input")
+    cache = root / "dl"
+    if cache.is_symlink():
+        raise ValueError("OpenWrt download cache symlink rejected")
+    cache.mkdir(exist_ok=True)
+    target = cache / filename
+    if target.is_symlink() or (target.exists() and not target.is_file()):
+        raise ValueError("OpenWrt download target is not a regular file")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=cache, prefix=".s20p-ca-", delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(data)
+        os.replace(temporary, target)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def write_package(directory, rows):
     directory = Path(directory)
     # Only dedicated, disposable build source packages may be replaced.
@@ -257,7 +283,7 @@ def quickstart_recipe(data):
     return "".join(lines)
 
 
-def prepare(root, inputs, output):
+def prepare(root, inputs, output, fixed_manifest=None):
     value = load(inputs)
     root, output = Path(root), Path(output)
     ca = root / "package/system/ca-certificates"
@@ -302,7 +328,19 @@ def prepare(root, inputs, output):
         (adg / "Makefile").write_text(recipe.replace(marker, addition + marker))
     import ca_security
     ca_date, _ = ca_version((ca / "Makefile").read_text())
-    ca_archive = download(f"https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{ca_date}.tar.xz")
+    if fixed_manifest:
+        import fixed_inputs
+        fixed = fixed_inputs.load(fixed_manifest)
+        if digest(Path(inputs).read_bytes()) != fixed["components"]["sha256"]:
+            raise ValueError("prepared components differ from fixed source inputs")
+        ca_archive = fixed_inputs.payload(Path(fixed_manifest).parent, fixed["ca_archive"])
+        ca_recipe = (ca / "Makefile").read_text()
+        if (field(ca_recipe, "PKG_NAME") != "ca-certificates"
+                or field(ca_recipe, "PKG_SOURCE") != "$(PKG_NAME)_$(PKG_VERSION).tar.xz"):
+            raise ValueError("unreviewed fixed CA download filename")
+        stage_download(root, f"ca-certificates_{ca_date}.tar.xz", ca_archive, field(ca_recipe, "PKG_HASH"))
+    else:
+        ca_archive = download(f"https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{ca_date}.tar.xz")
     ca_report = ca_security.reproduce(ca, ca_archive)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({"schema_version": 1, "status": "pass",
@@ -326,6 +364,8 @@ def main():
     command.add_argument("--source-root", type=Path, required=True)
     command.add_argument("--inputs", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--fixed-inputs", type=Path,
+                         default=Path(os.environ["S20P_FIXED_INPUTS"]) if os.environ.get("S20P_FIXED_INPUTS") else None)
     args = parser.parse_args()
     try:
         if args.command == "resolve":
@@ -340,7 +380,8 @@ def main():
             args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
             print(json.dumps({"fingerprint": result["fingerprint"], "status": "resolved"}))
         else:
-            print(json.dumps(prepare(args.source_root, args.inputs, args.output), sort_keys=True))
+            print(json.dumps(prepare(args.source_root, args.inputs, args.output,
+                                     fixed_manifest=args.fixed_inputs), sort_keys=True))
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         parser.exit(1, "Component policy: " + str(error) + "\n")
 

@@ -1,6 +1,6 @@
 # CLX-S20P 每日上游候選編譯
 
-2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，預裝 AdGuard Home，移除 Honk／TingReader，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
+2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，移除 Honk／TingReader，暫不預裝 AdGuard Home，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
 保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。每日會追蹤 QuickStart 更新，新版修補後可通過；不同 bytes 的未修補新版會阻擋發佈，不會擴張舊例外。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。
 
@@ -13,10 +13,9 @@ GitHub `main` 每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，
 | Docker／dockerd／containerd／runc | `immortalwrt/packages`，原相容分支 |
 | Dockerman、Docker LuCI library | `lisaac/luci-app-dockerman`、`lisaac/luci-lib-docker` |
 | 其他已編入插件及 LuCI | `ci/sources.lock.json` 的已選來源，完整清單由 resolver 驗證 |
-| AdGuard Home | `AdguardTeam/AdGuardHome` 最新穩定 release，核心及前端均核對 SHA256；LuCI 使用官方同名服務 |
 | CA／Go | 官方 CA recipe／Debian source 與 `go.dev` 穩定目錄，保留安全下限 |
 
-Honk、TingReader、Lucky 等未編入的來源不會觸發 S20P 重編。Docker 容器內的應用映像不屬於韌體套件更新；路由器上自行安裝的軟體也不會被此 workflow 遠端自動更新。
+Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發 S20P 重編；仍有其他已選套件的共用 feed 繼續追蹤。Docker 容器內的應用映像不屬於韌體套件更新；路由器上自行安裝的軟體也不會被此 workflow 遠端自動更新。
 
 既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。
 
@@ -52,14 +51,14 @@ Honk、TingReader、Lucky 等未編入的來源不會觸發 S20P 重編。Docker
 
 不包含私人設定、訂閱、factory、GPT或 SSH 私鑰。
 
-AdGuard Home 核心、官方 LuCI 介面及中文翻譯會編入映像。服務預設停用，須完成 DNS／ShellCrash／Tailscale 的端口規劃後啟用。過濾資料 `work_dir` 為 `/etc/adguardhome/work`，`/etc/adguardhome/` 和 UCI 加入 sysupgrade keep 清單；查詢紀錄及統計位置仍須按個人使用量配置。ShellCrash、ArkBridge、私人 YAML、訂閱、Tailscale 身分及其他插件資料不會放進公開映像；LuCI 設定備份也不等於插件程式或完整資料備份，需按 skill 的還原指引另行處理。
+官方 AdGuard LuCI 來源目前沒有要求的 `zh-cn` 翻譯，依使用者指示暫不編入 `adguardhome`、`luci-app-adguardhome`、`luci-i18n-adguardhome-zh-cn`；不自行補造中文套件，也不因其官方 release 更新觸發建置。這不影響現用設備上的 AdGuard 安裝。ShellCrash、ArkBridge、私人 YAML、訂閱、Tailscale 身分及其他插件資料不會放進公開映像；LuCI 設定備份也不等於插件程式或完整資料備份，需按 skill 的還原指引另行處理。
 
 ## 自動檢查與產物
 
 `ci/baseline/` 僅包含原廠公開 ROM 衍生的檔案清單、hash、DTB、套件資料和原四層配置，無設備的私密 overlay。
 
-- `.config` 與成品保留原套件基準，僅允許已審查的 Lucky／Honk／TingReader 缺席，並要求三個 AdGuard 套件、新增 root 與28個可選套件。共同核心功能不能因移除 Honk 而丟失。
-- SquashFS 抽出後檢查完整原路徑（只接受精確審查的移除）、kmod exact kernel dependency、critical 資料與 DTB 語義。新增 AdGuard 路徑須屬於 signed feed 驗證過的必需套件依賴閉包。
+- `.config` 與成品保留原套件基準，僅允許已審查的 Lucky／Honk／TingReader 缺席，要求三個 AdGuard 套件均排除，並保留新增 root 與28個可選套件。移除 Honk 後仍明確保留原有 `coreutils-stat`、`libsqlite3`、`sqlite3-cli` 及共用核心功能。
+- SquashFS 抽出後檢查完整原路徑（只接受精確審查的移除）、kmod exact kernel dependency、critical 資料與 DTB 語義。新增路徑仍須屬於 signed feed 驗證過的套件依賴閉包，不能藉排除插件放寬基準。
 - CA 以保存的 hash-pinned Debian archive 和完整 patches 獨立重建，不執行下載的 Makefile／Python。成品的完整 trust set、bundle、aliases、版本及撤銷 DER 都須符合重建；來源 manifests 與組合 fingerprint 綁定同一次 build。五個 dashboard 安裝檔亦須符合已審查 payload，Lua／Node 回歸檢查列入 Actions。
 - 版本、預設／資產／檔案差異須精確審核；未批准差異只保留 evidence，阻止候選發佈，不能以 allow-all 取消檢查。
 - 編譯成功後、原流程清理前保存完整 `bin/`、所有 APK／已簽名 `packages.adb`、公開key、kernel config／Module.symvers、final config、buildinfo、來源與HTTP輸入紀錄、logs與SHA256。

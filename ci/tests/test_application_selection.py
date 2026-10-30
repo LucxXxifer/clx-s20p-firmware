@@ -12,6 +12,14 @@ import preservation
 
 
 class ApplicationSelectionTests(unittest.TestCase):
+    def test_honk_omission_keeps_original_stat_and_sqlite_tools(self):
+        source = CI.parent / "wrt_core/deconfig/S20P-WIFI-YES.config"
+        values = preservation.parse_config(source)
+        for package in ("coreutils-stat", "sqlite3-cli", "libsqlite3"):
+            with self.subTest(package=package):
+                self.assertEqual(values.get("CONFIG_PACKAGE_" + package), "y",
+                                 "Baseline tools must remain installed without Honk")
+
     def test_review_binds_exact_baseline_packages_and_files(self):
         review = preservation.load_application_selection(CI / "baseline")
         self.assertEqual(review["package_names"], list(preservation.OMITTED_APPLICATION_PACKAGES))
@@ -23,15 +31,20 @@ class ApplicationSelectionTests(unittest.TestCase):
         self.assertNotIn('/etc/init.d/dnsmasq', paths)
         self.assertNotIn('/usr/bin/ip', paths)
 
-    def test_adguard_config_selection_is_required(self):
+    def test_adguard_is_excluded_until_upstream_chinese_is_available(self):
         source = CI.parent / "wrt_core/deconfig/S20P-WIFI-YES.config"
+        values = preservation.parse_config(source)
+        names = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
+        for name in names:
+            self.assertEqual(values.get('CONFIG_PACKAGE_' + name), 'n')
         with tempfile.TemporaryDirectory() as name:
             path = Path(name) / 'config'
-            path.write_text(source.read_text().replace('CONFIG_PACKAGE_adguardhome=y',
-                                                       'CONFIG_PACKAGE_adguardhome=n'))
+            path.write_text(source.read_text().replace('CONFIG_PACKAGE_adguardhome=n',
+                                                       'CONFIG_PACKAGE_adguardhome=y'))
             gate = preservation.Gate('config', CI / 'baseline', application_selection=True)
             gate.config(path, source_lock=CI / 'sources.lock.json')
             self.assertTrue(any(e['subject'] == 'CONFIG_PACKAGE_adguardhome' for e in gate.errors))
+        self.assertEqual(list(preservation.REQUIRED_APPLICATION_PACKAGES), [])
 
     def test_unrelated_missing_package_is_still_rejected(self):
         lucky = preservation.load_b_optional_package_policy(CI / "baseline", CI / "sources.lock.json")

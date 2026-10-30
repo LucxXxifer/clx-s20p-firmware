@@ -18,6 +18,36 @@ from component_fixtures import inputs
 
 
 class ComponentGateTests(unittest.TestCase):
+    def test_omitted_adguard_is_checked_in_the_actual_image(self):
+        with tempfile.TemporaryDirectory() as name:
+            try:
+                result = component_gate.verify_adguard(Path(name), {}, None)
+            except (TypeError, ValueError) as error:
+                self.fail('Excluded AdGuard should not require files: ' + str(error))
+            self.assertEqual(result, {'included': False})
+            for package in ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn'):
+                with self.assertRaisesRegex(ValueError, 'excluded AdGuard'):
+                    component_gate.verify_adguard(Path(name), {package: {'version': '0.107.79-r1'}}, None)
+
+    def test_release_without_adguard_still_checks_ca_and_exclusion(self):
+        value = inputs()
+        value['adguard'] = None
+        value['fingerprint'] = components.fingerprint(value)
+        ca = {'version': '20260816-r2'}
+        packages = {name: {'version': ca['version']} for name in ('ca-bundle', 'ca-certificates')}
+        report = {'schema_version': 1, 'status': 'pass', 'rootfs_sha256': 'a' * 64,
+                  'component_fingerprint': value['fingerprint'], 'ca': ca, 'adguard': {'included': False},
+                  'plugin_sources': component_gate.plugin_sources.identity(value['plugin_sources'])}
+        with patch('component_gate.reproduce_preparation', return_value=(value, [], ca)):
+            component_gate.verify_release(None, report, 'a' * 64, packages)
+            packages['ca-bundle']['version'] = '20210101-r1'
+            with self.assertRaisesRegex(ValueError, 'release CA package'):
+                component_gate.verify_release(None, report, 'a' * 64, packages)
+            packages['ca-bundle']['version'] = ca['version']
+            packages['adguardhome'] = {'version': '0.107.79-r1'}
+            with self.assertRaisesRegex(ValueError, 'excluded AdGuard'):
+                component_gate.verify_release(None, report, 'a' * 64, packages)
+
     def fixture(self, root):
         value = inputs()
         decision = upstream_sync.resolve_head(upstream_sync.BASE_COMMIT, upstream_sync.BASE_COMMIT,

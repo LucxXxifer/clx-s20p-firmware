@@ -157,7 +157,7 @@ def validate(value):
         if not match or int(match[1]) < minimum or not SHA.fullmatch(str(row.get("sha256"))):
             raise ValueError("official stable Go release is below the security floor")
     adguard = value["adguard"]
-    if (version(adguard["version"]) < ADGUARD_FLOOR or
+    if adguard is not None and (version(adguard["version"]) < ADGUARD_FLOOR or
             not COMMIT.fullmatch(str(adguard.get("commit"))) or
             any(not SHA.fullmatch(str(adguard.get(key))) for key in ("source_sha256", "frontend_sha256"))):
         raise ValueError("invalid official AdGuard stable release")
@@ -188,27 +188,12 @@ def resolve(previous_state=None):
         if len(source) != 1:
             raise ValueError("official Go source archive missing")
         go.append({"version": selected["version"], "sha256": source[0]["sha256"]})
-    release = api("repos/AdguardTeam/AdGuardHome/releases/latest")
-    if release.get("prerelease") is not False or release.get("draft") is not False:
-        raise ValueError("AdGuard stable published release required")
-    tag = release["tag_name"]
-    ver = tag.removeprefix("v")
-    version(ver)
-    tag_object = api("repos/AdguardTeam/AdGuardHome/commits/" + tag)
-    assets = [row for row in release["assets"] if row.get("name") == "AdGuardHome_frontend.tar.gz"]
-    if len(assets) != 1:
-        raise ValueError("official AdGuard frontend asset missing")
-    frontend = assets[0].get("digest", "").removeprefix("sha256:")
-    if not SHA.fullmatch(frontend):
-        frontend = digest(download(f"https://github.com/AdguardTeam/AdGuardHome/releases/download/{tag}/AdGuardHome_frontend.tar.gz"))
-    source = download(f"https://codeload.github.com/AdguardTeam/AdGuardHome/tar.gz/{tag}")
     result = {"schema_version": 1, "plugin_sources": sources,
               "ca": {"repository": CA_REPOSITORY, "commit": ca_commit,
                      "path": "package/system/ca-certificates",
                      "files": package_files(CA_REPOSITORY, ca_commit, "package/system/ca-certificates")},
               "go": go,
-              "adguard": {"version": ver, "commit": tag_object["sha"],
-                          "source_sha256": digest(source), "frontend_sha256": frontend},
+              "adguard": None,
               "quickstart": {"repository": QUICKSTART_REPOSITORY, "commit": quick_commit, "path": "quickstart",
                              "files": package_files(QUICKSTART_REPOSITORY, quick_commit, "quickstart")}}
     result["fingerprint"] = fingerprint(result)
@@ -268,32 +253,32 @@ def prepare(root, inputs, output):
     candidate = file_bytes(value["quickstart"]["files"], "Makefile").decode()
     if version(field(before, "PKG_VERSION")) <= version(field(candidate, "PKG_VERSION")):
         write_package(quick, value["quickstart"]["files"])
-    adg = root / "feeds/custom_feed/adguardhome"
-    recipe = (adg / "Makefile").read_text()
-    current = version(field(recipe, "PKG_VERSION"))
-    target = version(value["adguard"]["version"])
-    if current > target:
-        raise ValueError("newer feed AdGuard version needs official stable release evidence; refusing downgrade")
-    if field(recipe, "PKG_SOURCE_URL") != "https://codeload.github.com/AdguardTeam/AdGuardHome/tar.gz/v$(PKG_VERSION)?":
-        raise ValueError("unexpected AdGuard source origin")
-    for key, selected in (("PKG_VERSION", value["adguard"]["version"]),
-                          ("PKG_HASH", value["adguard"]["source_sha256"]),
-                          ("FRONTEND_HASH", value["adguard"]["frontend_sha256"])):
-        recipe = replace_field(recipe, key, selected)
-    (adg / "Makefile").write_text(recipe)
-    # Keep filters across reboot. Leave the service disabled until configured;
-    # never seize port 53 or copy a private DNS configuration into the image.
-    config = adg / "files/adguardhome.conf"
-    config.write_text(config.read_text().replace("/var/lib/adguardhome", "/etc/adguardhome/work"))
-    init = adg / "files/adguardhome.init"
-    init.write_text(init.read_text().replace("work_dir:string:/var/lib/adguardhome", "work_dir:string:/etc/adguardhome/work"))
-    keep = adg / "files/adguardhome.keep"
-    keep.write_text("/etc/adguardhome/\n/etc/config/adguardhome\n")
-    marker = "\t$(INSTALL_DIR) $(1)/etc/sysctl.d\n"
-    addition = "\t$(INSTALL_DIR) $(1)/lib/upgrade/keep.d\n\t$(INSTALL_DATA) ./files/adguardhome.keep $(1)/lib/upgrade/keep.d/adguardhome\n\n"
-    if recipe.count(marker) != 1:
-        raise ValueError("AdGuard install recipe changed")
-    (adg / "Makefile").write_text(recipe.replace(marker, addition + marker))
+    selected_adguard = value["adguard"]
+    if selected_adguard is not None:
+        adg = root / "feeds/custom_feed/adguardhome"
+        recipe = (adg / "Makefile").read_text()
+        current = version(field(recipe, "PKG_VERSION"))
+        target = version(selected_adguard["version"])
+        if current > target:
+            raise ValueError("newer feed AdGuard version needs official stable release evidence; refusing downgrade")
+        if field(recipe, "PKG_SOURCE_URL") != "https://codeload.github.com/AdguardTeam/AdGuardHome/tar.gz/v$(PKG_VERSION)?":
+            raise ValueError("unexpected AdGuard source origin")
+        for key, selected in (("PKG_VERSION", selected_adguard["version"]),
+                              ("PKG_HASH", selected_adguard["source_sha256"]),
+                              ("FRONTEND_HASH", selected_adguard["frontend_sha256"])):
+            recipe = replace_field(recipe, key, selected)
+        (adg / "Makefile").write_text(recipe)
+        config = adg / "files/adguardhome.conf"
+        config.write_text(config.read_text().replace("/var/lib/adguardhome", "/etc/adguardhome/work"))
+        init = adg / "files/adguardhome.init"
+        init.write_text(init.read_text().replace("work_dir:string:/var/lib/adguardhome", "work_dir:string:/etc/adguardhome/work"))
+        keep = adg / "files/adguardhome.keep"
+        keep.write_text("/etc/adguardhome/\n/etc/config/adguardhome\n")
+        marker = "\t$(INSTALL_DIR) $(1)/etc/sysctl.d\n"
+        addition = "\t$(INSTALL_DIR) $(1)/lib/upgrade/keep.d\n\t$(INSTALL_DATA) ./files/adguardhome.keep $(1)/lib/upgrade/keep.d/adguardhome\n\n"
+        if recipe.count(marker) != 1:
+            raise ValueError("AdGuard install recipe changed")
+        (adg / "Makefile").write_text(recipe.replace(marker, addition + marker))
     import ca_security
     ca_date, _ = ca_version((ca / "Makefile").read_text())
     ca_archive = download(f"https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{ca_date}.tar.xz")
@@ -303,10 +288,10 @@ def prepare(root, inputs, output):
                                  "component_fingerprint": value["fingerprint"],
                                  "ca": ca_report, "ca_source_files": snapshot_package(ca),
                                  "ca_archive_base64": base64.b64encode(ca_archive).decode(),
-                                 "adguard_version": value["adguard"]["version"]},
+                                 "adguard_version": selected_adguard["version"] if selected_adguard else None},
                                 indent=2, sort_keys=True) + "\n")
     return {"status": "pass", "fingerprint": value["fingerprint"],
-            "ca_version": ca_report["version"], "adguard_version": value["adguard"]["version"]}
+            "ca_version": ca_report["version"], "adguard_version": selected_adguard["version"] if selected_adguard else None}
 
 
 def main():

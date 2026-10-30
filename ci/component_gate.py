@@ -106,7 +106,7 @@ def reproduce_preparation(directory):
     if (set(evidence) != {"schema_version", "status", "component_fingerprint", "ca", "ca_source_files",
                          "ca_archive_base64", "adguard_version"} or evidence["schema_version"] != 1 or
             evidence["status"] != "pass" or evidence["component_fingerprint"] != value["fingerprint"] or
-            evidence["adguard_version"] != value["adguard"]["version"]):
+            evidence["adguard_version"] != (value["adguard"]["version"] if value["adguard"] else None)):
         raise ValueError("component preparation schema/identity mismatch")
     with tempfile.TemporaryDirectory() as name:
         package = Path(name)
@@ -133,6 +133,11 @@ def reproduce_preparation(directory):
 
 
 def verify_adguard(root, packages, selected):
+    if selected is None:
+        if any(name in packages for name in (
+                "adguardhome", "luci-app-adguardhome", "luci-i18n-adguardhome-zh-cn")):
+            raise ValueError("excluded AdGuard package remains in the image")
+        return {"included": False}
     version = packages.get("adguardhome", {}).get("version", "")
     if not re.fullmatch(re.escape(selected) + r"-r\d+", version):
         raise ValueError("AdGuard image version differs from official stable source")
@@ -152,7 +157,7 @@ def verify_adguard(root, packages, selected):
 def inspect(root, provenance_dir, payload, packages):
     value, prepared, ca = reproduce_preparation(provenance_dir)
     ca_security.verify_image(root, ca, packages, prepared)
-    adguard = verify_adguard(root, packages, value["adguard"]["version"])
+    adguard = verify_adguard(root, packages, value["adguard"]["version"] if value["adguard"] else None)
     return {"schema_version": 1, "status": "pass", "rootfs_sha256": components.digest(regular(payload)),
             "component_fingerprint": value["fingerprint"], "ca": ca, "adguard": adguard,
             "plugin_sources": plugin_sources.identity(value["plugin_sources"])}
@@ -168,6 +173,11 @@ def verify_release(directory, report, payload_sha256, packages):
     for name in ("ca-bundle", "ca-certificates"):
         if packages.get(name, {}).get("version") != ca["version"]:
             raise ValueError("release CA package version differs from reproduced source")
+    if value["adguard"] is None:
+        expected_adg = verify_adguard(None, packages, None)
+        if report.get("adguard") != expected_adg:
+            raise ValueError("release excluded AdGuard evidence mismatch")
+        return
     expected_adg = {"version": packages.get("adguardhome", {}).get("version"), "enabled": False,
                     "work_dir": "/etc/adguardhome/work"}
     if (report.get("adguard") != expected_adg or not re.fullmatch(

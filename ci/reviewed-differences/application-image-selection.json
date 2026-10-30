@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "title": "User-requested S20P application selection: omit Honk/TingReader and include AdGuard Home",
+  "title": "User-requested S20P application selection: omit Honk/TingReader and defer AdGuard Home",
   "package_names": [
     "honk",
     "luci-app-honk",
@@ -4584,16 +4584,17 @@
       "squashfs_inode": 4319
     }
   ],
-  "world_sha256": "a94f130767afe5a2611747f6f0d3d994ba0c705c1e3c03dcfcf32c2446a882af",
+  "world_sha256": "c31f086d6118c966991bd9aba5c15f376fc7e033f8051dab1f9e80d72adf7748",
   "ownership_evidence": {
     "method": "Each payload path matched verified same-build native APK metadata; APK bookkeeping and two init symlinks matched the original image manifest. No shared dependencies or directories removed.",
     "reference_run": 40893380461
   },
-  "scope": "S20P only; omit the four Honk/TingReader packages and their exact original payload records, and require the three AdGuard Home packages. No installed-device uninstall and no relaxation for unrelated files or packages.",
-  "required_packages": [
+  "scope": "S20P only; omit the four Honk/TingReader packages and their exact original payload records, and defer the three AdGuard Home packages until the official LuCI package has Chinese translation. No installed-device uninstall and no relaxation for unrelated files or packages.",
+  "required_packages": [],
+  "ownership_notice": "Honk and its bundled Doona UI ownership checked against native same-build APK metadata from run 40893380461; shared packages are preserved. Source pins for unused repositories remain for other wrapper profiles.",
+  "excluded_packages": [
     "adguardhome",
     "luci-app-adguardhome",
     "luci-i18n-adguardhome-zh-cn"
-  ],
-  "ownership_notice": "Honk and its bundled Doona UI ownership checked against native same-build APK metadata from run 40893380461; shared packages are preserved. Source pins for unused repositories remain for other wrapper profiles."
+  ]
 }

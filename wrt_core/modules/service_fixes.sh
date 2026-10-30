@@ -3,9 +3,7 @@
 
 update_adguardhome() {
     if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
-        # The old third-party GUI manages an incompatible AdGuardHome service.
-        # Keep the official LuCI feed package that depends on adguardhome.
-        [[ -f $BUILD_DIR/package/feeds/luci/luci-app-adguardhome/Makefile ]] || return 1
+        # S20P defers AdGuard entirely until the requested Chinese UI is available.
         return 0
     fi
     local adguardhome_dir="$(get_custom_feed_package_dir)/luci-app-adguardhome"

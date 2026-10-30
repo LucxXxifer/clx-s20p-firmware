@@ -34,9 +34,10 @@ B_OPTIONAL_PACKAGE_NAMES = (
 )
 B_LUCKY_STORE_KEY_SHA256 = "17d39c124a39a0f0bf54601073ddb3d42bad45b40be9ad28c17e805bee04db08"
 OMITTED_APPLICATION_PACKAGES = ('honk', 'luci-app-honk', 'luci-app-tingreader', 'luci-i18n-tingreader-zh-cn')
-REQUIRED_APPLICATION_PACKAGES = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
+REQUIRED_APPLICATION_PACKAGES = ()
+EXCLUDED_APPLICATION_PACKAGES = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
 APPLICATION_REVIEW = Path(__file__).with_name("reviewed-differences") / "application-image-selection.json"
-APPLICATION_REVIEW_SHA256 = "5b0b611ce838a74180328e60381a0d9b616aec674db3fa8d28b3b3f1ae1ba8bb"
+APPLICATION_REVIEW_SHA256 = "dfc997663fa6609f4e65706d77dd1ace77c1e68c3dac212ede6eaba4604484cf"
 
 
 def digest(value):
@@ -283,7 +284,8 @@ def load_application_selection(baseline):
         raise ValueError("application selection review digest mismatch")
     review = strict_json(raw)
     if (review.get("schema_version") != 1 or review.get("package_names") != list(OMITTED_APPLICATION_PACKAGES)
-            or review.get("required_packages") != list(REQUIRED_APPLICATION_PACKAGES)):
+            or review.get("required_packages") != list(REQUIRED_APPLICATION_PACKAGES)
+            or review.get("excluded_packages") != list(EXCLUDED_APPLICATION_PACKAGES)):
         raise ValueError("application selection must name the exact omitted and required packages")
     baseline = Path(baseline)
     for key, name in (("package_manifest_sha256", "original-package-manifest.json"),
@@ -313,6 +315,7 @@ def application_file_absences(review, baseline, actual):
 def application_selection_evidence(review):
     return {"packages": list(OMITTED_APPLICATION_PACKAGES), "review_sha256": APPLICATION_REVIEW_SHA256,
             "required_packages": list(REQUIRED_APPLICATION_PACKAGES),
+            "excluded_packages": list(EXCLUDED_APPLICATION_PACKAGES),
             "removed_path_count": len(review["removed_records"])}
 
 
@@ -701,6 +704,7 @@ class Gate:
         required.update({"CONFIG_PACKAGE_" + name: "y" for name in self.policy["required_packages"]})
         if self.application_selection:
             required.update({"CONFIG_PACKAGE_" + name: "y" for name in REQUIRED_APPLICATION_PACKAGES})
+            required.update({"CONFIG_PACKAGE_" + name: "n" for name in EXCLUDED_APPLICATION_PACKAGES})
         optional_policy = (load_b_optional_package_policy(
             self.baseline, source_lock, optional_package_review, upstream_evidence
         ) if source_lock else None)
@@ -1036,6 +1040,10 @@ class Gate:
                        {k: p["version"] for k, p in manifest.items()},
                        {k: p["version"] for k, p in actual.items()})
         requested_omitted = set(OMITTED_APPLICATION_PACKAGES) if self.application_selection else set()
+        if self.application_selection:
+            for name in EXCLUDED_APPLICATION_PACKAGES:
+                if name in actual:
+                    self.error("requested_package_omission", name, "absent", "installed")
         for name in requested_omitted:
             if name in actual:
                 self.error("requested_package_omission", name, "absent", "installed")
@@ -1283,7 +1291,7 @@ class Gate:
                 disposition, reason = "expected", "source-bound CA reproduction or exact reviewed dashboard payload"
             elif (name == "/etc/apk/world" and provenance_ok and self.application_selection and
                     current.get("sha256") == self.application_selection["world_sha256"]):
-                disposition, reason = "expected", "exact reviewed package roots with Honk/TingReader omitted and AdGuard Home included"
+                disposition, reason = "expected", "exact reviewed package roots with Honk/TingReader omitted and AdGuard Home deferred"
             elif name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
                 disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
             elif policy.startswith("exact-"):

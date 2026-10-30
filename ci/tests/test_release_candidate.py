@@ -229,11 +229,11 @@ class ReleaseCandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'omitted application package remains'):
             self.prepare()
 
-    def test_rejects_missing_adguard_with_recomputed_checksums(self):
+    def test_rejects_excluded_adguard_with_recomputed_checksums(self):
         archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         rewrite_archive_json(archive, 'inspection/installed-packages.json',
-                             lambda data: data['packages'][2].update(name='unrelated-app'))
-        with self.assertRaisesRegex(ValueError, 'required AdGuard'):
+                             lambda data: data['packages'][1].update(name='adguardhome'))
+        with self.assertRaisesRegex(ValueError, 'excluded application'):
             self.prepare()
 
     def test_rejects_missing_or_tampered_application_selection_evidence(self):

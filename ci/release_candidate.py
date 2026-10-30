@@ -15,7 +15,7 @@ import upstream_sync
 import go_security
 import dashboard
 import component_gate
-from preservation import (OMITTED_APPLICATION_PACKAGES, REQUIRED_APPLICATION_PACKAGES, load_application_selection,
+from preservation import (OMITTED_APPLICATION_PACKAGES, REQUIRED_APPLICATION_PACKAGES, EXCLUDED_APPLICATION_PACKAGES, load_application_selection,
                           application_selection_evidence)
 
 
@@ -333,8 +333,10 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
         raise ValueError("one of the three reviewed Lucky packages remains in the B image")
     if set(names) & set(OMITTED_APPLICATION_PACKAGES):
         raise ValueError("omitted application package remains in the image")
+    if set(names) & set(EXCLUDED_APPLICATION_PACKAGES):
+        raise ValueError("excluded application package remains in the image")
     if not set(REQUIRED_APPLICATION_PACKAGES) <= set(names):
-        raise ValueError("required AdGuard application package is missing from the image")
+        raise ValueError("required application package is missing from the image")
     package_count = len(packages)
     if package_count != pkg_check.get("actual_count") or package_count != signed.get("installed_packages_matched"):
         raise ValueError("installed package inventory count disagrees across build gates")

@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
@@ -15,6 +16,48 @@ from component_fixtures import inputs, files
 
 
 class ComponentTests(unittest.TestCase):
+    def test_omitted_adguard_does_not_resolve_or_download_a_release(self):
+        value = inputs()
+        releases = [{'stable': True, 'version': row['version'],
+                     'files': [{'kind': 'source', 'filename': row['version'] + '.src.tar.gz',
+                                'sha256': row['sha256']}]} for row in value['go']]
+        def fetch(path):
+            self.assertEqual(path, 'repos/' + components.CA_REPOSITORY + '/commits/master')
+            return {'sha': value['ca']['commit']}
+        with patch('components.plugin_sources.resolve', return_value=value['plugin_sources']), \
+                patch('components.api', side_effect=fetch), \
+                patch('components.package_files', side_effect=[value['ca']['files'], value['quickstart']['files']]), \
+                patch('components.download', return_value=json.dumps(releases).encode()) as download:
+            resolved = components.resolve()
+        self.assertIsNone(resolved['adguard'])
+        download.assert_called_once_with('https://go.dev/dl/?mode=json&include=all')
+
+    def test_preparation_without_adguard_still_reproduces_ca(self):
+        import ca_security
+        value = inputs()
+        value['adguard'] = None
+        value['fingerprint'] = components.fingerprint(value)
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            for path, rows in (('package/system/ca-certificates', value['ca']['files']),
+                               ('feeds/custom_feed/quickstart', value['quickstart']['files'])):
+                package = root / path
+                package.mkdir(parents=True)
+                components.write_package(package, rows)
+            selected = root / 'components.json'
+            selected.write_text(json.dumps(value))
+            output = root / 'evidence/preparation.json'
+            ca = {'version': '20260816-r2'}
+            with patch('components.download', return_value=b'controlled archive') as download, \
+                    patch.object(ca_security, 'reproduce', return_value=ca) as reproduce:
+                result = components.prepare(root, selected, output)
+            reproduce.assert_called_once_with(root / 'package/system/ca-certificates', b'controlled archive')
+            download.assert_called_once_with(
+                'https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_20260816.tar.xz')
+            self.assertEqual(result['ca_version'], ca['version'])
+            self.assertIsNone(json.loads(output.read_text())['adguard_version'])
+            self.assertFalse((root / 'feeds/custom_feed/adguardhome').exists())
+
     def test_changed_security_or_plugin_input_has_a_new_identity(self):
         original = inputs()
         for change in (lambda v: v['go'][0].update(version='go1.26.11'),

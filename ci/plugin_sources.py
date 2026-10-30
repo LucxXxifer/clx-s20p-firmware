@@ -18,7 +18,7 @@ EXCLUDED = {
     "dqsq2e2/luci-app-tingreader": "TingReader is omitted from the S20P image",
     "kenzok8/openwrt-honk": "Honk is omitted from the S20P image",
     "kenzok8/openwrt-daede": "the daed fragment is not selected for S20P",
-    "zqinking/luci-app-adguardhome": "S20P uses the matching official LuCI feed",
+    "zqinking/luci-app-adguardhome": "AdGuard is deferred from the S20P image",
     "sbwml/packages_lang_golang": "Go is resolved from the official stable catalog",
     "immortalwrt/immortalwrt": "CA is resolved separately; this fallback tree is not a plugin feed",
 }

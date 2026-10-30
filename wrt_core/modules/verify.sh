@@ -88,9 +88,6 @@ verify_custom_feed_installed_paths() {
 
     if [[ ${S20P_AUTOBUILD:-0} != 1 ]]; then
         required_package_dirs+=(luci-app-tingreader luci-app-adguardhome)
-    elif [[ ! -f $BUILD_DIR/package/feeds/luci/luci-app-adguardhome/Makefile ]]; then
-        echo 'Error: matching official adguardhome LuCI package is missing.' >&2
-        return 1
     fi
 
     if [[ ${DAED_PACKAGES_ENABLED:-0} == "1" ]]; then

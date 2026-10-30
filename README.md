@@ -11,7 +11,7 @@
 
 Skill 會先檢查 eMMC 壽命並保留每臺機器自己的原廠資料；預設不做 100+ GB 的 p6 原始映像克隆。完成 FIP 驗證後，斷電／Reset、進入 U-Boot 及刷 GPT／系統由使用者手動完成。備份驗證、七個實體網口測試與原廠還原實測會分別記錄；詳見[驗證範圍與限制](skills/README.md#驗證範圍與限制)。
 
-> **CLX-S20P 固件線**：GitHub `main` 每日 04:20（Asia/Shanghai）追蹤 chasey ImmortalWrt 25.12、已選第三方插件來源（包括 iStore、OpenClash、Docker）及官方 CA／Go／AdGuard 更新。來源組合有變才編譯，全部差異、安全、套件與簽章檢查通過才建立 prerelease。預裝 AdGuard Home，移除 Honk／TingReader，並納入控制面板修復。公開庫使用 GitHub-hosted 標準 Linux runner。
+> **CLX-S20P 固件線**：GitHub `main` 每日 04:20（Asia/Shanghai）追蹤 chasey ImmortalWrt 25.12、已選第三方插件來源（包括 iStore、OpenClash、Docker）及官方 CA／Go 更新。來源組合有變才編譯，全部差異、安全、套件與簽章檢查通過才建立 prerelease。移除 Honk／TingReader，暫不預裝 AdGuard Home，並納入控制面板修復。公開庫使用 GitHub-hosted 標準 Linux runner。
 >
 > **固定下載版 A（10/17）**：[GitHub release 與下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)／[固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17)。此 release 保留原成品、校驗碼及說明；rolling `main` 不會改寫它。既有 B 候選也保留：[B 25.12 candidate](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。
 >

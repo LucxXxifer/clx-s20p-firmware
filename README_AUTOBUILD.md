@@ -1,5 +1,9 @@
 # CLX-S20P 每日上游候選編譯
 
+新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart 與 5 份 wrapper HTTP 輸入。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
+
+固定模式成功後另建 `s20p-a-25.12-fixed-candidate-…` prerelease，保存完整同批套件與證據，不改寫歷史 release。這是固定來源候選，未實機驗收前不標為 stable；既有 QuickStart 精確舊版例外依然公開。一般 `fixed=false`／每日排程維持最新穩定元件政策，`force=true` 只在修正原因後要求重新建置。
+
 2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，移除 Honk／TingReader，暫不預裝 AdGuard Home，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
 保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。每日會追蹤 QuickStart 更新，新版修補後可通過；不同 bytes 的未修補新版會阻擋發佈，不會擴張舊例外。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。

@@ -1,0 +1,474 @@
+{
+  "differences": [
+    {
+      "actual": "2026.10.6-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "2026.8.3-r1",
+      "id": "f5004236451d63e7602e9d0c1ebd140bb8b0d058ba51ecb4acdc9a7e1515af06",
+      "reason": "source/version delta",
+      "subject": "cloudflared",
+      "verification": {
+        "depends": [
+          "ca-bundle",
+          "libc"
+        ],
+        "owner": "cloudflared",
+        "package_apk_sha256": "d4fb4e2f62da678af19eafa5941e54cdd6baf50bb724f82072a65cf5fb7181e9",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/net/cloudflared/Makefile",
+          "sha256": "0920764c5dcc4ad7fa8b6574eaf9aed9776eed7e000f1f6591295ff666836465",
+          "size": 2080
+        },
+        "version": "2026.10.6-r1"
+      }
+    },
+    {
+      "actual": "8.23.0-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "8.22.0-r1",
+      "id": "392d731698afaaf1f903b11317c7d66f874b1a46b7f8aa1ef8340a25848bbe5c",
+      "reason": "source/version delta",
+      "subject": "curl",
+      "verification": {
+        "depends": [
+          "libc",
+          "libcurl4"
+        ],
+        "owner": "curl",
+        "package_apk_sha256": "a85178445010b69e6779c478c24055e4c91a20f3c40619055887292832d3a562",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/net/curl/Makefile",
+          "sha256": "ba09df63f80f02ea8af8bea8ce0e85dac49b94750ebb6216a6a01cd97a1910e3",
+          "size": 6534
+        },
+        "version": "8.23.0-r1"
+      }
+    },
+    {
+      "actual": "3.5.3-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "3.5.1-r1",
+      "id": "4e3061ff9bcdd47295d247e2b28e4e4c2b75d4419cfcaa88249c2afc126be17b",
+      "reason": "source/version delta",
+      "subject": "htop",
+      "verification": {
+        "depends": [
+          "libc",
+          "libncurses6"
+        ],
+        "owner": "htop",
+        "package_apk_sha256": "1632e2f0c6c1bbb1f46a760649f958ca38cf9223f429d7db643f9b4b93aed936",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/admin/htop/Makefile",
+          "sha256": "460ca23df42b974532837e992f786a6f7a2c2601fbf82854936da5f10119e8fa",
+          "size": 1923
+        },
+        "version": "3.5.3-r1"
+      }
+    },
+    {
+      "actual": "8.23.0-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "8.22.0-r1",
+      "id": "bda8410a4dc81230c7ac54639138844c8944c6423fced0534503b46c85ab5250",
+      "reason": "source/version delta",
+      "subject": "libcurl4",
+      "verification": {
+        "depends": [
+          "ca-bundle",
+          "libc",
+          "libnghttp2-14",
+          "libopenssl3",
+          "libpthread",
+          "zlib"
+        ],
+        "owner": "libcurl4",
+        "package_apk_sha256": "f23c2cc366f5a68951242280a5e4f2927a10cc18ac17c6f0d7c4a7eb31de6e1c",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/net/curl/Makefile",
+          "sha256": "ba09df63f80f02ea8af8bea8ce0e85dac49b94750ebb6216a6a01cd97a1910e3",
+          "size": 6534
+        },
+        "version": "8.23.0-r1"
+      }
+    },
+    {
+      "actual": "2026e-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "2026d-r1",
+      "id": "eadf93e6032706ea66171af2f5fa9666be31281a492b153fb1cd097d2d1defc4",
+      "reason": "source/version delta",
+      "subject": "zoneinfo-asia",
+      "verification": {
+        "depends": [
+          "libc",
+          "zoneinfo-core"
+        ],
+        "owner": "zoneinfo-asia",
+        "package_apk_sha256": "36b4e7866fd99fbd81cd5d11b7c2cf6e23c513a7cb5ed7a93913232ae1fe3aaf",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/utils/zoneinfo/Makefile",
+          "sha256": "af6e4915c565b9e261c71354aa677dff12a5a9d204d6e74554d0a28dca3fa53f",
+          "size": 7013
+        },
+        "version": "2026e-r1"
+      }
+    },
+    {
+      "actual": "2026e-r1",
+      "category": "package_version",
+      "disposition": "review_required",
+      "expected": "2026d-r1",
+      "id": "1f2d958dfde6138bb7484e2d63d4b0217d31665d3699a3a11a2ab5bf148497d3",
+      "reason": "source/version delta",
+      "subject": "zoneinfo-core",
+      "verification": {
+        "depends": [
+          "libc"
+        ],
+        "owner": "zoneinfo-core",
+        "package_apk_sha256": "e7645d9c5a6a29908649cd21ebaa5ddfd0dea80e798bd7d9e800c1144a8dbf69",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/utils/zoneinfo/Makefile",
+          "sha256": "af6e4915c565b9e261c71354aa677dff12a5a9d204d6e74554d0a28dca3fa53f",
+          "size": 7013
+        },
+        "version": "2026e-r1"
+      }
+    },
+    {
+      "actual": "e2e8e31c4e10f44576c79345e76060591dbb3eef6ce14e006afc8a373caa9593",
+      "category": "file_sha256",
+      "disposition": "review_required",
+      "expected": "0718261beed45895d9a215d979febfb35c14fdcaa4fa7eec644401e5471d7b65",
+      "id": "a52b837b3dca7db924aefb71692d703aaa2ae3b70327a6a4ed893ac3a45efa23",
+      "reason": "report-all-differences",
+      "subject": "/usr/share/zoneinfo/zone.tab",
+      "verification": {
+        "apk_file": {
+          "acl": {
+            "group": "root",
+            "mode": 420,
+            "user": "root"
+          },
+          "hash": "e2e8e31c4e10f44576c79345e76060591dbb3eef6ce14e006afc8a373caa9593",
+          "mtime": 1793348800,
+          "name": "zone.tab",
+          "size": 18809
+        },
+        "depends": [
+          "libc"
+        ],
+        "image_record": {
+          "gid": 0,
+          "mode": "0644",
+          "path": "/usr/share/zoneinfo/zone.tab",
+          "sha256": "e2e8e31c4e10f44576c79345e76060591dbb3eef6ce14e006afc8a373caa9593",
+          "size": 18809,
+          "type": "file",
+          "uid": 0
+        },
+        "official_iana_source": {
+          "independently_downloaded_and_matched": true,
+          "sha256": "b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652",
+          "url": "https://data.iana.org/time-zones/releases/tzdata2026e.tar.gz",
+          "zone_tab_sha256": "e2e8e31c4e10f44576c79345e76060591dbb3eef6ce14e006afc8a373caa9593"
+        },
+        "owner": "zoneinfo-core",
+        "package_apk_sha256": "e7645d9c5a6a29908649cd21ebaa5ddfd0dea80e798bd7d9e800c1144a8dbf69",
+        "signed_feed_payload": "independently native verified; full feed offline fetch and bytes compared",
+        "source_recipe": {
+          "mode": "0o644",
+          "path": "feeds/packages/utils/zoneinfo/Makefile",
+          "sha256": "af6e4915c565b9e261c71354aa677dff12a5a9d204d6e74554d0a28dca3fa53f",
+          "size": 7013
+        },
+        "version": "2026e-r1"
+      }
+    }
+  ],
+  "evidence_artifact": {
+    "id": 12978132447,
+    "sha256": "71724d12d90b5fe3c9c5219c4f140667e13db5fbe0ed117c28cdf5cc8ccfc944"
+  },
+  "limitations": [
+    "No hardware or service validation",
+    "Unknown future version or byte deltas remain review_required",
+    "Frozen inputs do not claim bit-identical rebuilding or patched legacy QuickStart"
+  ],
+  "method": "Only the seven remaining canonical IDs: six source-owned package version advances, and zone.tab matched to both same-build signed package metadata and hash-pinned official IANA 2026e archive. Full API artifact digest and ZIP CRC checked; all 531 APKs in five feeds independently native verified offline. Original hard gates and negative controls retained.",
+  "rootfs_sha256": "459bbdf850bc5bcc63bf8b3ac0aaf066458e8ed4bebaef62df13a3bfb037e264",
+  "run_attempt": 1,
+  "run_id": 41031102553,
+  "schema_version": 1,
+  "source_build_fingerprint": "d8be034a42491faac8fbec526fd155125a5794c5a951a6f0c230c15d8e9e1a94",
+  "source_lock_sha256": "49fe325dbe4bef54fec74ba5e0cd72842c008bde28c76a91cb38f602224e648c",
+  "sources": [
+    {
+      "commit": "4b2b7332896063ef888f34da2187c3cc6f366037",
+      "name": "github.com/4iceg/luci-app-mini-diskmanager",
+      "tree": "582dd233cca4c9744184d960212c5023df4561d7",
+      "tree_hash": "ecc5048fa81a76b5c21d3adebf10303f69068f858d673d2972054481fca41200",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/4iceg/luci-app-mini-diskmanager"
+    },
+    {
+      "commit": "f17cbea85ebcb9071b659ac7bafd2c56a9de7b3c",
+      "name": "github.com/adminchenyu/emmc-health",
+      "tree": "56fb014c256a46a148ad7fc46f6d500d1788c112",
+      "tree_hash": "8ab0cb8f04dd2f16587b090685679edbb61d8354d22d0ed025fa5e42ee7c03fe",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/adminchenyu/emmc-health"
+    },
+    {
+      "commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+      "name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
+      "tree": "32cfde7e4644113871fe4fa00dc7cb2fc8efa4ec",
+      "tree_hash": "82c30f415614bb0f5aafab016250c04b1b7cac3520166dc4ba4e7f99a070da4a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+    },
+    {
+      "commit": "1e8513a69cff32da3dd82c342151cdb4a991c2b7",
+      "name": "github.com/dl12345/luci-app-mwan3",
+      "tree": "fc0ca3f5c2d2755525e7b32352a2187ad603e708",
+      "tree_hash": "e8c7b3b39b49d83870b2340df6af4d3c03490027159470e7061d2299a648dd69",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dl12345/luci-app-mwan3"
+    },
+    {
+      "commit": "cdd4fc56f4de9ccf56d40d6dc04a5b6a4e5a0ae6",
+      "name": "github.com/dl12345/mwan3",
+      "tree": "e4073bd3e1a19bfaa8c703de5440e0363848c00d",
+      "tree_hash": "ce4780c1169705e3ed996be8caeac6e9a95bc88cff461072925d82ca28464d7b",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dl12345/mwan3"
+    },
+    {
+      "commit": "54e90fe61cf52b62e7f3ecfcdb62b9d857f90309",
+      "name": "github.com/dqsq2e2/luci-app-velo5x0-fan",
+      "tree": "4aec6011466d2df5d5aba3f65b7b30c6673d6b85",
+      "tree_hash": "1d00bb74ec63751cb871011dd34c463271b715963cdf831074645827d95bcc89",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/dqsq2e2/luci-app-velo5x0-fan"
+    },
+    {
+      "commit": "a5299ce0144859f47683ec3bc40805bf616f534f",
+      "name": "github.com/eamonxg/luci-app-aurora-config",
+      "tree": "d66801ec3809466630339c686ff2d53ccd58ee8c",
+      "tree_hash": "d1e829a96e3fcd77efcffb933b4ca0b04ef33d4c107f868c11cfbc4626706a81",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/eamonxg/luci-app-aurora-config"
+    },
+    {
+      "commit": "84c27b66952e6fc4be60128067a6b88bfd34afb5",
+      "name": "github.com/eamonxg/luci-theme-aurora",
+      "tree": "798f80558cc056db85106134292596cbf3268236",
+      "tree_hash": "702c34704a5f2f0cfdd8bb6cd997c9a73f36793ad2bdf367b59e11d517e9ba8a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/eamonxg/luci-theme-aurora"
+    },
+    {
+      "commit": "9449a5250c61f1aa8f16b2d8e04a9da25c26e735",
+      "name": "github.com/gdy666/luci-app-lucky",
+      "tree": "8d022a105d52b2f01160bb42fe24850ea27bf345",
+      "tree_hash": "1ef37d635e660e59d6b43fdb661311e01adc14ee447c0a2445c4897f7cccd18b",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/gdy666/luci-app-lucky"
+    },
+    {
+      "commit": "fadaa676104f59ff6ace480a780a258d846d0aec",
+      "name": "github.com/immortalwrt/homeproxy",
+      "tree": "8c64ebf0ce32677e798b31904f7efff2616e1f5c",
+      "tree_hash": "2e01d6a6b86b61a206ccc711f8264b36c986942d5de26ea5a31d89fa3983af1a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/homeproxy"
+    },
+    {
+      "commit": "c84adb975e207ae8b14982191838ec6218d632cd",
+      "name": "github.com/immortalwrt/luci",
+      "tree": "b90ee4741a73e5600bd0594ba49c8cf898fb359f",
+      "tree_hash": "c0cdcbe6250e23308247feb0f6c6150c87b52ce0d01ea06e4a2ba413c9159a83",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/luci"
+    },
+    {
+      "commit": "2dba1dd2af3b447faf52f85c0850a6f9667cac17",
+      "name": "github.com/immortalwrt/packages",
+      "tree": "1cbefa1c134211c6c91eb3e60ceaa36061a0e2e5",
+      "tree_hash": "fe651daa02a43bcd2c698e0ccc69d8a0f86277e56bbf5b98f6180981a9f6757d",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/immortalwrt/packages"
+    },
+    {
+      "commit": "e465f2b6e266210cf1fa910a8e7aa798a28c49d7",
+      "name": "github.com/kenzok8/small-package",
+      "tree": "dd1e09c020e2b510e593985e661ae6f65e4a3c44",
+      "tree_hash": "afdc5066d9fd6b165f53ced5a211071cc1d7b00f3a28620e8db235470794eef1",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/kenzok8/small-package"
+    },
+    {
+      "commit": "a97ace34f2da358a015b094d326bba2697697f2e",
+      "name": "github.com/linkease/istore",
+      "tree": "6b034500168639ffcfb0454dd0c204ef175aa94a",
+      "tree_hash": "3e44a7d5889a297439c2903bbe3111531e444e0d9b579774dfe70d6728611970",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/linkease/istore"
+    },
+    {
+      "commit": "6fd9937954e0b080bf07967182d714ea21fe7eb1",
+      "name": "github.com/lisaac/luci-app-dockerman",
+      "tree": "e4ad2b3f8f68fcbab5b9f666b63c327aff0e96d2",
+      "tree_hash": "82e2eefea9b56194cddb90b06f6b8aca6da965b0bc0cdbe8fc4148f3e10f1778",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/lisaac/luci-app-dockerman"
+    },
+    {
+      "commit": "98a663449208b65e68702ad0f3ad61c536bfa40c",
+      "name": "github.com/lisaac/luci-lib-docker",
+      "tree": "eede4830901f9238b747aa41ecf3da82bcd5c5d3",
+      "tree_hash": "50a92a3ed44cd06542210d21872ed44e0bae9df74108d264e83782393099caa2",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/lisaac/luci-lib-docker"
+    },
+    {
+      "commit": "78e1a751d55ed0762811f054ee699049473da7b8",
+      "name": "github.com/nikkinikki-org/openwrt-nikki",
+      "tree": "89757e00ad3a091c2719b57529713f426c3eff09",
+      "tree_hash": "edf80b27fe362a7c615b4fcd2212ab1ea64ef56b6a649e5d668fb46b43382825",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/nikkinikki-org/openwrt-nikki"
+    },
+    {
+      "commit": "f8eeb3119008ac0e429fc642c125512f9253ec1b",
+      "name": "github.com/nongfah/luci-app-athena-led",
+      "tree": "05ee9a11bf84464fab00b63b8a135cffb3975a78",
+      "tree_hash": "2ec2e78006d2e2680d546385365799d86651a97f00f192692e2f179e08624d0e",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/nongfah/luci-app-athena-led"
+    },
+    {
+      "commit": "997e2f1c97c7fc50f2640480d2e0f46debe364fc",
+      "name": "github.com/openwrt-passwall/openwrt-passwall",
+      "tree": "bcc19d59932345020cb62673f85c3ac69f78d4ea",
+      "tree_hash": "5fa351db879875da1bd1464be9a00c147c0db6f3a18dffba2c693b70d475b3a4",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt-passwall/openwrt-passwall"
+    },
+    {
+      "commit": "48c808034414a2112cf9d5261a20a320e8d0d170",
+      "name": "github.com/openwrt/routing",
+      "tree": "d63de918288422164a548371cf8c1c20f627e5f5",
+      "tree_hash": "e9e8523b0a957b7172044dec6b991af777c64b244a213e43749cf33a3c670bb8",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/routing"
+    },
+    {
+      "commit": "c58ec5a6703966dcccb53d0919698c8aba3a9ef5",
+      "name": "github.com/openwrt/telephony",
+      "tree": "a936b284b85c9133973a00f9582f92aa9a9740a7",
+      "tree_hash": "3c3355898de6b16456e00b0b447a83862e4d1342745764b8d338ea192fc13e38",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/telephony"
+    },
+    {
+      "commit": "094bf58da6682f895255a35a84349a79dab4bf95",
+      "name": "github.com/openwrt/video",
+      "tree": "b6c9524578cd1b1ae16cf3ab02ceb797cabbc36d",
+      "tree_hash": "4c49bd7b3d9c77da390cc62fb5d49b37115463d933587aa4a085a689792a1de2",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/openwrt/video"
+    },
+    {
+      "commit": "581e5e816d92d3a663b1b2e331e3f21685968cf1",
+      "name": "github.com/pymumu/luci-app-smartdns",
+      "tree": "87e1b80f097689ed7125ab3aff3e2887b90d428a",
+      "tree_hash": "89971e41b6afd086e5153a88ffdc3d43c98bd8210e4d00f945e3ecfa1ab2d570",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/pymumu/luci-app-smartdns"
+    },
+    {
+      "commit": "dbdd91ab8ac8b079b6a3ca1a48d99e970d17111b",
+      "name": "github.com/sbwml/luci-app-mosdns",
+      "tree": "c9a3175f90c854b6d0cabda3859bb8882da68c3c",
+      "tree_hash": "4de001963b7ffa86c33c27786fd259f2b41e2bb9739d146de46d05634b21606a",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-app-mosdns"
+    },
+    {
+      "commit": "ef2ca5d16ad1156539930d8763c3069f6ac4eb12",
+      "name": "github.com/sbwml/luci-app-quickfile",
+      "tree": "1d33b982480149662e857dc44890b43ae0d0182b",
+      "tree_hash": "f44e37634f9b71d311aaf3b03f0946c4ebfb863d4620d1b45d78fd609f119f1d",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-app-quickfile"
+    },
+    {
+      "commit": "4b8b7849551c558ec905c40b0ebb864641c9fa32",
+      "name": "github.com/sbwml/luci-theme-argon",
+      "tree": "9bff6b894e852c1ca9c46a0fd5bb10e6e4efe251",
+      "tree_hash": "e8f4ffe52d78154fe88c0cc0dbdb72d9f0f4f27efafb7a814149321d1eb08f27",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sbwml/luci-theme-argon"
+    },
+    {
+      "commit": "52b82003a9392fb2692662bb702d5610ce9ec505",
+      "name": "github.com/sirpdboy/luci-app-timecontrol",
+      "tree": "85d8d98fd8ca2c5bd38147d456423a61d1bd8ad4",
+      "tree_hash": "da813078fd3ff6a0bec6e67467f7ab151c90f5b5842136f8f4debcb8c51f4655",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/sirpdboy/luci-app-timecontrol"
+    },
+    {
+      "commit": "108369b8da05f01296a3ed0210a2ab60809712e5",
+      "name": "github.com/timsaya/luci-app-bandix",
+      "tree": "3393a5807691fd271acbe4481f2441f24c1dac5b",
+      "tree_hash": "f56b58323c74fc74c6e2b793c79c8f6e1bb6e90a502988164132f43e79ffc6c7",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/timsaya/luci-app-bandix"
+    },
+    {
+      "commit": "0760d1f5b52d1a2317dfd171ab00fe6543a9a0c4",
+      "name": "github.com/timsaya/openwrt-bandix",
+      "tree": "ec380a85b03384ad9e415c07dc64b28013238452",
+      "tree_hash": "fe3838859d0a2fac51c17be5307897d51d46a2b93c520cb7fe7876a794a31ae9",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/timsaya/openwrt-bandix"
+    },
+    {
+      "commit": "e0e429b94a3f49d97f94994b0126d6aad119e5fe",
+      "name": "github.com/vikingyfy/packages",
+      "tree": "2b477f7f32ee2f472916959efc42c160b7c86d81",
+      "tree_hash": "1418fa32392ff301e8a658a6bc1800f23a41a7fc3bd39a26661c1b0430df9d76",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/vikingyfy/packages"
+    },
+    {
+      "commit": "b4a7fa1dba3ffe0c9cb17ab32c492277007cd660",
+      "name": "github.com/zqinking/openwrt-smartdns",
+      "tree": "7070ae44fe0ee6360ddeca340e50ec83bdc8e880",
+      "tree_hash": "3526a52d4ab726671a896a0f9a724a84a9003d48b8754d87b1c94909244e63a8",
+      "tree_hash_method": "SHA256 of recursive Git tree listing (paths, modes, content object IDs); prepared modifications separately hashed",
+      "url": "https://github.com/zqinking/openwrt-smartdns"
+    }
+  ],
+  "wrapper_commit": "c9535b1e411ec10f8aa792e521bb8c63b14a10a8"
+}

@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
@@ -234,6 +235,25 @@ def verify_upstream_resolution(root, expected_commit):
     return evidence
 
 
+def verify_fixed_bundle(root, upstream_commit):
+    import fixed_inputs
+    root = Path(root)
+    captured = root / "provenance/fixed/manifest.json"
+    expected = os.environ.get("S20P_FIXED_INPUTS")
+    if not captured.exists() and not expected:
+        return None
+    # A fixed publication must bind captured bytes to the reviewed wrapper
+    # snapshot, not merely to a self-consistent manifest inside the artifact.
+    expected = Path(expected) if expected else Path(__file__).parent / "fixed/20261030/manifest.json"
+    value = fixed_inputs.load(expected)
+    fixed_inputs.verify(captured, upstream_commit, root / "provenance/component-resolution.json")
+    if captured.read_bytes() != expected.read_bytes():
+        raise ValueError("captured fixed manifest differs from reviewed snapshot")
+    fixed_inputs.verify_http(captured, root / "provenance/http-inputs.jsonl")
+    return {"manifest_sha256": sha256_file(expected), "source_run": value["source_run"],
+            "component_fingerprint": value["components"]["fingerprint"]}
+
+
 def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_commit):
     root = Path(root)
     build = read_json(root, "reports/build-status.json")
@@ -376,6 +396,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     if len(images) != 1 or images[0] != image_path:
         raise ValueError("bundle must contain exactly one captured S20P sysupgrade image")
     return {
+        "fixed_inputs": verify_fixed_bundle(root, upstream_commit),
         "image_path": image,
         "image_sha256": sha256_file(image_path),
         "kernel_abi": kernel["version"],
@@ -517,6 +538,14 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
 
 {security_exception_notice(verified['go_security']) or 'No legacy prebuilt exception is present in this image Go inventory.'}
 """
+    if verified["fixed_inputs"]:
+        guide = guide.replace("rolling 25.12 prerelease candidate", "fixed-source 25.12 prerelease candidate").replace(
+            "It is a rolling prerelease candidate", "It is a fixed-source prerelease candidate")
+        guide += ("\n## Fixed inputs\n\nSystem, plugin/feed and security inputs are frozen to source run "
+                  + verified["fixed_inputs"]["source_run"] + ". Manifest SHA256: `"
+                  + verified["fixed_inputs"]["manifest_sha256"]
+                  + "`. The same-build archive includes the manifest and reviewed wrapper HTTP bytes. "
+                  "Runner tools are not bit-for-bit frozen; this does not claim reproducible binary output.\n")
     (output / "INSTALLATION.md").write_text(guide)
     metadata = {
         "schema_version": 1,
@@ -528,6 +557,7 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
         "source_lock_sha256": verified["source_lock_sha256"],
         "public_key_sha256": verified["public_key_sha256"],
         "go_security": verified["go_security"],
+        "fixed_inputs": verified["fixed_inputs"],
         "live_acceptance": "not-run", "stable_eligible": False,
     }
     (output / "BUILD-VERIFICATION.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
@@ -564,6 +594,7 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
             metadata.get("image_sha256") != verified["image_sha256"] or
             metadata.get("upstream_commit") != upstream_commit or
             metadata.get("go_security") != verified["go_security"] or
+            metadata.get("fixed_inputs") != verified["fixed_inputs"] or
             metadata.get("live_acceptance") != "not-run" or metadata.get("stable_eligible") is not False):
         raise ValueError("release build verification record does not match exact candidate")
     guide = (output / "INSTALLATION.md").read_text()

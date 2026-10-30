@@ -2335,6 +2335,34 @@
     {
       "id": "59869afdcbbdd83f475617736d5b05a15a6534f76c13e66e992cc978d525dd07",
       "reason": "Exact daily component delta from run 40996021264; source recipe plus independently verified signed APK metadata and image payload reviewed in ci/reviewed-differences/daily-components-40996021264.json."
+    },
+    {
+      "id": "f5004236451d63e7602e9d0c1ebd140bb8b0d058ba51ecb4acdc9a7e1515af06",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "392d731698afaaf1f903b11317c7d66f874b1a46b7f8aa1ef8340a25848bbe5c",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "4e3061ff9bcdd47295d247e2b28e4e4c2b75d4419cfcaa88249c2afc126be17b",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "bda8410a4dc81230c7ac54639138844c8944c6423fced0534503b46c85ab5250",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "eadf93e6032706ea66171af2f5fa9666be31281a492b153fb1cd097d2d1defc4",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "1f2d958dfde6138bb7484e2d63d4b0217d31665d3699a3a11a2ab5bf148497d3",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "a52b837b3dca7db924aefb71692d703aaa2ae3b70327a6a4ed893ac3a45efa23",
+      "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
     }
   ],
   "schema_version": 1

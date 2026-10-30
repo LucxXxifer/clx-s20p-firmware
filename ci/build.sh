@@ -12,6 +12,7 @@ export S20P_SOURCE_LOCK="${S20P_SOURCE_LOCK:-$repo/ci/sources.lock.json}"
 export S20P_UPSTREAM_EVIDENCE="${S20P_UPSTREAM_EVIDENCE:-}"
 export S20P_UPSTREAM_COMMIT="${S20P_UPSTREAM_COMMIT:-}"
 export S20P_COMPONENT_INPUTS="${S20P_COMPONENT_INPUTS:-}"
+export S20P_FIXED_INPUTS="${S20P_FIXED_INPUTS:-}"
 export S20P_GIT_LOG="$S20P_CAPTURE_DIR/provenance/git-clones.jsonl"
 export S20P_HTTP_LOG="$S20P_CAPTURE_DIR/provenance/http-inputs.jsonl"
 export S20P_BUILD_LOG="$S20P_CAPTURE_DIR/logs/build.log"
@@ -64,6 +65,11 @@ if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
     }
 fi
 export S20P_UPSTREAM_COMMIT="$locked_upstream"
+if [[ -n $S20P_FIXED_INPUTS ]]; then
+    python3 ci/fixed_inputs.py verify "$S20P_FIXED_INPUTS" \
+        --head "$locked_upstream" --components "$S20P_COMPONENT_INPUTS" \
+        --capture "$S20P_CAPTURE_DIR/provenance/fixed"
+fi
 # The parent wrapper's pre-clone and build share these exported lock variables.
 set +e
 (
@@ -85,6 +91,11 @@ fi
     echo 'Build did not produce the required pre-clean capture.' >&2; exit 1;
 }
 verify_runtime_inputs
+if [[ -n $S20P_FIXED_INPUTS ]]; then
+    python3 ci/fixed_inputs.py verify "$S20P_FIXED_INPUTS" \
+        --head "$locked_upstream" --components "$S20P_COMPONENT_INPUTS"
+    python3 ci/fixed_inputs.py verify-http "$S20P_FIXED_INPUTS" --log "$S20P_HTTP_LOG"
+fi
 python3 ci/dashboard.py inspect \
     --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
     --output output/reports/dashboard.json

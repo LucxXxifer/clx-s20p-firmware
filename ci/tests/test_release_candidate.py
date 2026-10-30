@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import stat
@@ -65,6 +66,47 @@ class ReleaseCandidateTests(unittest.TestCase):
             self.output, run_id="1234", run_attempt="2", build_commit=TEST_WRAPPER_COMMIT,
             upstream_commit=release.UPSTREAM_BASE_COMMIT,
         )["pass"])
+
+    def test_fixed_release_requires_exact_captured_manifest_inputs_and_http_coverage(self):
+        from test_fixed_inputs import fixture
+        frozen = self.root / 'frozen'
+        frozen.mkdir()
+        manifest_path, manifest = fixture(frozen)
+        provenance = self.root / 'bundle/provenance'
+        provenance.mkdir(parents=True)
+        shutil.copytree(frozen, provenance / 'fixed')
+        shutil.copyfile(frozen / 'components.json', provenance / 'component-resolution.json')
+        (provenance / 'http-inputs.jsonl').write_text(json.dumps({
+            'urls': [manifest['http_inputs'][0]['url']], 'exit_code': 0,
+            'stdout_sha256': manifest['http_inputs'][0]['sha256']}) + '\n')
+        with patch.dict(os.environ, {'S20P_FIXED_INPUTS': str(manifest_path)}):
+            result = release.verify_fixed_bundle(provenance.parent, manifest['upstream_commit'])
+            self.assertEqual(result['source_run'], manifest['source_run'])
+            (provenance / 'fixed/payload').write_bytes(b'wrong')
+            with self.assertRaises(ValueError):
+                release.verify_fixed_bundle(provenance.parent, manifest['upstream_commit'])
+            shutil.rmtree(provenance / 'fixed')
+            with self.assertRaises(ValueError):
+                release.verify_fixed_bundle(provenance.parent, manifest['upstream_commit'])
+
+    def test_fixed_release_metadata_and_installation_guide_remain_explicit(self):
+        from test_fixed_inputs import fixture
+        frozen = self.root / 'frozen'
+        frozen.mkdir()
+        path, manifest = fixture(frozen)
+        extras = {'provenance/fixed/' + p.name: p.read_bytes() for p in frozen.iterdir()}
+        extras['provenance/component-resolution.json'] = (frozen / 'components.json').read_bytes()
+        extras['provenance/http-inputs.jsonl'] = json_bytes({
+            'urls': [manifest['http_inputs'][0]['url']], 'exit_code': 0,
+            'stdout_sha256': manifest['http_inputs'][0]['sha256']})
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, extra_files=extras)
+        with patch.dict(os.environ, {'S20P_FIXED_INPUTS': str(path)}):
+            result = self.prepare()
+            guide = (self.output / 'INSTALLATION.md').read_text()
+            self.assertIn('fixed-source prerelease candidate', guide)
+            self.assertIn('not a stable release', guide)
+            self.assertIn(manifest['source_run'], guide)
+            self.assertEqual(result['verified']['fixed_inputs']['source_run'], manifest['source_run'])
 
     def test_rejects_a_bundle_from_another_wrapper_commit(self):
         release_fixture(self.artifact, commit="a" * 40)
@@ -352,7 +394,7 @@ def add_legacy_quickstart(report):
 def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                     upstream_commit=None, preservation_status="pass", signed_feed_status="pass",
                     package_count_delta=0, include_lucky=False, unsafe_member=None,
-                    unsafe_member_type=None, payload_mismatch=False, wrong_public_key_hash=False):
+                    unsafe_member_type=None, payload_mismatch=False, wrong_public_key_hash=False, extra_files=None):
     """Build a same-shape archive with integrity and acceptance records."""
     packages = [
         {"name": "kernel", "version": TEST_KERNEL_ABI},
@@ -481,6 +523,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
 
     if extra_image:
         files["bin/targets/mediatek/filogic/clx_s20p-extra-sysupgrade.bin"] = b"second-image"
+    files.update(extra_files or {})
     build = artifact / "fixture"
     for name, data in files.items():
         path = build / name

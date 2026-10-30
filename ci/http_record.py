@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Record public wrapper HTTP inputs without changing stdout or payload bytes.
 
-This is provenance, not a claim that mutable release APIs are frozen. Recipe
-hash validation and the image difference gate remain mandatory.
+Rolling mode records network responses. Fixed mode replays only reviewed GET
+payloads and rejects unknown commands/URLs. Recipe and image gates still apply.
 """
 import hashlib
 import json
@@ -31,15 +31,40 @@ def run(log, command):
             output = arg.split("=", 1)[1]
         elif command[0] == "wget" and arg.startswith("-qO"):
             output = arg[3:]
+    fixed = os.environ.get("S20P_FIXED_INPUTS")
     with tempfile.TemporaryFile() as stdout:
-        result = subprocess.run(command, stdout=stdout, check=False)
+        if fixed:
+            from fixed_inputs import load, payload
+            value = load(fixed)
+            # Only the exact public GET forms used by this reviewed wrapper.
+            # Do not ignore unknown flags or fall back to a mutable download.
+            get = command[:]
+            if get[:6] == ["curl", "--retry", "3", "--retry-delay", "2", "--retry-all-errors"]:
+                get = ["curl", *get[6:]]
+            elif get[:3] == ["wget", "--tries=3", "--waitretry=2"]:
+                get = ["wget", *get[3:]]
+            file_get = len(get) == 5 and get[:3] == ["curl", "-fsSL", "-o"] and get[3] != "-"
+            stdout_get = len(get) == 3 and get[:2] == ["wget", "-qO-"]
+            if not (file_get or stdout_get) or urls != [command[-1]]:
+                raise ValueError("unreviewed fixed HTTP command")
+            matches = [row for row in value["http_inputs"] if row["url"] == command[-1]]
+            if len(matches) != 1:
+                raise ValueError("unreviewed fixed HTTP URL")
+            data = payload(Path(fixed).parent, matches[0])
+            if file_get:
+                Path(output).write_bytes(data)
+            else:
+                stdout.write(data)
+            returncode = 0
+        else:
+            returncode = subprocess.run(command, stdout=stdout, check=False).returncode
         stdout.seek(0)
         digest = hashlib.sha256()
         while chunk := stdout.read(1024 * 1024):
             digest.update(chunk)
             sys.stdout.buffer.write(chunk)
         sys.stdout.buffer.flush()
-    entry = {"urls": urls, "exit_code": result.returncode,
+    entry = {"urls": urls, "exit_code": returncode,
              "stdout_sha256": digest.hexdigest()}
     if output and output != "-" and Path(output).is_file():
         digest = hashlib.sha256()
@@ -51,7 +76,7 @@ def run(log, command):
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("a") as handle:
         handle.write(json.dumps(entry, sort_keys=True) + "\n")
-    return result.returncode
+    return returncode
 
 
 if __name__ == "__main__":

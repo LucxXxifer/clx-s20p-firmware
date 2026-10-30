@@ -123,6 +123,40 @@ class DailyWorkflowTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Run workflow with force=true', result.stderr)
 
+    def test_fixed_dispatch_uses_snapshot_without_resolving_mutable_heads(self):
+        shell = textwrap.dedent(self.text.split('id: resolve', 1)[1].split('run: |\n', 1)[1]
+                                .split('\n      - name:', 1)[0])
+        repo = WORKFLOW.parents[2]
+        manifest = json.loads((repo / 'ci/fixed/20261030/manifest.json').read_text())
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            gh = root / 'gh'
+            gh.write_text('#!' + sys.executable + '\n' + textwrap.dedent('''\
+                import json, sys
+                path = sys.argv[2]
+                if '/compare/' in path:
+                    base, head = path.split('/compare/')[1].split('...')
+                    print(json.dumps({'status': 'identical', 'merge_base_commit': {'sha': base}}))
+                elif '/actions/workflows/' in path:
+                    sys.exit(1)
+                else:
+                    raise SystemExit('unexpected mutable request: ' + path)
+                '''))
+            gh.chmod(0o755)
+            result = subprocess.run(['bash', '-c', shell], cwd=repo, capture_output=True, text=True,
+                                    env={**os.environ, 'PATH': str(root) + os.pathsep + os.environ['PATH'],
+                                         'FIXED': 'true', 'FORCE': 'true', 'GITHUB_RUN_ATTEMPT': '1',
+                                         'GITHUB_WORKSPACE': str(repo), 'RUNNER_TEMP': str(root),
+                                         'GITHUB_REPOSITORY': 'test/firmware', 'GITHUB_SHA': 'c' * 40,
+                                         'GITHUB_RUN_ID': '42', 'GITHUB_OUTPUT': str(root / 'outputs'),
+                                         'UPSTREAM_REPOSITORY': 'chasey-dev/immortalwrt-mt798x-rebase',
+                                         'UPSTREAM_REF': '25.12', 'UPSTREAM_BASE': manifest['upstream_commit']})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('fixed=true', (root / 'outputs').read_text())
+            self.assertIn('should_build=true', (root / 'outputs').read_text())
+            self.assertEqual((root / 's20p-components.json').read_bytes(),
+                             (repo / 'ci/fixed/20261030/components.json').read_bytes())
+
     def test_build_state_marks_only_an_executed_build_as_attempted(self):
         record = self.text.split("- name: Record exact run state", 1)[1].split("- name: Upload exact run state", 1)[0]
         self.assertIn("steps.build.outputs.build_started", record)

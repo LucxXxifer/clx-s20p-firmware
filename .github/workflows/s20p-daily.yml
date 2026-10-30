@@ -1,5 +1,5 @@
 name: S20P rolling A 25.12 candidate
-run-name: S20P rolling A 25.12 · ${{ github.run_number }}
+run-name: S20P ${{ inputs.fixed == true && 'fixed' || 'rolling' }} A 25.12 · ${{ github.run_number }}
 
 on:
   schedule:
@@ -7,6 +7,11 @@ on:
     - cron: '20 20 * * *'
   workflow_dispatch:
     inputs:
+      fixed:
+        description: Build the reviewed 20261030 source snapshot instead of resolving newer inputs
+        required: false
+        default: false
+        type: boolean
       force:
         description: Retry the exact current upstream head even if the last attempt was recorded
         required: false
@@ -35,6 +40,7 @@ jobs:
       artifact_digest: ${{ steps.upload_candidate.outputs.artifact-digest }}
       upstream_commit: ${{ steps.resolve.outputs.upstream_commit }}
       should_build: ${{ steps.resolve.outputs.should_build }}
+      fixed: ${{ steps.resolve.outputs.fixed }}
     steps:
       - name: Checkout rolling build policy
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -46,13 +52,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           FORCE: ${{ (github.event_name == 'workflow_dispatch' && inputs.force == true) && 'true' || 'false' }}
+          FIXED: ${{ (github.event_name == 'workflow_dispatch' && inputs.fixed == true) && 'true' || 'false' }}
         run: |
           set -euo pipefail
           [[ $GITHUB_RUN_ATTEMPT == 1 ]] || {
             echo 'Use Run workflow with force=true for a retry; Actions reruns reuse an older run identity.' >&2
             exit 1
           }
-          head=$(gh api "repos/${UPSTREAM_REPOSITORY}/git/ref/heads/${UPSTREAM_REF}" --jq '.object.sha')
+          fixed_manifest=''
+          if [[ ${FIXED:-false} == true ]]; then
+            fixed_manifest="$GITHUB_WORKSPACE/ci/fixed/20261030/manifest.json"
+            selected=$(python3 ci/fixed_inputs.py select "$fixed_manifest" --output "$RUNNER_TEMP/s20p-components.json")
+            head=$(jq -er '.upstream_commit' <<<"$selected")
+          else
+            head=$(gh api "repos/${UPSTREAM_REPOSITORY}/git/ref/heads/${UPSTREAM_REF}" --jq '.object.sha')
+          fi
           compare=$(gh api "repos/${UPSTREAM_REPOSITORY}/compare/${UPSTREAM_BASE}...${head}")
           status=$(jq -er '.status' <<<"$compare")
           merge_base=$(jq -er '.merge_base_commit.sha' <<<"$compare")
@@ -116,11 +130,17 @@ jobs:
             fi
           done <<<"$previous_runs"
 
-          component_args=(resolve --output "$RUNNER_TEMP/s20p-components.json")
-          if [[ -n $previous_state ]]; then
-            component_args+=(--previous-state "$previous_state" --wrapper-commit "$GITHUB_SHA")
+          if [[ ${FIXED:-false} == true ]]; then
+            # An explicit reviewed snapshot may predate rolling state. Its
+            # immutable manifest and normal base-ancestry checks bind the inputs.
+            previous_state=''
+          else
+            component_args=(resolve --output "$RUNNER_TEMP/s20p-components.json")
+            if [[ -n $previous_state ]]; then
+              component_args+=(--previous-state "$previous_state" --wrapper-commit "$GITHUB_SHA")
+            fi
+            python3 ci/components.py "${component_args[@]}"
           fi
-          python3 ci/components.py "${component_args[@]}"
 
           prepare_args=(
             prepare --lock ci/sources.lock.json --baseline ci/baseline
@@ -142,6 +162,8 @@ jobs:
           fi
           result=$(python3 ci/upstream_sync.py "${prepare_args[@]}")
           {
+            echo "fixed=${FIXED:-false}"
+            echo "fixed_manifest=$fixed_manifest"
             echo "upstream_commit=$(jq -er '.upstream_commit' <<<"$result")"
             echo "should_build=$(jq -er '.should_build' <<<"$result")"
             echo "previous_attempted=$(jq -er '.previous_attempted' <<<"$result")"
@@ -176,6 +198,7 @@ jobs:
           S20P_UPSTREAM_EVIDENCE: ${{ steps.resolve.outputs.inputs_dir }}/upstream-resolution.json
           S20P_UPSTREAM_COMMIT: ${{ steps.resolve.outputs.upstream_commit }}
           S20P_COMPONENT_INPUTS: ${{ steps.resolve.outputs.inputs_dir }}/component-resolution.json
+          S20P_FIXED_INPUTS: ${{ steps.resolve.outputs.fixed_manifest }}
         run: |
           echo 'build_started=true' >> "$GITHUB_OUTPUT"
           bash ci/build.sh
@@ -284,6 +307,7 @@ jobs:
           GH_BUILD_COMMIT: ${{ github.sha }}
           GH_UPSTREAM_COMMIT: ${{ needs.build.outputs.upstream_commit }}
           GH_EXPECTED_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+          S20P_FIXED_INPUTS: ${{ needs.build.outputs.fixed == 'true' && format('{0}/ci/fixed/20261030/manifest.json', github.workspace) || '' }}
         run: |
           set -euo pipefail
           artifact_name="s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
@@ -320,22 +344,34 @@ jobs:
           GH_RUN_ATTEMPT: ${{ github.run_attempt }}
           GH_BUILD_COMMIT: ${{ github.sha }}
           GH_UPSTREAM_COMMIT: ${{ needs.build.outputs.upstream_commit }}
+          GH_FIXED: ${{ needs.build.outputs.fixed }}
         run: |
           set -euo pipefail
           assets_dir=$(cat "$RUNNER_TEMP/s20p-a-assets-dir")
           (cd "$assets_dir" && sha256sum -c SHA256SUMS)
           tag="s20p-a-25.12-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}-${GH_UPSTREAM_COMMIT:0:8}"
+          title="S20P rolling A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
+          if [[ $GH_FIXED == true ]]; then
+            tag="s20p-a-25.12-fixed-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}-${GH_UPSTREAM_COMMIT:0:8}"
+            title="S20P fixed A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
+          fi
           cat > release-notes.md <<NOTES
-          S20P rolling A 25.12 prerelease candidate.
+          ${title}.
 
           Upstream commit: ${GH_UPSTREAM_COMMIT}
           Wrapper commit: ${GH_BUILD_COMMIT}
           The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, scoped Go x509 and preservation checks. The verified installation guide below discloses the exact Go security status and all retained unpatched prebuilts. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
           NOTES
+          if [[ $GH_FIXED == true ]]; then
+            cat >> release-notes.md <<'FIXED_NOTES'
+
+          Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs are frozen to the reviewed run 41031102553 snapshot (ci/fixed/20261030/manifest.json). The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. This immutable candidate still requires hardware acceptance before stable use.
+          FIXED_NOTES
+          fi
           cat "$assets_dir/INSTALLATION.md" >> release-notes.md
           shopt -s nullglob
           assets=("$assets_dir"/*)
           [[ ${#assets[@]} == 6 ]]
           gh release create "$tag" "${assets[@]}" --target "$GH_BUILD_COMMIT" \
-            --title "S20P rolling A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}" \
+            --title "$title" \
             --notes-file release-notes.md --prerelease --latest=false

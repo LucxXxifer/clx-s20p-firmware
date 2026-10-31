@@ -1,6 +1,8 @@
 # CLX-S20P 主線韌體每日編譯
 
-目前正式下載入口為[CLX-S20P 主線韌體 2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、成品與驗證資料保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
+目前正式下載入口為[CLX-S20P 主線韌體 2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、映像內容與同批封存保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
+
+三個已發布版本的 `.bin` 下載檔名統一為 `clx-s20p-<upstream8>-<YYYYMMDD>-sysupgrade.bin`，日期採 Asia/Shanghai 發布日；最新檔名為 `clx-s20p-9f397975-20261031-sysupgrade.bin`。此調整只變更下載名稱及配套清單／說明，映像 SHA256 與原始 run 證據不變，不需重新編譯。
 
 新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart、5 份 wrapper HTTP 輸入及 Debian Snapshot CA 原始封存。封存 SHA256 必須與固定 CA recipe 的上游 `PKG_HASH` 一致，並核對 Snapshot SHA-1 內容位址；固定建置會將同一封存放入 OpenWrt `dl/` 快取，避免 Debian pool 原 URL 下架後編譯階段再次下載失敗。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
 
@@ -9,6 +11,8 @@
 2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，移除 Honk／TingReader，暫不預裝 AdGuard Home，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
 保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。每日會追蹤 QuickStart 更新，新版修補後可通過；不同 bytes 的未修補新版會阻擋發佈，不會擴張舊例外。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。
+
+2026-10-31 官方來源複核更正了「未找到可公開重編 QuickStart 後端」的舊結論：已確認 iStoreOS 官方 MIT source，且 ARM64 靜態交叉編譯通過 Go 1.26.10 與 x509 檢查；尚未整合現有 LuCI／dashboard/API、build gates 或實機驗收，該 source 也未納入每日 resolver。較新的 app-hub 測試預編譯仍不符合 Go／SPKI 門檻。這項研究不改變目前固定映像的精確例外與建置門檻，詳見 [2026-10-31 研究更正](docs/SECURITY-BUILD.md#2026-10-31-官方來源複核與更正)。
 
 GitHub `main` 每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，並追蹤 `ci/plugin_sources.py` 選出的 31 個插件／feed 來源。保留原相容分支，使用完整 commit 及 GitHub compare 證明來源前進，拒絕倒退／分叉。原 patches、Docker nftables、MTK Wi-Fi、HNAT/WARP/eQoS/TurboACC 和共用 BPF/BTF 配置仍受原驗收門檻保護。
 

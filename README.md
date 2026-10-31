@@ -12,7 +12,7 @@
 | 上一個成功版 · 2026-10-30 | [歷史 Release 與完整成品](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975) · run `40893380461` |
 | 10/17 歷史固定版 | [原始 Release 與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) · [固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17) |
 
-最新版本按維護者決定正式發布並設為 Latest。現行名稱統一為「CLX-S20P 主線韌體」；既有檔名／tag 中的 `A`、`a`、`candidate` 及同批驗證資料保留建置當時的身分，來源、成品與校驗碼保持不變。
+最新版本按維護者決定正式發布並設為 Latest。現行名稱統一為「CLX-S20P 主線韌體」；三個已發布版本的 `.bin` 下載檔名採 `clx-s20p-<upstream8>-<YYYYMMDD>-sysupgrade.bin`，日期為 Asia/Shanghai 發布日。改名不需重新編譯，映像內容與 SHA256 不變，下載清單與說明同步更新；原始 tag、run 與同批封存保留建置時的識別。
 
 ## 最新正式版內容與驗證範圍
 
@@ -23,7 +23,7 @@
 
 ## 下載校驗與升級
 
-最新正式版的韌體檔為 `s20p-A-25.12-9f397975-sysupgrade.bin`，SHA256：
+最新正式版的韌體檔為 `clx-s20p-9f397975-20261031-sysupgrade.bin`，SHA256：
 
 ```text
 40a26abc68162b86afd7fd5a001518caa7c25c084ee18554140d245e6590bff3
@@ -38,7 +38,7 @@ shasum -a 256 -c SHA256SUMS
 sha256sum -c SHA256SUMS
 ```
 
-`SHA256SUMS` 列出其餘五個檔案；只下載 `.bin` 時，改用 `shasum -a 256 s20p-A-25.12-9f397975-sysupgrade.bin` 並比對上方雜湊。保留同一 run 的 `s20p-samebuild-*.tar.gz`，安裝 kmod／補充套件時使用其中相符 ABI 與簽章的套件源。
+`SHA256SUMS` 列出其餘五個檔案；只下載 `.bin` 時，改用 `shasum -a 256 clx-s20p-9f397975-20261031-sysupgrade.bin` 並比對上方雜湊。保留同一 run 的 `s20p-samebuild-*.tar.gz`，安裝 kmod／補充套件時使用其中相符 ABI 與簽章的套件源。
 
 OpenWrt 升級入口為 LuCI「系統 → 備份／升級」。先依[備份與還原流程](skills/clx-s20p-provisioning/references/openwrt-backup-restore.md)核對來源／目標的板型、分區、套件系統及設定相容性，再選擇保留設定或乾淨安裝。LuCI 設定備份不會重裝插件程式，插件資料與身分需另外備份及逐項還原。
 

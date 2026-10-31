@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify and prepare directly downloadable assets for one exact B Actions run."""
+"""Verify and prepare mainline release assets for one exact CLX-S20P Actions run."""
 
 import argparse
 import hashlib
@@ -508,7 +508,7 @@ def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, bui
         shutil.copyfile(archive, output / archive_name)
         (output / "archive.SHA256SUMS").write_text(
             f"{sha256_file(output / archive_name)}  {archive_name}\n")
-    guide = f"""# S20P A rolling 25.12 prerelease candidate
+    guide = f"""# CLX-S20P 主線韌體 · rolling 25.12 prerelease candidate
 
 This is a directly flashable S20P sysupgrade image from GitHub Actions run {run_id} (attempt {run_attempt}), wrapper commit `{build_commit}`, resolved upstream commit `{upstream_commit}`. It is a rolling prerelease candidate, not a stable release. Hardware boot and migration have not been validated.
 

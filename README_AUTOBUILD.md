@@ -1,6 +1,6 @@
-# CLX-S20P 每日上游候選編譯
+# CLX-S20P 主線韌體每日編譯
 
-目前正式下載入口為[2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、成品與驗證資料保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
+目前正式下載入口為[CLX-S20P 主線韌體 2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、成品與驗證資料保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
 
 新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart、5 份 wrapper HTTP 輸入及 Debian Snapshot CA 原始封存。封存 SHA256 必須與固定 CA recipe 的上游 `PKG_HASH` 一致，並核對 Snapshot SHA-1 內容位址；固定建置會將同一封存放入 OpenWrt `dl/` 快取，避免 Debian pool 原 URL 下架後編譯階段再次下載失敗。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
 
@@ -23,13 +23,13 @@ GitHub `main` 每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，
 
 Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發 S20P 重編；仍有其他已選套件的共用 feed 繼續追蹤。Docker 容器內的應用映像不屬於韌體套件更新；路由器上自行安裝的軟體也不會被此 workflow 遠端自動更新。
 
-保留下載版本為最新固定正式版、[上一個成功版 run 40893380461](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975)及 [A 10/17 歷史固定版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。2026-10-31 清理其他舊 release，保留來源 tags 與 Actions 執行記錄；失敗／取消建置的附件一併清理。每日 workflow 仍只自動發布 prerelease，不會改寫正式固定版或自動刷機；未審查差異繼續阻止發布。
+保留下載版本為最新固定正式版、[上一個成功版 run 40893380461](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975)及 [10/17 歷史固定版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。2026-10-31 清理其他舊 release，保留來源 tags 與 Actions 執行記錄；失敗／取消建置的附件一併清理。每日 workflow 仍只自動發布 prerelease，不會改寫正式固定版或自動刷機；未審查差異繼續阻止發布。
 
 最新固定版已完成實際編譯與獨立離線驗收：488 個已安裝套件、531 APK、5 個簽章套件源、153 個同 ABI kmods、28 個 USB/mobile 可選包，以及 ROM、API digest、ZIP CRC、內外校驗碼、面板與安全檢查均通過。核對完整 `SHA256SUMS` 時，需先把該 release 的六個 assets 下載到同一目錄；只下載 `.bin` 會回報其他檔案缺失。成品驗證不代替實機刷入驗收。
 
-既有 A build 的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。新 rolling 流程由固定 B 初始基準 `9f397975...` 逐次前進；每個 artifact、repository signing key、kernel ABI 及同批套件 feed 均只屬於自己的 run，不能套用 A 或其他候選的值。歷史 source 差異、CA 安全移除門檻及驗證要求見 [source transition record](docs/SOURCE-TRANSITION-B.md)。
+10/17 歷史固定版的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。主線每日編譯由已審查初始基準 `9f397975...` 逐次前進；每個 artifact、repository signing key、kernel ABI 及同批套件 feed 均只屬於自己的 run，不能套用歷史版或其他候選的值。歷史 source 差異、CA 安全移除門檻及驗證要求見 [source transition record](docs/SOURCE-TRANSITION-B.md)。
 
-原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保存已審查的初始輸入；Actions 只在 runner 暫存目錄產生本次上游 SHA 的 lock 和基線，避免提交動態 lock 或變更受審基線。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用 A 或其他 run 的值。
+原作者沒有保留完整 feeds、動態資產和環境 lock，因此無法承諾與原 ROM 位元一致。`ci/sources.lock.json` 保存已審查的初始輸入；Actions 只在 runner 暫存目錄產生本次上游 SHA 的 lock 和基線，避免提交動態 lock 或變更受審基線。kernel ABI、build fingerprint 及 repository signing key 依實際建置產生，絕不套用其他 run 的值。
 
 ## 觸發方式
 

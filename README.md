@@ -1,6 +1,6 @@
-# CLX-S20P 韌體、刷機與備份還原
+# CLX-S20P 主線韌體
 
-本倉庫維護 **CLX-S20P（AX6000 Wi-Fi）** 的 ImmortalWrt 25.12 韌體、GitHub Actions 編譯，以及首次刷機／OpenWrt 升級還原的 Codex skill。建置設定為 `S20P-WIFI-YES`，映像板型為 `clx,s20p`。
+本倉庫維護 **CLX-S20P 主線韌體**，基於 ImmortalWrt 25.12，保留 AX6000 Wi-Fi，並提供 GitHub Actions 編譯與刷機／備份還原指引。僅發布 CLX-S20P，建置設定為 `S20P-WIFI-YES`，映像板型為 `clx,s20p`。
 
 ## 韌體下載
 
@@ -8,11 +8,11 @@
 
 | 版本 | 下載與說明 |
 | --- | --- |
-| **最新正式版：25.12 固定來源版** · 2026-10-31 | [Release、韌體、校驗碼與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975) · run `41083116478` |
+| **主線正式版：25.12 固定來源版** · 2026-10-31 | [Release、韌體、校驗碼與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975) · run `41083116478` |
 | 上一個成功版 · 2026-10-30 | [歷史 Release 與完整成品](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975) · run `40893380461` |
 | 10/17 歷史固定版 | [原始 Release 與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) · [固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17) |
 
-最新版本按維護者決定正式發布並設為 Latest；來源、成品、校驗碼及原始 tag 保持不變。檔名／tag 中的 `candidate` 和同批驗證資料保留建置當時的身分，不會為更名而重新打包韌體。
+最新版本按維護者決定正式發布並設為 Latest。現行名稱統一為「CLX-S20P 主線韌體」；既有檔名／tag 中的 `A`、`a`、`candidate` 及同批驗證資料保留建置當時的身分，來源、成品與校驗碼保持不變。
 
 ## 最新正式版內容與驗證範圍
 
@@ -58,4 +58,4 @@ GitHub Actions 每日 **04:20（Asia/Shanghai）** 追蹤相容的 ImmortalWrt 2
 
 [編譯模式、來源鎖定與驗收規則](README_AUTOBUILD.md) · [安全政策](docs/SECURITY-BUILD.md) · [Actions](https://github.com/LucxXxifer/clx-s20p-firmware/actions/workflows/s20p-daily.yml) · [Releases](https://github.com/LucxXxifer/clx-s20p-firmware/releases)
 
-本倉庫的建置框架源自 [dqsq2e2/wrt_release](https://github.com/dqsq2e2/wrt_release)，S20P 系統來源為 [chasey-dev/immortalwrt-mt798x-rebase](https://github.com/chasey-dev/immortalwrt-mt798x-rebase)。上游框架內的其他設備設定不屬於本倉庫的發布與驗收範圍。
+本倉庫的建置框架源自 [dqsq2e2/wrt_release](https://github.com/dqsq2e2/wrt_release)，S20P 系統來源為 [chasey-dev/immortalwrt-mt798x-rebase](https://github.com/chasey-dev/immortalwrt-mt798x-rebase)。

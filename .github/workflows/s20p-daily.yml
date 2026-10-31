@@ -1,5 +1,5 @@
-name: S20P rolling A 25.12 candidate
-run-name: S20P ${{ inputs.fixed == true && 'fixed' || 'rolling' }} A 25.12 · ${{ github.run_number }}
+name: CLX-S20P 主線韌體 25.12 每日候選
+run-name: CLX-S20P 主線韌體 25.12 · ${{ inputs.fixed == true && 'fixed' || 'rolling' }} · ${{ github.run_number }}
 
 on:
   schedule:
@@ -285,6 +285,7 @@ jobs:
         run: exit 1
 
   publish-rolling-a-prerelease:
+    name: 發布 CLX-S20P 主線韌體候選版
     needs: build
     if: ${{ needs.build.result == 'success' && needs.build.outputs.publish_candidate == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
@@ -336,7 +337,7 @@ jobs:
             --build-commit "$GH_BUILD_COMMIT" --upstream-commit "$GH_UPSTREAM_COMMIT"
           printf '%s\n' "$assets_dir" > "$RUNNER_TEMP/s20p-a-assets-dir"
 
-      - name: Publish verified rolling A prerelease
+      - name: Publish verified CLX-S20P mainline prerelease
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -350,22 +351,22 @@ jobs:
           assets_dir=$(cat "$RUNNER_TEMP/s20p-a-assets-dir")
           (cd "$assets_dir" && sha256sum -c SHA256SUMS)
           tag="s20p-a-25.12-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}-${GH_UPSTREAM_COMMIT:0:8}"
-          title="S20P rolling A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
+          title="CLX-S20P 主線韌體 25.12 每日候選 ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
           if [[ $GH_FIXED == true ]]; then
             tag="s20p-a-25.12-fixed-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}-${GH_UPSTREAM_COMMIT:0:8}"
-            title="S20P fixed A 25.12 candidate ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
+            title="CLX-S20P 主線韌體 25.12 固定來源候選 ${GH_RUN_ID}.${GH_RUN_ATTEMPT}"
           fi
           cat > release-notes.md <<NOTES
           ${title}.
 
           Upstream commit: ${GH_UPSTREAM_COMMIT}
           Wrapper commit: ${GH_BUILD_COMMIT}
-          The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, scoped Go x509 and preservation checks. The verified installation guide below discloses the exact Go security status and all retained unpatched prebuilts. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical A 10/17 release remains the fixed recovery download.
+          The candidate passed same-build package, signed-feed, source, ABI, image-safety, CA revocation, scoped Go x509 and preservation checks. The verified installation guide below discloses the exact Go security status and all retained unpatched prebuilts. Go validation covers the image executables, not post-install downloads. This is not a stable release; live hardware boot, migration, and Lucky runtime compatibility remain unverified. The historical 10/17 release remains the fixed recovery download.
           NOTES
           if [[ $GH_FIXED == true ]]; then
             cat >> release-notes.md <<'FIXED_NOTES'
 
-          Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs are frozen to the reviewed run 41031102553 snapshot (ci/fixed/20261030/manifest.json). The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. This immutable candidate still requires hardware acceptance before stable use.
+          Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs are frozen to the reviewed run 41031102553 snapshot (ci/fixed/20261030/manifest.json). The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. This fixed-source candidate still requires hardware acceptance before stable use.
           FIXED_NOTES
           fi
           cat "$assets_dir/INSTALLATION.md" >> release-notes.md

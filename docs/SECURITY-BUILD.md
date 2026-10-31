@@ -1,4 +1,4 @@
-# S20P CA 與 Go x509 安全建置
+# CLX-S20P 主線韌體 CA 與 Go x509 安全建置
 
 2026-10-31，[固定來源版 run 41083116478](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)已按維護者決定正式發布；已獨立驗證成品、CA、Go 與面板檢查。此變更只調整發布狀態與說明，不改寫原始成品、安全報告或 `stable_eligible=false`。以下 QuickStart 未修補例外及未實機驗收限制繼續適用。
 
@@ -6,7 +6,7 @@
 
 以下保留 2026-10-29 固定來源安全建置的查核紀錄；其中固定版本及來源描述不是每日更新的上限。
 
-本輪沿用 rolling A 的固定主來源 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`。截至 2026-10-29，上游 25.12 head 沒有前進；沒有把整個 packages feed 換成未審核的新版本。
+2026-10-29 安全建置使用固定主來源 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`。截至當日，上游 25.12 head 沒有前進；沒有把整個 packages feed 換成未審核的新版本。
 
 ## 來源修補
 

@@ -2,31 +2,38 @@
 
 本倉庫維護 **CLX-S20P 主線韌體**，基於 ImmortalWrt 25.12，保留 AX6000 Wi-Fi，並提供 GitHub Actions 編譯與刷機／備份還原指引。僅發布 CLX-S20P，建置設定為 `S20P-WIFI-YES`，映像板型為 `clx,s20p`。
 
+最新發佈為 **25.12 補充補丁正式版 · 2026-10-31**，採固定來源，納入 uhttpd／LuCI ACL 精確修補及 EasyTier 精簡。
+
 ## 韌體下載
 
-目前保留以下三個版本。時間使用 Asia/Shanghai；「10/17」是歷史版本的基準名稱，並非 GitHub 發布日期。
+以下為最新與保留的歷史版本。時間使用 Asia/Shanghai；「10/17」是歷史版本的基準名稱，並非 GitHub 發布日期。
 
 | 版本 | 下載與說明 |
 | --- | --- |
-| **主線正式版：25.12 固定來源版** · 2026-10-31 | [Release、韌體、校驗碼與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975) · run `41083116478` |
-| 上一個成功版 · 2026-10-30 | [歷史 Release 與完整成品](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975) · run `40893380461` |
+| **最新：25.12 補充補丁正式版** · 2026-10-31 | [Release、韌體、校驗碼與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41175460764-1-9f397975) · run `41175460764` |
+| 前一固定來源正式版 · 2026-10-31 | [歷史 Release、韌體與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975) · run `41083116478` |
+| 歷史成功版 · 2026-10-30 | [歷史 Release 與完整成品](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975) · run `40893380461` |
 | 10/17 歷史固定版 | [原始 Release 與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) · [固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17) |
 
-最新版本按維護者決定正式發布並設為 Latest。現行名稱統一為「CLX-S20P 主線韌體」；三個已發布版本的 `.bin` 下載檔名採 `clx-s20p-<upstream8>-<YYYYMMDD>-sysupgrade.bin`，日期為 Asia/Shanghai 發布日。改名不需重新編譯，映像內容與 SHA256 不變，下載清單與說明同步更新；原始 tag、run 與同批封存保留建置時的識別。
+最新版本由本專案正式發布並設為 Latest。現行名稱統一為「CLX-S20P 主線韌體」；`.bin` 下載檔名採 `clx-s20p-<upstream8>-<YYYYMMDD>-sysupgrade.bin`，日期為 Asia/Shanghai 發布日。原始 tag、run 與同批封存保留建置時的識別；歷史版本與下載入口繼續保留。
 
-## 最新正式版內容與驗證範圍
+## 補充補丁正式版內容與驗證範圍
 
-- 固定系統、31 個插件／feed、CA／Go／QuickStart 及建置使用的 HTTP 輸入，避免每日來源變動影響此版本。
-- CA 為 `20260816-r2`；11 個已修補 Go 執行檔使用 `go1.26.10`／`go1.27.3`。**QuickStart 0.13.0 仍使用 `go1.25.0`，是唯一已批准、尚未修補 GO-2026-6809／CVE-2026-111943 的精確例外**，詳見[安全說明](docs/SECURITY-BUILD.md)。
-- 納入控制面板狀態顯示修正。
-- 實際編譯及全部既定雲端檢查通過；獨立核對六個下載成品的 API digest／checksum、5 個簽章套件源、531 個 APK、153 個同 ABI 核心模組及映像內 488 個套件版本。
+- **uhttpd／uhttpd-mod-ubus** 兩包重建為 `2026.08.24~373145f7-r2`，在固定來源上回補 [OpenWrt 官方修正 `64dcf47`](https://github.com/openwrt/uhttpd/commit/64dcf47aa7f84ae60db9a3950e5c4b8fbe5ed6f1)，拒絕 ubus `list` 請求中的非字串參數。
+- **LuCI ACL** 依[官方安全公告](https://github.com/openwrt/luci/security/advisories/GHSA-v5f9-62c7-cw29)，僅移除「掛載點」權限組對 `/etc/crontabs/root` 的寫入授權；「計劃任務」專用權限及正常編輯功能保留。
+- **EasyTier 精簡**：映像排除 `easytier`、`luci-app-easytier`、`luci-i18n-easytier-zh-cn`，保留其他功能使用的共用依賴。
+- 沿用固定系統、插件／feed 與建置輸入；CA 為 `20260816-r2`，11 個已修補 Go 執行檔使用 `go1.26.10`／`go1.27.3`。安全檢查範圍與政策見[安全說明](docs/SECURITY-BUILD.md)。
+- 保留控制面板狀態顯示修正、Honk／TingReader 排除及 AdGuard Home 暫不預裝的設定。
+- 實際編譯與全部既定雲端檢查通過；已獨立核對六個發布附件的 API digest／checksum、簽章套件源、套件與核心 ABI、映像及精確差異。
+
+本專案的正式發佈不代表完整映像已完成現機刷入與啟動驗收。此版建置識別為 run `41175460764`、本專案 commit `f5ce16d9ac320ee492385d13e48a327320f0b179`、上游 commit `9f397975c7b47ce6986a6e39529d2f72fd5c729d`；完整來源與驗證證據隨同批封存提供。
 
 ## 下載校驗與升級
 
 最新正式版的韌體檔為 `clx-s20p-9f397975-20261031-sysupgrade.bin`，SHA256：
 
 ```text
-40a26abc68162b86afd7fd5a001518caa7c25c084ee18554140d245e6590bff3
+32e9b64a0373647079087aa53bf8c2a524d304c0fcaf0f67bb12bfcf15d1fe51
 ```
 
 將該 release 的六個檔案下載到同一資料夾，再核對完整清單：

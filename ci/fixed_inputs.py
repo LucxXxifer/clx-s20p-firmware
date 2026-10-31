@@ -11,6 +11,19 @@ from urllib.parse import urlsplit
 import components
 
 
+def profile_descriptor(policy_id):
+    if policy_id != "minimal-20261031":
+        raise ValueError("unknown fixed security profile")
+    import minimal_security
+    from preservation import APPLICATION_POLICIES
+    return {"id": policy_id, "security_sha256": minimal_security.profile_sha256(),
+            "application_policy_sha256": APPLICATION_POLICIES[policy_id]["sha256"]}
+
+
+def application_policy(value):
+    return value["profile"]["id"] if value["schema_version"] == 3 else "legacy"
+
+
 def payload(root, row):
     name = row.get("path")
     if (not isinstance(name, str) or PurePosixPath(name).is_absolute() or
@@ -34,9 +47,16 @@ def load(path):
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 100_000:
         raise ValueError("regular fixed manifest required")
     value = json.loads(path.read_text())
-    if (set(value) != {"schema_version", "source_run", "upstream_commit", "artifact", "components",
-                       "ca_archive", "http_inputs"}
-            or value["schema_version"] != 2 or not re.fullmatch(r"[1-9]\d*", str(value["source_run"]))
+    fields = {"schema_version", "source_run", "upstream_commit", "artifact", "components",
+              "ca_archive", "http_inputs"}
+    if value.get("schema_version") == 3:
+        fields.add("profile")
+        profile = value.get("profile")
+        if (not isinstance(profile, dict) or
+                profile != profile_descriptor(profile.get("id"))):
+            raise ValueError("fixed security profile differs from reviewed policy")
+    if (set(value) != fields
+            or value["schema_version"] not in (2, 3) or not re.fullmatch(r"[1-9]\d*", str(value["source_run"]))
             or not re.fullmatch(r"[0-9a-f]{40}", str(value["upstream_commit"]))
             or set(value["artifact"]) != {"id", "sha256"}
             or not re.fullmatch(r"[1-9]\d*", str(value["artifact"]["id"]))
@@ -127,8 +147,13 @@ def main():
     http = sub.add_parser("verify-http")
     http.add_argument("manifest", type=Path)
     http.add_argument("--log", type=Path, required=True)
+    policy = sub.add_parser("policy")
+    policy.add_argument("manifest", type=Path)
     args = parser.parse_args()
-    if args.command == "select":
+    if args.command == "policy":
+        print(application_policy(load(args.manifest)))
+        return
+    elif args.command == "select":
         value = load(args.manifest)
         args.output.write_bytes(payload(args.manifest.parent, value["components"]))
     elif args.command == "verify-http":

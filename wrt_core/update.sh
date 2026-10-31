@@ -178,6 +178,10 @@ stage_post_install_package_fixes() {
             --inputs "${S20P_COMPONENT_INPUTS:?}" \
             --output "${S20P_CAPTURE_DIR:?}/provenance/component-preparation.json" || return 1
         python3 "${S20P_CI_DIR:?}/dashboard.py" prepare --source-root "$BUILD_DIR" || return 1
+        if [[ ${S20P_APPLICATION_POLICY:-legacy} == minimal-20261031 ]]; then
+            python3 "${S20P_CI_DIR:?}/minimal_security.py" prepare --source-root "$BUILD_DIR" \
+                --output "${S20P_CAPTURE_DIR:?}/provenance/minimal-security-preparation.json" || return 1
+        fi
     fi
     # apply_hash_fixes
 }

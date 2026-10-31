@@ -1,0 +1,51 @@
+{
+  "schema_version": 3,
+  "source_run": "41031102553",
+  "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+  "artifact": {
+    "id": "12978132447",
+    "sha256": "71724d12d90b5fe3c9c5219c4f140667e13db5fbe0ed117c28cdf5cc8ccfc944"
+  },
+  "components": {
+    "path": "components.json",
+    "sha256": "8d4d95f9840fcc3e890822de0208d3833bf2ec24dce1911d3e6dc6d106bb14e8",
+    "fingerprint": "a6a451c7eb24a1960fd6458d34c5fc7cd976ce4ef9e90d2d90cd71919a8ed1a1"
+  },
+  "ca_archive": {
+    "url": "https://snapshot.debian.org/file/736a5affa6e397b52fa7b68ea9be41e00be5a7d6",
+    "path": "ca/ca-certificates_20260816.tar.xz",
+    "sha256": "d939bcdd0cb058712cf4175bac76997676eb8b68fe9473765e1b40fb3d5b186a"
+  },
+  "http_inputs": [
+    {
+      "url": "https://raw.githubusercontent.com/VIKINGYFY/immortalwrt/refs/heads/main/package/firmware/ath11k-firmware/Makefile",
+      "path": "http/0.input",
+      "sha256": "7cd7f6f77c9c8689e61d78a459545ad03a7f83224820155c0d4e5e88e31d47f8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Openwrt-Passwall/openwrt-passwall-packages/refs/heads/main/tcping/Makefile",
+      "path": "http/1.input",
+      "sha256": "75be118f0f9867a323a69037095dc7f323e601b88877fc16307499322e5477ad"
+    },
+    {
+      "url": "https://gist.githubusercontent.com/puteulanus/1c180fae6bccd25e57eb6d30b7aa28aa/raw/istore_backend.lua",
+      "path": "http/2.input",
+      "sha256": "5eb5e0524a42b62895ee8163d50bf1d78999db7c1321646fdcca3c99c26249e2"
+    },
+    {
+      "url": "https://github.com/v2fly/geoip/releases/download/202610050438/geoip.dat.sha256sum",
+      "path": "http/3.input",
+      "sha256": "a169e01d926fad874d24845d11e44b702491356e23c6d9d5f8f875be9e230655"
+    },
+    {
+      "url": "https://github.com/v2fly/geoip/releases/download/202610050438/geoip-only-cn-private.dat.sha256sum",
+      "path": "http/4.input",
+      "sha256": "bc8fabe670779ea752c91a5e018f44e9e86cfd77319ce86b556914c51152ac2d"
+    }
+  ],
+  "profile": {
+    "id": "minimal-20261031",
+    "security_sha256": "bc08a3a07d6cb86aa3d6195a2385534c1da05ec6c7139072d9fb8a8d917d1fec",
+    "application_policy_sha256": "3c811db216202365d08b4e0ddcb7636d98ad1c22b3cc329d7cf8f46c42b62b64"
+  }
+}

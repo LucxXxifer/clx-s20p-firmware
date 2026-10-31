@@ -21,6 +21,8 @@ sys.path.insert(0, str(CI))
 import upstream_sync
 import go_security
 import dashboard
+import fixed_inputs
+import minimal_security
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
@@ -108,6 +110,221 @@ class ReleaseCandidateTests(unittest.TestCase):
             self.assertIn('not a stable release', guide)
             self.assertIn(manifest['source_run'], guide)
             self.assertEqual(result['verified']['fixed_inputs']['source_run'], manifest['source_run'])
+
+    def test_committed_fixed_snapshots_are_selected_by_exact_captured_bytes(self):
+        paths = []
+        bundles = []
+        for policy_id in ("legacy", "minimal-20261031"):
+            frozen = self.root / policy_id
+            frozen.mkdir()
+            path, manifest, extras = fixed_release_fixture(frozen, policy_id)
+            paths.append(path)
+            bundle = self.root / (policy_id + "-bundle")
+            for name, data in extras.items():
+                target = bundle / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(data)
+            bundles.append((bundle, manifest))
+        with patch.dict(os.environ, {}, clear=True), patch.object(release, "FIXED_MANIFESTS", tuple(paths)):
+            for bundle, manifest in bundles:
+                result = release.verify_fixed_bundle(bundle, manifest["upstream_commit"])
+                self.assertEqual(result["manifest_sha256"], release.sha256_file(
+                    bundle / "provenance/fixed/manifest.json"))
+                if manifest["schema_version"] == 3:
+                    self.assertEqual(result["profile"], manifest["profile"])
+                else:
+                    self.assertNotIn("profile", result)
+            captured = bundles[1][0] / "provenance/fixed/manifest.json"
+            value = json.loads(captured.read_text())
+            value["source_run"] = "1234"
+            captured.write_text(json.dumps(value))
+            with self.assertRaisesRegex(ValueError, "reviewed snapshot"):
+                release.verify_fixed_bundle(bundles[1][0], value["upstream_commit"])
+
+    def test_artifact_application_evidence_cannot_self_select_minimal_profile(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                        application_policy="minimal-20261031")
+        with self.assertRaisesRegex(ValueError, "reviewed application selection"):
+            self.prepare()
+
+    def test_trusted_minimal_profile_rejects_legacy_application_evidence(self):
+        frozen = self.root / "frozen"
+        frozen.mkdir()
+        path, _, extras = fixed_release_fixture(frozen, "minimal-20261031")
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, extra_files=extras)
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}):
+            with self.assertRaisesRegex(ValueError, "reviewed application selection"):
+                self.prepare()
+
+    def test_trusted_minimal_profile_rejects_retained_easytier(self):
+        frozen = self.root / "frozen"
+        frozen.mkdir()
+        path, _, extras = fixed_release_fixture(frozen, "minimal-20261031")
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, extra_files=extras,
+                                  application_policy="minimal-20261031")
+        rewrite_archive_json(archive, "inspection/installed-packages.json",
+                             lambda data: data["packages"][1].update(name="easytier", version="2.7.0"))
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}):
+            with self.assertRaisesRegex(ValueError, "omitted application package remains"):
+                self.prepare()
+
+    def test_trusted_minimal_profile_requires_independent_security_report(self):
+        frozen = self.root / "frozen"
+        frozen.mkdir()
+        path, _, extras = fixed_release_fixture(frozen, "minimal-20261031")
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, extra_files=extras,
+                        application_policy="minimal-20261031")
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}):
+            with self.assertRaisesRegex(ValueError, "minimal-security"):
+                self.prepare()
+
+    def test_minimal_release_independently_verifies_security_report_and_profile(self):
+        path, _, _ = self.minimal_fixture()
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}), \
+                patch.object(minimal_security, "bound_sources", return_value=(
+                    None, minimal_security.preparation_report()["prepared_files"])):
+            result = self.prepare()
+        self.assertEqual(result["verified"]["fixed_inputs"]["profile"],
+                         fixed_inputs.profile_descriptor("minimal-20261031"))
+
+    def test_minimal_release_rejects_self_consistent_report_tampering(self):
+        path, archive, _ = self.minimal_fixture()
+        rewrite_archive_json(archive, "reports/minimal-security.json",
+                             lambda report: report.update(rootfs_sha256="a" * 64))
+        rewrite_archive_json(archive, "reports/preservation-image.json",
+                             lambda report: report["checks"]["minimal_security"].update(
+                                 rootfs_sha256="a" * 64))
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}), \
+                patch.object(minimal_security, "bound_sources", return_value=(
+                    None, minimal_security.preparation_report()["prepared_files"])):
+            with self.assertRaisesRegex(ValueError, "minimal security release report/source/payload mismatch"):
+                self.prepare()
+
+    def test_minimal_release_requires_same_report_in_preservation_evidence(self):
+        path, archive, _ = self.minimal_fixture()
+        rewrite_archive_json(archive, "reports/preservation-image.json",
+                             lambda report: report["checks"]["minimal_security"].update(runtime_tested=True))
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}), \
+                patch.object(minimal_security, "bound_sources", return_value=(
+                    None, minimal_security.preparation_report()["prepared_files"])):
+            with self.assertRaisesRegex(ValueError, "differs from preservation evidence"):
+                self.prepare()
+
+    def test_minimal_release_rechecks_wrapper_patch_evidence(self):
+        path, archive, _ = self.minimal_fixture()
+        rewrite_archive_json(archive, "provenance/wrapper-source-files.json",
+                             lambda rows: rows[0].update(sha256="a" * 64))
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}), \
+                patch.object(minimal_security, "bound_sources", return_value=(
+                    None, minimal_security.preparation_report()["prepared_files"])):
+            with self.assertRaisesRegex(ValueError, "wrapper/profile source mismatch"):
+                self.prepare()
+
+    def test_new_release_uses_same_build_date_in_name_and_metadata(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                        extra_files={"provenance/build-date.txt": b"20261031\n"})
+        result = self.prepare()
+        self.assertEqual(result["image"], "clx-s20p-9f397975-20261031-sysupgrade.bin")
+        self.assertEqual(result["verified"]["build_date"], "20261031")
+
+    def test_release_rejects_invalid_or_noncanonical_calendar_date(self):
+        for raw in (b"20260230\n", b"20261301\n", b"2026103\n", b" 20261031\n",
+                    b"20261031\n\n", b"20261031\r\n", b"20261031suffix"):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as name:
+                self.artifact = Path(name)
+                self.output = self.artifact / "assets"
+                release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                                extra_files={"provenance/build-date.txt": raw})
+                with self.assertRaisesRegex(ValueError, "build date"):
+                    self.prepare()
+
+    def test_build_date_requires_regular_file_and_accepts_real_leap_day(self):
+        provenance = self.root / "provenance"
+        provenance.mkdir()
+        path = provenance / "build-date.txt"
+        path.write_bytes(b"20280229")
+        self.assertEqual(release.verify_build_date(self.root), "20280229")
+        real = self.root / "real-date"
+        path.rename(real)
+        path.symlink_to(real)
+        with self.assertRaisesRegex(ValueError, "regular canonical build date"):
+            release.verify_build_date(self.root)
+
+    def test_minimal_profile_requires_build_date_even_with_valid_security_report(self):
+        path, archive, _ = self.minimal_fixture()
+        # Rebuild an equivalent minimal archive with no date evidence.
+        rewrite_archive_entry(archive, "provenance/build-date.txt", None)
+        with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}):
+            with self.assertRaisesRegex(ValueError, "build date"):
+                self.prepare()
+
+    def test_release_rechecks_date_against_archive_after_asset_renaming(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                        extra_files={"provenance/build-date.txt": b"20261031\n"})
+        self.prepare()
+        original = self.output / "clx-s20p-9f397975-20261031-sysupgrade.bin"
+        original.rename(self.output / "clx-s20p-9f397975-20261101-sysupgrade.bin")
+        write_checksums(self.output, exclude={"SHA256SUMS"})
+        with self.assertRaisesRegex(ValueError, "release asset set"):
+            release.verify_release_assets(self.output, run_id="1234", run_attempt="2",
+                build_commit=TEST_WRAPPER_COMMIT, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def test_release_rejects_date_metadata_tampering(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                        extra_files={"provenance/build-date.txt": b"20261031\n"})
+        self.prepare()
+        metadata = self.output / "BUILD-VERIFICATION.json"
+        value = json.loads(metadata.read_text())
+        value["build_date"] = "20261101"
+        metadata.write_bytes(json_bytes(value))
+        write_checksums(self.output, exclude={"SHA256SUMS"})
+        with self.assertRaisesRegex(ValueError, "verification record"):
+            release.verify_release_assets(self.output, run_id="1234", run_attempt="2",
+                build_commit=TEST_WRAPPER_COMMIT, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def test_release_rejects_metadata_image_name_tampering(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT,
+                        extra_files={"provenance/build-date.txt": b"20261031\n"})
+        self.prepare()
+        metadata = self.output / "BUILD-VERIFICATION.json"
+        value = json.loads(metadata.read_text())
+        value["image"] = "clx-s20p-9f397975-20261101-sysupgrade.bin"
+        metadata.write_bytes(json_bytes(value))
+        write_checksums(self.output, exclude={"SHA256SUMS"})
+        with self.assertRaisesRegex(ValueError, "verification record"):
+            release.verify_release_assets(self.output, run_id="1234", run_attempt="2",
+                build_commit=TEST_WRAPPER_COMMIT, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def minimal_fixture(self):
+        frozen = self.root / "frozen"
+        frozen.mkdir()
+        path, _, extras = fixed_release_fixture(frozen, "minimal-20261031")
+        prepared = minimal_security.preparation_report()
+        security_inputs = {
+            "minimal-security-preparation.json": prepared,
+            "prepared-source-files.json": prepared["prepared_files"],
+            "wrapper-source-files.json": minimal_security.wrapper_rows()[0],
+        }
+        packages = [{"name": name, "version": version}
+                    for name, version in minimal_security.EXPECTED_PACKAGES.items()]
+        with tempfile.TemporaryDirectory() as name:
+            provenance = Path(name)
+            for filename, value in security_inputs.items():
+                (provenance / filename).write_bytes(json_bytes(value))
+            with patch.object(minimal_security, "bound_sources", return_value=(
+                    None, prepared["prepared_files"])):
+                report = minimal_security.expected_report(
+                    hashlib.sha256(TEST_ROOTFS_PAYLOAD).hexdigest(), provenance,
+                    {row["name"]: row for row in packages})
+        extras.update({"provenance/" + filename: json_bytes(value)
+                       for filename, value in security_inputs.items()})
+        extras["reports/minimal-security.json"] = json_bytes(report)
+        extras["provenance/build-date.txt"] = b"20261031\n"
+        archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT, extra_files=extras,
+                                  application_policy="minimal-20261031", extra_packages=packages)
+        rewrite_archive_json(archive, "reports/preservation-image.json",
+                             lambda data: data["checks"].update(minimal_security=report))
+        return path, archive, report
 
     def test_rejects_a_bundle_from_another_wrapper_commit(self):
         release_fixture(self.artifact, commit="a" * 40)
@@ -392,16 +609,36 @@ def add_legacy_quickstart(report):
         "security_status": "legacy-unpatched-prebuilt", "exception_id": exception["id"]})
 
 
+def fixed_release_fixture(root, policy_id="legacy"):
+    from test_fixed_inputs import fixture
+    path, manifest = fixture(root)
+    if policy_id != "legacy":
+        manifest.update(schema_version=3, profile=fixed_inputs.profile_descriptor(policy_id))
+        path.write_text(json.dumps(manifest))
+    extras = {"provenance/fixed/" + item.relative_to(root).as_posix(): item.read_bytes()
+              for item in root.rglob("*") if item.is_file()}
+    extras["provenance/component-resolution.json"] = (root / "components.json").read_bytes()
+    extras["provenance/http-inputs.jsonl"] = json_bytes({
+        "urls": [manifest["http_inputs"][0]["url"]], "exit_code": 0,
+        "stdout_sha256": manifest["http_inputs"][0]["sha256"]})
+    if policy_id != "legacy":
+        extras["provenance/build-date.txt"] = b"20261031\n"
+    return path, manifest, extras
+
+
 def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
                     upstream_commit=None, preservation_status="pass", signed_feed_status="pass",
                     package_count_delta=0, include_lucky=False, unsafe_member=None,
-                    unsafe_member_type=None, payload_mismatch=False, wrong_public_key_hash=False, extra_files=None):
+                    unsafe_member_type=None, payload_mismatch=False, wrong_public_key_hash=False, extra_files=None,
+                    application_policy="legacy", extra_packages=None):
     """Build a same-shape archive with integrity and acceptance records."""
     packages = [
         {"name": "kernel", "version": TEST_KERNEL_ABI},
         {"name": "base-files", "version": "1~b25.12"},
     ]
-    packages.extend({'name': name, 'version': '0.107.79-r1'} for name in release.REQUIRED_APPLICATION_PACKAGES)
+    selection = release.load_application_selection(CI / "baseline", application_policy)
+    packages.extend({'name': name, 'version': '0.107.79-r1'} for name in selection["required_packages"])
+    packages.extend(extra_packages or [])
     if include_lucky:
         packages.extend([
             {"name": "lucky", "version": "3.4.0-r3"},
@@ -439,7 +676,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         "reports/preservation-image.json": json_bytes({
             "status": preservation_status, "errors": [], "pending_review_count": 0,
             "checks": {"application_selection": release.application_selection_evidence(
-                release.load_application_selection(CI / "baseline")), "packages": {
+                selection), "packages": {
                 "original_count": 483, "actual_count": actual_count, "kernel": TEST_KERNEL_ABI,
                 "kmods": 0, "luci_apps": 0,
                 "reviewed_optional_absent": [] if include_lucky else sorted(release.B_OPTIONAL_PACKAGE_NAMES),
@@ -487,7 +724,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         "provenance/config-gate.json": json_bytes({
             "status": "pass", "errors": [], "checks": {
                 "application_selection": release.application_selection_evidence(
-                    release.load_application_selection(CI / "baseline")), "config": {
+                    selection), "config": {
                 "b_optional_packages": list(release.B_OPTIONAL_PACKAGE_NAMES),
                 "b_optional_package_omission": {
                     "upstream_commit": resolved_upstream,
@@ -514,7 +751,7 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         files["reports/preservation-image.json"] = json_bytes({
             "status": "pass", "errors": [], "pending_review_count": 0,
             "checks": {"application_selection": release.application_selection_evidence(
-                release.load_application_selection(CI / "baseline")), "packages": {
+                selection), "packages": {
                 "original_count": 483, "actual_count": actual_count + package_count_delta,
                 "kernel": TEST_KERNEL_ABI,
                 "kmods": 0, "luci_apps": 0,
@@ -637,6 +874,15 @@ def write_checksums(directory, exclude=()):
 
 
 def rewrite_archive_json(archive, name, mutate):
+    with tarfile.open(archive, "r:gz") as source:
+        member = next(item for item in source.getmembers()
+                      if Path(item.name).as_posix().removeprefix("./") == name)
+        data = json.load(source.extractfile(member))
+    mutate(data)
+    rewrite_archive_entry(archive, name, json_bytes(data))
+
+
+def rewrite_archive_entry(archive, name, replacement):
     temporary = archive.with_suffix(".rewritten.tar.gz")
     with tarfile.open(archive, "r:gz") as source, tarfile.open(temporary, "w:gz") as target:
         rewritten = {}
@@ -645,9 +891,9 @@ def rewrite_archive_json(archive, name, mutate):
             if member_name == "SHA256SUMS":
                 continue
             if member_name == name:
-                data = json.load(source.extractfile(member))
-                mutate(data)
-                payload = json_bytes(data)
+                if replacement is None:
+                    continue
+                payload = replacement
                 member.size = len(payload)
                 target.addfile(member, fileobj=__import__("io").BytesIO(payload))
                 rewritten[name] = payload

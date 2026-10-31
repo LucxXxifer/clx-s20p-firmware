@@ -435,7 +435,9 @@ apply_config() {
     for fragment in "${EFFECTIVE_CONFIG_FRAGMENTS[@]}"; do
         cat "$CONFIG_FRAGMENT_DIR/$fragment.config" >> "$BASE_PATH/../$BUILD_DIR/.config"
     done
-
+    if [[ ${S20P_AUTOBUILD:-0} == 1 && ${S20P_APPLICATION_POLICY:-legacy} == minimal-20261031 ]]; then
+        python3 "$REPO_ROOT/ci/minimal_config.py" "$BASE_PATH/../$BUILD_DIR/.config"
+    fi
 }
 
 verify_theme_config() {
@@ -655,6 +657,7 @@ if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
         --output "$S20P_CAPTURE_DIR/provenance/go-host-dependencies.json"
     python3 "$REPO_ROOT/ci/preservation.py" config --config .config \
         --application-selection \
+        --application-policy "${S20P_APPLICATION_POLICY:-legacy}" \
         --baseline-dir "${S20P_BASELINE_DIR:-$REPO_ROOT/ci/baseline}" \
         --optional-packages "$REPO_ROOT/ci/mobile-usb-packages.txt" \
         --package-info "$PWD/tmp/.packageinfo" \

@@ -2363,6 +2363,21 @@
     {
       "id": "a52b837b3dca7db924aefb71692d703aaa2ae3b70327a6a4ed893ac3a45efa23",
       "reason": "Exact source-owned package advance or IANA zone.tab bytes verified against the API-digest-checked same-build artifact, all signed APKs and native offline fetch; see ci/reviewed-differences/fixed-components-41031102553.json."
+    },
+    {
+      "id": "f17614069c099c9370abfd49b9012c9d8f6a8bc118222ce2112f4707a1f96fdf",
+      "reason": "Exact official uhttpd list-type backport 64dcf47 to frozen 373145f7; r2 distinguishes the rebuild. New fixed profile additionally requires source-bound patch/ACL and installed payload evidence; ci/security/minimal-20261031/.",
+      "application_policy": "minimal-20261031"
+    },
+    {
+      "id": "c1f2d3b6671b8d0eaa80d7b23e632a6a1e21a178eeae5c1da01fbb48adf1f87a",
+      "reason": "Exact official uhttpd list-type backport 64dcf47 to frozen 373145f7; r2 distinguishes the rebuild. New fixed profile additionally requires source-bound patch/ACL and installed payload evidence; ci/security/minimal-20261031/.",
+      "application_policy": "minimal-20261031"
+    },
+    {
+      "id": "cb558528ac5cc1eb670542e5d9f46a996d40fc427581f498c860aae72e94520b",
+      "reason": "Exact GHSA-v5f9-62c7-cw29 mounts-only root crontab write grant removal; all cron and other ACL grants preserved. New profile also independently validates prepared and image ACL hashes; ci/security/minimal-20261031/.",
+      "application_policy": "minimal-20261031"
     }
   ],
   "schema_version": 1

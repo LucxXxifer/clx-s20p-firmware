@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       fixed:
-        description: Build the reviewed 20261030 source snapshot instead of resolving newer inputs
+        description: Build frozen sources with reviewed 20261031 uhttpd/ACL fixes and EasyTier exclusion
         required: false
         default: false
         type: boolean
@@ -61,7 +61,7 @@ jobs:
           }
           fixed_manifest=''
           if [[ ${FIXED:-false} == true ]]; then
-            fixed_manifest="$GITHUB_WORKSPACE/ci/fixed/20261030/manifest.json"
+            fixed_manifest="$GITHUB_WORKSPACE/ci/fixed/20261031/manifest.json"
             selected=$(python3 ci/fixed_inputs.py select "$fixed_manifest" --output "$RUNNER_TEMP/s20p-components.json")
             head=$(jq -er '.upstream_commit' <<<"$selected")
           else
@@ -308,7 +308,7 @@ jobs:
           GH_BUILD_COMMIT: ${{ github.sha }}
           GH_UPSTREAM_COMMIT: ${{ needs.build.outputs.upstream_commit }}
           GH_EXPECTED_ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
-          S20P_FIXED_INPUTS: ${{ needs.build.outputs.fixed == 'true' && format('{0}/ci/fixed/20261030/manifest.json', github.workspace) || '' }}
+          S20P_FIXED_INPUTS: ${{ needs.build.outputs.fixed == 'true' && format('{0}/ci/fixed/20261031/manifest.json', github.workspace) || '' }}
         run: |
           set -euo pipefail
           artifact_name="s20p-candidate-${GH_RUN_ID}-${GH_RUN_ATTEMPT}"
@@ -366,7 +366,7 @@ jobs:
           if [[ $GH_FIXED == true ]]; then
             cat >> release-notes.md <<'FIXED_NOTES'
 
-          Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs are frozen to the reviewed run 41031102553 snapshot (ci/fixed/20261030/manifest.json). The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. This fixed-source candidate still requires hardware acceptance before stable use.
+          Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs retain the reviewed run 41031102553 snapshot. The separate ci/fixed/20261031/manifest.json binds the official uhttpd list-type backport, scoped LuCI mounts ACL removal and three-package EasyTier exclusion. QuickStart remains installed with its explicitly disclosed legacy Go exception; its source rebuild is deferred. The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. Hardware acceptance remains required.
           FIXED_NOTES
           fi
           cat "$assets_dir/INSTALLATION.md" >> release-notes.md

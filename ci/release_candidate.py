@@ -2,6 +2,7 @@
 """Verify and prepare mainline release assets for one exact CLX-S20P Actions run."""
 
 import argparse
+from datetime import date
 import hashlib
 import json
 import os
@@ -30,6 +31,8 @@ IMAGE_RE = re.compile(r"^bin/targets/mediatek/filogic/[^/]*clx_s20p[^/]*sysupgra
 SHA_LINE = re.compile(r"^([0-9a-f]{64})  (.+)$")
 MAX_ARCHIVE_EXPANDED = 20 * 1024 * 1024 * 1024
 PARTITION_CAPACITIES = {"kernel": 32 * 1024 * 1024, "rootfs": 2 * 1024 * 1024 * 1024}
+FIXED_MANIFESTS = tuple(Path(__file__).parent / "fixed" / date / "manifest.json"
+                        for date in ("20261030", "20261031"))
 
 
 def sha256_file(path):
@@ -240,22 +243,64 @@ def verify_fixed_bundle(root, upstream_commit):
     root = Path(root)
     captured = root / "provenance/fixed/manifest.json"
     expected = os.environ.get("S20P_FIXED_INPUTS")
-    if not captured.exists() and not expected:
+    if not captured.exists() and not captured.is_symlink() and not expected:
         return None
     # A fixed publication must bind captured bytes to the reviewed wrapper
     # snapshot, not merely to a self-consistent manifest inside the artifact.
-    expected = Path(expected) if expected else Path(__file__).parent / "fixed/20261030/manifest.json"
+    if captured.is_symlink() or not captured.is_file():
+        raise ValueError("regular captured fixed manifest is required")
+    if expected:
+        expected = Path(expected)
+    else:
+        captured_bytes = captured.read_bytes()
+        matches = [path for path in FIXED_MANIFESTS
+                   if path.is_file() and not path.is_symlink() and path.read_bytes() == captured_bytes]
+        if len(matches) != 1:
+            raise ValueError("captured fixed manifest differs from reviewed snapshot")
+        expected = matches[0]
     value = fixed_inputs.load(expected)
-    fixed_inputs.verify(captured, upstream_commit, root / "provenance/component-resolution.json")
     if captured.read_bytes() != expected.read_bytes():
         raise ValueError("captured fixed manifest differs from reviewed snapshot")
+    fixed_inputs.verify(captured, upstream_commit, root / "provenance/component-resolution.json")
     fixed_inputs.verify_http(captured, root / "provenance/http-inputs.jsonl")
-    return {"manifest_sha256": sha256_file(expected), "source_run": value["source_run"],
-            "component_fingerprint": value["components"]["fingerprint"]}
+    result = {"manifest_sha256": sha256_file(expected), "source_run": value["source_run"],
+              "component_fingerprint": value["components"]["fingerprint"]}
+    if value["schema_version"] == 3:
+        result["profile"] = value["profile"]
+    return result
+
+
+def verify_build_date(root, *, required=False):
+    path = Path(root) / "provenance/build-date.txt"
+    if not path.exists() and not path.is_symlink():
+        if required:
+            raise ValueError("minimal profile requires a same-build build date")
+        return None
+    if path.is_symlink() or not path.is_file() or path.stat().st_size not in (8, 9):
+        raise ValueError("regular canonical build date evidence is required")
+    raw = path.read_bytes()
+    if not re.fullmatch(rb"[0-9]{8}\n?", raw):
+        raise ValueError("build date must be canonical YYYYMMDD")
+    value = raw.removesuffix(b"\n").decode("ascii")
+    try:
+        date(int(value[:4]), int(value[4:6]), int(value[6:8]))
+    except ValueError as error:
+        raise ValueError("build date is not a valid calendar date") from error
+    return value
+
+
+def release_image_name(upstream_commit, build_date=None):
+    if build_date:
+        return "clx-s20p-" + upstream_commit[:8] + "-" + build_date + "-sysupgrade.bin"
+    return "s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin"
 
 
 def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_commit):
     root = Path(root)
+    fixed = verify_fixed_bundle(root, upstream_commit)
+    policy_id = fixed.get("profile", {}).get("id", "legacy") if fixed else "legacy"
+    selection = load_application_selection(Path(__file__).parent / "baseline", policy_id)
+    build_date = verify_build_date(root, required=policy_id == "minimal-20261031")
     build = read_json(root, "reports/build-status.json")
     preservation = read_json(root, "reports/preservation-image.json")
     capture = read_json(root, "reports/capture.json")
@@ -275,7 +320,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
             preservation.get("pending_review_count") != 0):
         raise ValueError("image preservation gate did not pass")
     pkg_check = preservation.get("checks", {}).get("packages", {})
-    requested_omission = application_selection_evidence(load_application_selection(Path(__file__).parent / "baseline"))
+    requested_omission = application_selection_evidence(selection)
     if preservation.get("checks", {}).get("application_selection") != requested_omission:
         raise ValueError("preservation report lacks the exact reviewed application selection")
     if (pkg_check.get("original_count") != 483 or
@@ -351,11 +396,11 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
         raise ValueError("installed package inventory is malformed or duplicated")
     if set(names) & set(B_OPTIONAL_PACKAGE_NAMES):
         raise ValueError("one of the three reviewed Lucky packages remains in the B image")
-    if set(names) & set(OMITTED_APPLICATION_PACKAGES):
+    if set(names) & set(selection["package_names"]):
         raise ValueError("omitted application package remains in the image")
-    if set(names) & set(EXCLUDED_APPLICATION_PACKAGES):
+    if set(names) & set(selection["excluded_packages"]):
         raise ValueError("excluded application package remains in the image")
-    if not set(REQUIRED_APPLICATION_PACKAGES) <= set(names):
+    if not set(selection["required_packages"]) <= set(names):
         raise ValueError("required application package is missing from the image")
     package_count = len(packages)
     if package_count != pkg_check.get("actual_count") or package_count != signed.get("installed_packages_matched"):
@@ -385,6 +430,13 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     go_report = read_json(root, "reports/go-x509-security.json")
     go_security.verify_report(go_report, sha256_file(rootfs_payload))
     dashboard.verify_report(read_json(root, "reports/dashboard.json"), sha256_file(rootfs_payload))
+    if policy_id == "minimal-20261031":
+        import minimal_security
+        report = read_json(root, "reports/minimal-security.json")
+        minimal_security.verify_report(report, sha256_file(rootfs_payload), root / "provenance",
+                                       {row["name"]: row for row in packages})
+        if report != preservation.get("checks", {}).get("minimal_security"):
+            raise ValueError("release minimal security report differs from preservation evidence")
     if upstream_resolution.get("schema_version") == 2:
         report = read_json(root, "reports/components.json")
         component_gate.verify_release(root / "provenance", report, sha256_file(rootfs_payload),
@@ -395,8 +447,8 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     images = [path for path in root.rglob("*.bin") if IMAGE_RE.fullmatch(path.relative_to(root).as_posix())]
     if len(images) != 1 or images[0] != image_path:
         raise ValueError("bundle must contain exactly one captured S20P sysupgrade image")
-    return {
-        "fixed_inputs": verify_fixed_bundle(root, upstream_commit),
+    result = {
+        "fixed_inputs": fixed,
         "image_path": image,
         "image_sha256": sha256_file(image_path),
         "kernel_abi": kernel["version"],
@@ -413,6 +465,9 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
                         "binary_count": len(go_report["binaries"]),
                         "versions": sorted({row["go_version"] for row in go_report["binaries"]})},
     }
+    if build_date:
+        result["build_date"] = build_date
+    return result
 
 
 def verify_sysupgrade_payload(image, kernel_payload, rootfs_payload, safety):
@@ -502,7 +557,7 @@ def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, bui
         extract_verified_archive(archive, extracted)
         verified = verify_candidate_bundle(extracted, run_id, run_attempt, build_commit, upstream_commit)
         image = extracted / verified["image_path"]
-        image_name = "s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin"
+        image_name = release_image_name(upstream_commit, verified.get("build_date"))
         shutil.copyfile(image, output / image_name)
         archive_name = archive.name
         shutil.copyfile(archive, output / archive_name)
@@ -546,6 +601,15 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
                   + verified["fixed_inputs"]["manifest_sha256"]
                   + "`. The same-build archive includes the manifest and reviewed wrapper HTTP bytes. "
                   "Runner tools are not bit-for-bit frozen; this does not claim reproducible binary output.\n")
+        if verified["fixed_inputs"].get("profile", {}).get("id") == "minimal-20261031":
+            guide += ("\n## Scoped management backports\n\n"
+                      "uhttpd and uhttpd-mod-ubus are rebuilt as r2 with official fix "
+                      "64dcf47aa7f84ae60db9a3950e5c4b8fbe5ed6f1. The LuCI mounts ACL "
+                      "loses only its root crontab write grant; dedicated cron permissions remain. "
+                      "The three EasyTier packages are excluded; shared dependencies remain. "
+                      "QuickStart retains its existing packages and disclosed unpatched Go exception. "
+                      "No kernel, ubus ABI or Docker migration is included. Existing overlay files "
+                      "and post-install packages still require separate migration/runtime checks.\n")
     (output / "INSTALLATION.md").write_text(guide)
     metadata = {
         "schema_version": 1,
@@ -560,6 +624,8 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
         "fixed_inputs": verified["fixed_inputs"],
         "live_acceptance": "not-run", "stable_eligible": False,
     }
+    if "build_date" in verified:
+        metadata["build_date"] = verified["build_date"]
     (output / "BUILD-VERIFICATION.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     (output / "SHA256SUMS").write_text(checksum_lines(output, exclude={"SHA256SUMS"}))
     verify_release_assets(output, run_id=run_id, run_attempt=run_attempt,
@@ -570,14 +636,9 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
 def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upstream_commit):
     output = Path(output_dir)
     checksums = verify_checksums(output)
-    expected_names = {
-        "s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin",
-        f"s20p-samebuild-{run_id}-{run_attempt}.tar.gz",
-        "archive.SHA256SUMS", "INSTALLATION.md", "BUILD-VERIFICATION.json",
-    }
-    if set(checksums) != expected_names:
-        raise ValueError("release asset set differs from verified rolling candidate asset set")
     archive = output / f"s20p-samebuild-{run_id}-{run_attempt}.tar.gz"
+    if archive.name not in checksums:
+        raise ValueError("release asset set has no exact same-build archive")
     archive_sum = parse_sha256sums(output / "archive.SHA256SUMS")
     if archive_sum != {archive.name: sha256_file(archive)}:
         raise ValueError("original same-build archive checksum mismatch")
@@ -585,16 +646,24 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
         root = Path(temp) / "bundle"
         extract_verified_archive(archive, root)
         verified = verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_commit)
-    image = output / ("s20p-A-25.12-" + upstream_commit[:8] + "-sysupgrade.bin")
+    image_name = release_image_name(upstream_commit, verified.get("build_date"))
+    expected_names = {image_name, archive.name,
+                      "archive.SHA256SUMS", "INSTALLATION.md", "BUILD-VERIFICATION.json"}
+    if set(checksums) != expected_names:
+        raise ValueError("release asset set differs from verified candidate asset set")
+    image = output / image_name
     if sha256_file(image) != verified["image_sha256"]:
         raise ValueError("direct ROM does not match the same-build archive")
     metadata = read_json(output, "BUILD-VERIFICATION.json")
     if (metadata.get("run_id") != str(run_id) or metadata.get("run_attempt") != str(run_attempt) or
             metadata.get("wrapper_commit") != build_commit or
+            metadata.get("image") != image_name or
             metadata.get("image_sha256") != verified["image_sha256"] or
             metadata.get("upstream_commit") != upstream_commit or
             metadata.get("go_security") != verified["go_security"] or
             metadata.get("fixed_inputs") != verified["fixed_inputs"] or
+            metadata.get("build_date") != verified.get("build_date") or
+            ("build_date" in metadata) != ("build_date" in verified) or
             metadata.get("live_acceptance") != "not-run" or metadata.get("stable_eligible") is not False):
         raise ValueError("release build verification record does not match exact candidate")
     guide = (output / "INSTALLATION.md").read_text()

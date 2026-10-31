@@ -14,6 +14,7 @@ sys.path.insert(0, str(CI))
 sys.path.insert(0, str(CI / "tests"))
 from component_fixtures import files, inputs
 import components
+import fixed_inputs
 
 
 def fixture(root):
@@ -48,6 +49,28 @@ def fixture(root):
 
 
 class FixedInputsTests(unittest.TestCase):
+    def test_versioned_profile_is_explicit_and_hash_bound(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path, manifest = fixture(Path(temp))
+            self.assertEqual(fixed_inputs.application_policy(fixed_inputs.load(path)), "legacy")
+            manifest.update(schema_version=3, profile=fixed_inputs.profile_descriptor("minimal-20261031"))
+            path.write_text(json.dumps(manifest))
+            self.assertEqual(fixed_inputs.application_policy(fixed_inputs.load(path)), "minimal-20261031")
+            for field in ("id", "security_sha256", "application_policy_sha256"):
+                changed = json.loads(json.dumps(manifest))
+                changed["profile"][field] = "unreviewed"
+                path.write_text(json.dumps(changed))
+                with self.assertRaises(ValueError):
+                    fixed_inputs.load(path)
+
+    def test_legacy_schema_cannot_silently_select_a_new_policy(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path, manifest = fixture(Path(temp))
+            manifest["profile"] = {"id": "minimal-20261031"}
+            path.write_text(json.dumps(manifest))
+            with self.assertRaises(ValueError):
+                fixed_inputs.load(path)
+
     def test_select_keeps_exact_component_bytes_and_head(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

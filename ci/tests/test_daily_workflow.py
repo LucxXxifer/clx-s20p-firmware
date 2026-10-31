@@ -127,7 +127,7 @@ class DailyWorkflowTests(unittest.TestCase):
         shell = textwrap.dedent(self.text.split('id: resolve', 1)[1].split('run: |\n', 1)[1]
                                 .split('\n      - name:', 1)[0])
         repo = WORKFLOW.parents[2]
-        manifest = json.loads((repo / 'ci/fixed/20261030/manifest.json').read_text())
+        manifest = json.loads((repo / 'ci/fixed/20261031/manifest.json').read_text())
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             gh = root / 'gh'
@@ -155,7 +155,7 @@ class DailyWorkflowTests(unittest.TestCase):
             self.assertIn('fixed=true', (root / 'outputs').read_text())
             self.assertIn('should_build=true', (root / 'outputs').read_text())
             self.assertEqual((root / 's20p-components.json').read_bytes(),
-                             (repo / 'ci/fixed/20261030/components.json').read_bytes())
+                             (repo / 'ci/fixed/20261031/components.json').read_bytes())
 
     def test_build_state_marks_only_an_executed_build_as_attempted(self):
         record = self.text.split("- name: Record exact run state", 1)[1].split("- name: Upload exact run state", 1)[0]

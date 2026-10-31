@@ -38,6 +38,26 @@ REQUIRED_APPLICATION_PACKAGES = ()
 EXCLUDED_APPLICATION_PACKAGES = ('adguardhome', 'luci-app-adguardhome', 'luci-i18n-adguardhome-zh-cn')
 APPLICATION_REVIEW = Path(__file__).with_name("reviewed-differences") / "application-image-selection.json"
 APPLICATION_REVIEW_SHA256 = "a2a5919a56dc21c964378e9bfa244dcb969e604997d2966cb44584ff28dc5dfb"
+# Keep the legacy review and report shape available for historical fixed runs.
+# New selections require a separate hash-addressed review, not a wider omission
+# list silently applied to every prior image.
+APPLICATION_POLICIES = {
+    "legacy": {
+        "path": APPLICATION_REVIEW,
+        "sha256": APPLICATION_REVIEW_SHA256,
+        "package_names": OMITTED_APPLICATION_PACKAGES,
+        "required_packages": REQUIRED_APPLICATION_PACKAGES,
+        "excluded_packages": EXCLUDED_APPLICATION_PACKAGES,
+    },
+    "minimal-20261031": {
+        "path": APPLICATION_REVIEW.with_name("application-image-selection-20261031.json"),
+        "sha256": "3c811db216202365d08b4e0ddcb7636d98ad1c22b3cc329d7cf8f46c42b62b64",
+        "package_names": OMITTED_APPLICATION_PACKAGES + (
+            "easytier", "luci-app-easytier", "luci-i18n-easytier-zh-cn"),
+        "required_packages": REQUIRED_APPLICATION_PACKAGES,
+        "excluded_packages": EXCLUDED_APPLICATION_PACKAGES,
+    },
+}
 
 
 def digest(value):
@@ -278,14 +298,19 @@ def load_b_optional_package_policy(baseline_dir, source_lock_path,
     return normalized
 
 
-def load_application_selection(baseline):
-    raw = APPLICATION_REVIEW.read_bytes()
-    if APPLICATION_REVIEW.is_symlink() or digest(raw) != APPLICATION_REVIEW_SHA256:
+def load_application_selection(baseline, policy_id="legacy"):
+    if policy_id not in APPLICATION_POLICIES:
+        raise ValueError("unknown application selection policy: " + str(policy_id))
+    policy = APPLICATION_POLICIES[policy_id]
+    path = policy["path"]
+    raw = path.read_bytes()
+    if path.is_symlink() or digest(raw) != policy["sha256"]:
         raise ValueError("application selection review digest mismatch")
     review = strict_json(raw)
-    if (review.get("schema_version") != 1 or review.get("package_names") != list(OMITTED_APPLICATION_PACKAGES)
-            or review.get("required_packages") != list(REQUIRED_APPLICATION_PACKAGES)
-            or review.get("excluded_packages") != list(EXCLUDED_APPLICATION_PACKAGES)):
+    if (review.get("schema_version") != 1 or review.get("policy_id", "legacy") != policy_id
+            or review.get("package_names") != list(policy["package_names"])
+            or review.get("required_packages") != list(policy["required_packages"])
+            or review.get("excluded_packages") != list(policy["excluded_packages"])):
         raise ValueError("application selection must name the exact omitted and required packages")
     baseline = Path(baseline)
     for key, name in (("package_manifest_sha256", "original-package-manifest.json"),
@@ -293,7 +318,7 @@ def load_application_selection(baseline):
         if digest((baseline / name).read_bytes()) != review.get(key):
             raise ValueError("application selection baseline digest mismatch: " + name)
     packages = read_json(baseline / "original-package-manifest.json")
-    if [row for row in packages if row["name"] in OMITTED_APPLICATION_PACKAGES] != review["baseline_packages"]:
+    if [row for row in packages if row["name"] in review["package_names"]] != review["baseline_packages"]:
         raise ValueError("application selection baseline package identity mismatch")
     records = review.get("removed_records", [])
     original = file_index(read_json(baseline / "full-rootfs-manifest.json")["files"])
@@ -315,10 +340,17 @@ def application_file_absences(review, baseline, actual):
 
 
 def application_selection_evidence(review):
-    return {"packages": list(OMITTED_APPLICATION_PACKAGES), "review_sha256": APPLICATION_REVIEW_SHA256,
-            "required_packages": list(REQUIRED_APPLICATION_PACKAGES),
-            "excluded_packages": list(EXCLUDED_APPLICATION_PACKAGES),
-            "removed_path_count": len(review["removed_records"])}
+    policy_id = review.get("policy_id", "legacy")
+    if policy_id not in APPLICATION_POLICIES:
+        raise ValueError("unknown application selection policy: " + str(policy_id))
+    result = {"packages": list(review["package_names"]),
+              "review_sha256": APPLICATION_POLICIES[policy_id]["sha256"],
+              "required_packages": list(review["required_packages"]),
+              "excluded_packages": list(review["excluded_packages"]),
+              "removed_path_count": len(review["removed_records"])}
+    if policy_id != "legacy":
+        result["policy_id"] = policy_id
+    return result
 
 
 def application_world_matches(review, data, kernel):
@@ -617,13 +649,17 @@ def semantic_dtb(nodes):
 
 
 class Gate:
-    def __init__(self, phase, baseline, approval=None, *, application_selection=False):
+    def __init__(self, phase, baseline, approval=None, *, application_selection=False,
+                 application_policy="legacy"):
         self.phase = phase
         self.baseline = Path(baseline)
         self.errors, self.differences, self.checks = [], [], {}
         self._source_evidence = None
         self.b_optional_package_policy = None
-        self.application_selection = load_application_selection(baseline) if application_selection else None
+        if not application_selection and application_policy != "legacy":
+            raise ValueError("application policy requires application selection")
+        self.application_selection = (load_application_selection(baseline, application_policy)
+                                      if application_selection else None)
         if self.application_selection:
             self.checks["application_selection"] = application_selection_evidence(self.application_selection)
         self.approvals = {}
@@ -641,6 +677,11 @@ class Gate:
                         not re.fullmatch(r"[0-9a-f]{64}", str(item.get("id", ""))) or
                         not item.get("reason", "").strip()):
                     raise ValueError("Approval requires an exact difference ID and review reason")
+                if "application_policy" in item:
+                    if item["application_policy"] not in APPLICATION_POLICIES:
+                        raise ValueError("unknown application policy in difference approval")
+                    if item["application_policy"] != application_policy:
+                        continue
                 self.approvals[item["id"]] = item["reason"]
         integrity = self.baseline / "baseline-sha256.json"
         if integrity.exists():
@@ -698,7 +739,7 @@ class Gate:
         # only the actual image gate can establish that they were installed.
         for name in self.original:
             selector = "CONFIG_PACKAGE_" + name
-            if self.application_selection and name in OMITTED_APPLICATION_PACKAGES:
+            if self.application_selection and name in self.application_selection["package_names"]:
                 selectors[name] = selector
                 required[selector] = "n"
                 continue
@@ -716,8 +757,10 @@ class Gate:
             required.setdefault(selector, ["y", "m"])
         required.update({"CONFIG_PACKAGE_" + name: "y" for name in self.policy["required_packages"]})
         if self.application_selection:
-            required.update({"CONFIG_PACKAGE_" + name: "y" for name in REQUIRED_APPLICATION_PACKAGES})
-            required.update({"CONFIG_PACKAGE_" + name: "n" for name in EXCLUDED_APPLICATION_PACKAGES})
+            required.update({"CONFIG_PACKAGE_" + name: "y"
+                             for name in self.application_selection["required_packages"]})
+            required.update({"CONFIG_PACKAGE_" + name: "n"
+                             for name in self.application_selection["excluded_packages"]})
         optional_policy = (load_b_optional_package_policy(
             self.baseline, source_lock, optional_package_review, upstream_evidence
         ) if source_lock else None)
@@ -1052,9 +1095,10 @@ class Gate:
             self.error("package_db_mismatch", "build manifest vs actual APK DB",
                        {k: p["version"] for k, p in manifest.items()},
                        {k: p["version"] for k, p in actual.items()})
-        requested_omitted = set(OMITTED_APPLICATION_PACKAGES) if self.application_selection else set()
+        requested_omitted = (set(self.application_selection["package_names"])
+                             if self.application_selection else set())
         if self.application_selection:
-            for name in EXCLUDED_APPLICATION_PACKAGES:
+            for name in self.application_selection["excluded_packages"]:
                 if name in actual:
                     self.error("requested_package_omission", name, "absent", "installed")
         for name in requested_omitted:
@@ -1075,7 +1119,8 @@ class Gate:
                                 "expected", "fixed B-only Lucky omission; hash-pinned review and signed compatible iStore feed")
         else:
             omitted = set()
-        applications = set(REQUIRED_APPLICATION_PACKAGES) if self.application_selection else set()
+        applications = (set(self.application_selection["required_packages"])
+                        if self.application_selection else set())
         for name in sorted((set(self.original) - omitted - requested_omitted) | set(self.policy["required_packages"]) | applications):
             if name not in actual:
                 self.error("missing_package", name)
@@ -1259,6 +1304,25 @@ class Gate:
         actual = walk_files(root)
         self.daily_components(root, provenance_ok, packages)
         verified_paths = self._daily_verified_paths
+        if self.application_selection and self.application_selection.get("policy_id") == "minimal-20261031":
+            try:
+                if not provenance_ok or not self._source_evidence:
+                    raise ValueError("validated source provenance is required for minimal security")
+                import fixed_inputs
+                import minimal_security
+                provenance = self._source_evidence[0].parent
+                expected = Path(__file__).parent / "fixed/20261031/manifest.json"
+                fixed = provenance / "fixed/manifest.json"
+                if (fixed.read_bytes() != expected.read_bytes() or
+                        fixed_inputs.application_policy(fixed_inputs.load(fixed)) != "minimal-20261031"):
+                    raise ValueError("minimal security requires the reviewed fixed manifest")
+                report = minimal_security.inspect(root, provenance.parent / "inspection/rootfs.squashfs",
+                                                  provenance)
+                if report != read_json(provenance.parent / "reports/minimal-security.json"):
+                    raise ValueError("minimal security report differs from inspected image")
+                self.checks["minimal_security"] = report
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                self.error("minimal_security_guard", "uhttpd/ACL", "source-bound exact patch", str(error))
         removed = self.security_removals(root, provenance_ok, packages, baseline)
         requested_removed = (application_file_absences(self.application_selection, baseline, actual)
                              if self.application_selection else set())
@@ -1274,8 +1338,10 @@ class Gate:
                 if name in removed:
                     continue
                 if name in requested_removed:
+                    omitted_names = ("Honk/TingReader/EasyTier" if self.application_selection.get("policy_id")
+                                     == "minimal-20261031" else "Honk/TingReader")
                     self.difference("removed_requested_file", name, expected, None, "expected",
-                                    "user-requested Honk/TingReader package-owned path; exact baseline review")
+                                    "user-requested " + omitted_names + " package-owned path; exact baseline review")
                     continue
                 if name in optional_removed:
                     self.difference("removed_optional_file", name, expected, None, "expected",
@@ -1305,7 +1371,10 @@ class Gate:
             elif (name == "/etc/apk/world" and provenance_ok and self.application_selection and
                     application_world_matches(self.application_selection, path.read_text(),
                                               packages.get("kernel", {}).get("version", ""))):
-                disposition, reason = "expected", "exact reviewed package roots and verified same-build kernel ABI; Honk/TingReader omitted and AdGuard Home deferred"
+                omitted_names = ("Honk/TingReader/EasyTier" if self.application_selection.get("policy_id")
+                                 == "minimal-20261031" else "Honk/TingReader")
+                disposition, reason = "expected", ("exact reviewed package roots and verified same-build kernel ABI; "
+                                                   + omitted_names + " omitted and AdGuard Home deferred")
             elif name == "/etc/apk/keys/public-key.pem" and signing_key_ok and provenance_ok:
                 disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
             elif policy.startswith("exact-"):
@@ -1429,6 +1498,8 @@ def main(argv=None):
         command.add_argument("--approve-differences", type=Path)
         command.add_argument("--application-selection", action="store_true",
                              help="require the exact reviewed S20P application selection")
+        command.add_argument("--application-policy", choices=APPLICATION_POLICIES, default="legacy",
+                             help="versioned review for the enabled application selection")
         if phase == "config":
             command.add_argument("--config", required=True, type=Path)
             command.add_argument("--optional-packages", type=Path,
@@ -1455,7 +1526,8 @@ def main(argv=None):
     gate = None
     try:
         gate = Gate(args.phase, args.baseline_dir, args.approve_differences,
-                    application_selection=args.application_selection)
+                    application_selection=args.application_selection,
+                    application_policy=args.application_policy)
         if args.phase == "config":
             gate.config(args.config, args.optional_packages, args.package_info,
                         args.source_lock, args.optional_package_review, args.upstream_evidence)

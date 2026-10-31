@@ -1,0 +1,94 @@
+{
+  "files": [
+    {
+      "path": "100-ubus-reject-non-string-list-params.patch",
+      "sha256": "caec0b216565af30f51440fc48bee3603b1a39fd94cac32c13a04cd4253496f2",
+      "size": 3200
+    },
+    {
+      "path": "README.md",
+      "sha256": "f8595b0e91f74e5f687d28babbc9faddd028652510d4ff579f6b9c94444816c5",
+      "size": 2530
+    },
+    {
+      "path": "luci-mod-system.after.json",
+      "sha256": "b5a005ccc669a3dc74df2f9758a6e55dc43c634f4d1da11143153276ae40d867",
+      "size": 4675
+    },
+    {
+      "path": "luci-mod-system.before.json",
+      "sha256": "16a24f388ca457758afbea4ff2283ad5984b0146d01697a6955ea84f42cb7924",
+      "size": 4714
+    },
+    {
+      "path": "native-regression.py",
+      "sha256": "5ce005ccd8dc262c7095887b9fee7d4805f02685e01338ec9933122eb42f8687",
+      "size": 2925
+    },
+    {
+      "path": "uhttpd-Makefile.before",
+      "sha256": "c5ee746eae2d9183d01f2a6dfa818eb300b1fdff86125f52fcb1e7c6db2bd6c8",
+      "size": 3172
+    },
+    {
+      "path": "uhttpd-list-regression.c",
+      "sha256": "fc2b37984068fd3e93c94a6afd4239afa2f67e1bd808bbe14cf2dceddbe6d077",
+      "size": 1857
+    },
+    {
+      "path": "uhttpd-ubus.before.c",
+      "sha256": "1eaee34402712e78ff7a5660e2b074dc915a0624f0f713847ee45d64647cbf71",
+      "size": 25719
+    }
+  ],
+  "id": "s20p-minimal-security-20261031",
+  "limits": [
+    "No target runtime or hardware test is implied.",
+    "QuickStart and other pending security issues remain unchanged."
+  ],
+  "luci_acl": {
+    "advisory": "https://github.com/openwrt/luci/security/advisories/GHSA-v5f9-62c7-cw29",
+    "method": "Exact removal of stale mounts.write.file /etc/crontabs/root grant per upstream advisory; not an upstream merged commit.",
+    "source_commit": "c84adb975e207ae8b14982191838ec6218d632cd",
+    "source_repository": "https://github.com/immortalwrt/luci"
+  },
+  "native_regression": {
+    "libubox_archive_sha256": "7599cd1818c89714cc19e53f8c65983e5b552d0fe363055bc0e150a4254381ee",
+    "libubox_archive_url": "https://codeload.github.com/openwrt/libubox/tar.gz/7dd127841e82eb1cfb61185da37dde7b9bd9ba6d",
+    "libubox_commit": "7dd127841e82eb1cfb61185da37dde7b9bd9ba6d",
+    "libubox_files": {
+      "assert.h": "c2c265083900f333af16c7ff59793907723ecb933a18c45e1047088432aedc09",
+      "avl-cmp.h": "0701f4520376445975cefde699442d3747a63399cf6373f44c31dcc32a133651",
+      "avl.h": "f0ebf6b2c8731fa8340a6d92380390ae8ff348eb71ae4ee5c46e3b166d99dae1",
+      "blob.c": "52f37a35d3319502b85c3853fe0803fd609003e6b6cb7500faf5b99e8f86e770",
+      "blob.h": "115ad0e346735e26ca4c118bc08807b5544c8a456a21f3f627b23dafa0d39ec4",
+      "blobmsg.c": "0b6f1b90454e3a308fca03dc1064e2031382f33323f9f3268269f9645f57123e",
+      "blobmsg.h": "affec80432f30d42324694be6c4261ad97d34c222c5aed80ba20de7ec3823c60",
+      "blobmsg_json.h": "eb2e141a9e64007206c75e9161fb63da27ee72bdd5e90a286495c5ff9496fbd7",
+      "json_script.h": "de72da2493bc660ac046f8b03d2fc6de4253a2fb15045eadc73edd872a564ee8",
+      "kvlist.h": "da1ed50121e6d841105fc9cacfa3e425254b97d404aaa2a1cd00de40079e8ef6",
+      "list.h": "8ca757c8053da9da5c68fe8ba27918da9544030152ad065023c328c1f48d677b",
+      "md5.h": "73415778d804af47962b6757579ef286a7d6ad3ac622e24363932cf803953457",
+      "runqueue.h": "a13a540d05b24f61974cd540d941eaf794a43fb2d7b28b14d59360fc5e473eb0",
+      "safe_list.h": "f05dca08740153b8510c8cbbe1b2a783174f2579c62c61d466f6c2c2556edaa0",
+      "udebug-priv.h": "41fe654734df936d29962a99d25465333d485427f884d34e8f3117f193941460",
+      "udebug-proto.h": "73a0d57612efd78632bbc7e099b0454c7aa34ace934405e033603c43406ff528",
+      "udebug.h": "3281bb39ae0d2ac788f2722069760e3ec8f118b131ccb2f76e5163befd0d5b9c",
+      "ulog.h": "867f971659f471576b9856090696fe6e76064af7f7e2966896aa465317d0bfb8",
+      "uloop.h": "4432f10f94fd8f5fe7b0cfa87f8b7e858dd51f4714a700e38e1e91e8029e1bdf",
+      "usock.h": "73e7aad1f2880452fc468eefb5b18e10cb0bc7a4069ff2e9bde1a8793c6bfab3",
+      "ustream.h": "9935d53eacc0ee488b6f171f2d00118002a609eb1a22fcdb6b0ff2ab846c4b7a",
+      "utils.c": "22447191e1048d165207808a3ec5d882f7e66b39fa109a3a420a74bba76fb726",
+      "utils.h": "a3c97f1b6d431041816ab6c085d6f44811d6d2bfb1e694c2ba7b501be226a2d8",
+      "vlist.h": "063c78977ef5a5d739c5ec3aea5752c083ced1802894265cbc6b98ace6f1b211"
+    }
+  },
+  "schema_version": 1,
+  "uhttpd": {
+    "base_commit": "373145f72c884c36a2b16f7f47e74ffae06bd754",
+    "commit": "64dcf47aa7f84ae60db9a3950e5c4b8fbe5ed6f1",
+    "package_release": 2,
+    "patched_ubus_sha256": "2164df281ae6f169e74f9b30fc2c51b18ba57adec49823ee64a9b26a442d19b6",
+    "url": "https://github.com/openwrt/uhttpd/commit/64dcf47aa7f84ae60db9a3950e5c4b8fbe5ed6f1.patch"
+  }
+}

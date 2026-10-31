@@ -13,6 +13,8 @@ export S20P_UPSTREAM_EVIDENCE="${S20P_UPSTREAM_EVIDENCE:-}"
 export S20P_UPSTREAM_COMMIT="${S20P_UPSTREAM_COMMIT:-}"
 export S20P_COMPONENT_INPUTS="${S20P_COMPONENT_INPUTS:-}"
 export S20P_FIXED_INPUTS="${S20P_FIXED_INPUTS:-}"
+# Only a verified fixed manifest may select the new image/security policy.
+export S20P_APPLICATION_POLICY=legacy
 export S20P_GIT_LOG="$S20P_CAPTURE_DIR/provenance/git-clones.jsonl"
 export S20P_HTTP_LOG="$S20P_CAPTURE_DIR/provenance/http-inputs.jsonl"
 export S20P_BUILD_LOG="$S20P_CAPTURE_DIR/logs/build.log"
@@ -38,6 +40,7 @@ verify_runtime_inputs() {
 }
 verify_runtime_inputs
 mkdir -p "$S20P_CAPTURE_DIR/logs" "$S20P_CAPTURE_DIR/provenance" "$S20P_CAPTURE_DIR/reports"
+TZ=Asia/Shanghai date +%Y%m%d > "$S20P_CAPTURE_DIR/provenance/build-date.txt"
 if [[ -z $S20P_COMPONENT_INPUTS ]]; then
     export S20P_COMPONENT_INPUTS="$S20P_CAPTURE_DIR/provenance/component-resolution.json"
     python3 ci/components.py resolve --output "$S20P_COMPONENT_INPUTS"
@@ -69,6 +72,7 @@ if [[ -n $S20P_FIXED_INPUTS ]]; then
     python3 ci/fixed_inputs.py verify "$S20P_FIXED_INPUTS" \
         --head "$locked_upstream" --components "$S20P_COMPONENT_INPUTS" \
         --capture "$S20P_CAPTURE_DIR/provenance/fixed"
+    S20P_APPLICATION_POLICY=$(python3 ci/fixed_inputs.py policy "$S20P_FIXED_INPUTS")
 fi
 # The parent wrapper's pre-clone and build share these exported lock variables.
 set +e
@@ -99,6 +103,11 @@ fi
 python3 ci/dashboard.py inspect \
     --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
     --output output/reports/dashboard.json
+if [[ $S20P_APPLICATION_POLICY == minimal-20261031 ]]; then
+    python3 ci/minimal_security.py inspect \
+        --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
+        --provenance output/provenance --output output/reports/minimal-security.json
+fi
 if [[ -f output/provenance/component-preparation.json ]]; then
     python3 ci/component_gate.py --rootfs output/inspection/rootfs \
         --payload output/inspection/rootfs.squashfs --provenance output/provenance \
@@ -122,6 +131,7 @@ if [[ -f $repo/ci/approved-differences.json ]]; then
 fi
 gate_command+=(
     --application-selection \
+    --application-policy "$S20P_APPLICATION_POLICY" \
     --rootfs output/inspection/rootfs \
     --kernel-config output/metadata/kernel/.config \
     --packages output/inspection/rootfs/lib/apk/db/installed \

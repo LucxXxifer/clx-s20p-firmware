@@ -1,5 +1,7 @@
 # S20P CA 與 Go x509 安全建置
 
+2026-10-31，[固定來源版 run 41083116478](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)已按維護者決定正式發布；已獨立驗證成品、CA、Go 與面板檢查。此變更只調整發布狀態與說明，不改寫原始成品、安全報告或 `stable_eligible=false`。以下 QuickStart 未修補例外及未實機驗收限制繼續適用。
+
 2026-10-30 起，每日模式採用[每日元件政策](../README_AUTOBUILD.md)：系統及已選插件來源每日解析；CA／Go 保留本文件安全下限並接受較新的相容穩定版本。CA 輸出改由保存的官方 source archive 獨立重建驗證，Go 保留 recipe 結構及實際 ELF 檢查。依最新指示，AdGuard Home 核心、LuCI 與中文包暫不編入映像。QuickStart 的精確舊版例外不擴張；新版若已修補可通過，若仍未修補且 bytes 不同則停止發布。
 
 以下保留 2026-10-29 固定來源安全建置的查核紀錄；其中固定版本及來源描述不是每日更新的上限。
@@ -21,7 +23,7 @@
 3. `docker`、`dockerd`、`containerd`、`runc` 四個既有程式都必須在檢查清單內；不以移除 Docker 來避過檢查。
 4. `reports/go-x509-security.json` schema 2 保存每個程式的 SHA256、Go 版本、verifier／常數證據及分類，並綁定原始 SquashFS SHA256 與檢查政策 SHA256。缺報告、未審核的舊版本或 payload 不同，均不得發佈候選版。存在例外時只可標為 `pass_with_known_exception`，並列出完整 `known_exceptions`；發佈驗證拒絕隱藏或改寫此狀態。
 
-報告與所有原有證據進入同次編譯 archive 及其 checksum。每日排程仍是上海時間 04:20；手動安全建置使用單次 `force=true`，沒有設定循環重試。全部檢查通過後只發佈 rolling prerelease，保留歷史 A／B。
+報告與所有原有證據進入同次編譯 archive 及其 checksum。每日排程仍是上海時間 04:20；手動安全建置使用單次 `force=true`，沒有設定循環重試。全部檢查通過後自動發佈 rolling prerelease；正式發布另由維護者決定，目前保留版本見[首頁](../README.md#韌體下載)。
 
 ## 保留 QuickStart 的已知安全例外
 

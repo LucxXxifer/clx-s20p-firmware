@@ -2,7 +2,7 @@
 
 本文件的 compare、CA 移除和 package 差異內容記錄 **B 最初鎖定建置**，不是把未來上游差異預先批准。GitHub `main` 的 rolling workflow 以 `chasey-dev/immortalwrt-mt798x-rebase@25.12` 的 `9f397975c7b47ce6986a6e39529d2f72fd5c729d` 為唯一起點；每次從 GitHub compare 取得一個完整 SHA，確認其為此起點的 fast-forward descendant，並在 runner 暫存目錄生成精確 source lock。若有新差異，既有 preservation、package、ABI、source、簽章與安全 gate 仍逐項檢查，任何未審查差異都會阻止候選發布。
 
-固定 A 10/17 release `s20p-candidate-40095658212-1` 與初始 B candidate release `s20p-b-25.12-candidate-40420056051-1` 保留原始 assets 和校驗碼。rolling 候選只以獨立 prerelease 發布，不能覆蓋這兩個 release，也不能重用不同 run 的 signing key、feed 或 kmod。
+固定 A 10/17 release `s20p-candidate-40095658212-1` 保留原始 assets 和校驗碼。初始 B candidate `s20p-b-25.12-candidate-40420056051-1` 的下載 release 已於 2026-10-31 依維護者要求清理，來源 tag、Actions 執行記錄及本文件的歷史審查保留。現行三個下載版本見[首頁](../README.md#韌體下載)。rolling 候選不得覆蓋保留版本，也不能重用不同 run 的 signing key、feed 或 kmod。
 
 B 初始 source 固定為 `chasey-dev/immortalwrt-mt798x-rebase@9f397975c7b47ce6986a6e39529d2f72fd5c729d`，只更新 A 的 `03eb30617955519e35845838c6255ebe687eb717`。A wrapper commit `2e6371c4a4801961cf88f2094224e1bb82ef4825`／run `40095658212` 的 release ref、bundle、來源與驗收證據獨立保留。B 不覆蓋 A，也不能借用 A 的套件簽名或同批 kmod。
 

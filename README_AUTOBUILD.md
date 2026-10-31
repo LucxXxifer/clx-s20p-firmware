@@ -1,8 +1,10 @@
 # CLX-S20P 每日上游候選編譯
 
+目前正式下載入口為[2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、成品與驗證資料保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
+
 新增固定來源模式：Actions → **Run workflow → fixed=true** 使用 `ci/fixed/20261030/manifest.json`，固定 run `41031102553` 的系統、31 個插件／feed、CA／Go／QuickStart、5 份 wrapper HTTP 輸入及 Debian Snapshot CA 原始封存。封存 SHA256 必須與固定 CA recipe 的上游 `PKG_HASH` 一致，並核對 Snapshot SHA-1 內容位址；固定建置會將同一封存放入 OpenWrt `dl/` 快取，避免 Debian pool 原 URL 下架後編譯階段再次下載失敗。HTTP 內容按精確 URL／SHA256 重播，未知下載、內容竄改、未完整消耗輸入均停止；仍經原來源、簽章、ABI、面板、安全與精確差異驗收。固定模式不查詢新版元件，不採 rolling 的前次 head 作為版本選擇；仍驗證來源基準 ancestry。排程仍使用每日追新的 rolling 模式。固定輸入與 runner 工具鏈完全可重現是不同承諾；此模式不保證二進位逐位一致。
 
-固定模式成功後另建 `s20p-a-25.12-fixed-candidate-…` prerelease，保存完整同批套件與證據，不改寫歷史 release。這是固定來源候選，未實機驗收前不標為 stable；既有 QuickStart 精確舊版例外依然公開。一般 `fixed=false`／每日排程維持最新穩定元件政策，`force=true` 只在修正原因後要求重新建置。
+固定模式成功後另建 `s20p-a-25.12-fixed-candidate-…` prerelease，保存完整同批套件與證據，不改寫歷史 release。維護者可另外決定正式發布，但不因此改寫成品或驗收事實；既有 QuickStart 精確舊版例外依然公開。一般 `fixed=false`／每日排程維持最新穩定元件政策，`force=true` 只在修正原因後要求重新建置。
 
 2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，移除 Honk／TingReader，暫不預裝 AdGuard Home，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
@@ -21,9 +23,9 @@ GitHub `main` 每天查詢 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12`，
 
 Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發 S20P 重編；仍有其他已選套件的共用 feed 繼續追蹤。Docker 容器內的應用映像不屬於韌體套件更新；路由器上自行安裝的軟體也不會被此 workflow 遠端自動更新。
 
-既有 A 10/17 固定下載版保持獨立：[GitHub release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。原始 A 成品、校驗碼與來源證據不由 rolling `main` 改寫。此前的 B 25.12 靜態候選也保留：[B candidate release](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。這個 workflow 只發新的 rolling prerelease candidate，不建立 stable release、不刷機；新上游差異未通過精確審查時不會發布。
+保留下載版本為最新固定正式版、[上一個成功版 run 40893380461](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975)及 [A 10/17 歷史固定版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)。2026-10-31 清理其他舊 release，保留來源 tags 與 Actions 執行記錄；失敗／取消建置的附件一併清理。每日 workflow 仍只自動發布 prerelease，不會改寫正式固定版或自動刷機；未審查差異繼續阻止發布。
 
-首輪 rolling A 已由 [Actions run 40488248986](https://github.com/LucxXxifer/clx-s20p-firmware/actions/runs/40488248986) 完成，對應 [2026-10-27 prerelease 與完整下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40488248986-1-9f397975)。此輪是 `force=true` 的流程驗證，上游仍為 `9f397975...`，build wrapper 為 `1a52a567...`。ROM、同批完整 feed、API digest、ZIP CRC、內外校驗碼及原生離線套件驗證均通過；492個已安裝套件、535 APK、153個同ABI kmods、28個USB/mobile可選包齊備。使用 `sha256sum -c SHA256SUMS` 前請下載該 release 的全部六個 assets 到同一目錄；manifest 列出另外五個檔案，僅下載 `.bin` 會回報缺檔。本候選尚未實機刷入驗收。
+最新固定版已完成實際編譯與獨立離線驗收：488 個已安裝套件、531 APK、5 個簽章套件源、153 個同 ABI kmods、28 個 USB/mobile 可選包，以及 ROM、API digest、ZIP CRC、內外校驗碼、面板與安全檢查均通過。核對完整 `SHA256SUMS` 時，需先把該 release 的六個 assets 下載到同一目錄；只下載 `.bin` 會回報其他檔案缺失。成品驗證不代替實機刷入驗收。
 
 既有 A build 的 wrapper commit 為 `2e6371c4a4801961cf88f2094224e1bb82ef4825`、Actions run 為 `40095658212`，其主 source 是 chasey `03eb30617955519e35845838c6255ebe687eb717`。新 rolling 流程由固定 B 初始基準 `9f397975...` 逐次前進；每個 artifact、repository signing key、kernel ABI 及同批套件 feed 均只屬於自己的 run，不能套用 A 或其他候選的值。歷史 source 差異、CA 安全移除門檻及驗證要求見 [source transition record](docs/SOURCE-TRANSITION-B.md)。
 

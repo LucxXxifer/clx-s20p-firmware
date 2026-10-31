@@ -1,199 +1,63 @@
-# CLX-S20P 從 0 到 1：刷機、備份還原與固件
+# CLX-S20P 韌體、刷機與備份還原
 
-本倉庫集中管理 CLX-S20P 首次刷機、OpenWrt 升級／備份還原的 Codex skill、固定下載固件與每日上游候選編譯。Skill 也可用於其他 S20P 分支，須逐次核對相容性。
+本倉庫維護 **CLX-S20P（AX6000 Wi-Fi）** 的 ImmortalWrt 25.12 韌體、GitHub Actions 編譯，以及首次刷機／OpenWrt 升級還原的 Codex skill。建置設定為 `S20P-WIFI-YES`，映像板型為 `clx,s20p`。
+
+## 韌體下載
+
+目前保留以下三個版本。時間使用 Asia/Shanghai；「10/17」是歷史版本的基準名稱，並非 GitHub 發布日期。
+
+| 版本 | 下載與說明 |
+| --- | --- |
+| **最新正式版：25.12 固定來源版** · 2026-10-31 | [Release、韌體、校驗碼與同批套件](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975) · run `41083116478` |
+| 上一個成功版 · 2026-10-30 | [歷史 Release 與完整成品](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-candidate-40893380461-1-9f397975) · run `40893380461` |
+| 10/17 歷史固定版 | [原始 Release 與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) · [固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17) |
+
+最新版本按維護者決定正式發布並設為 Latest；來源、成品、校驗碼及原始 tag 保持不變。檔名／tag 中的 `candidate` 和同批驗證資料保留建置當時的身分，不會為更名而重新打包韌體。
+
+## 最新正式版內容與驗證範圍
+
+- 固定系統、31 個插件／feed、CA／Go／QuickStart 及建置使用的 HTTP 輸入，避免每日來源變動影響此版本。
+- CA 為 `20260816-r2`；11 個已修補 Go 執行檔使用 `go1.26.10`／`go1.27.3`。**QuickStart 0.13.0 仍使用 `go1.25.0`，是唯一已批准、尚未修補 GO-2026-6809／CVE-2026-111943 的精確例外**，詳見[安全說明](docs/SECURITY-BUILD.md)。
+- 納入控制面板狀態顯示修正；移除 Honk／TingReader，暫不預裝 AdGuard Home。Lucky 亦維持已審查的三個套件排除。
+- 實際編譯及全部既定雲端檢查通過；獨立核對六個下載成品的 API digest／checksum、5 個簽章套件源、531 個 APK、153 個同 ABI 核心模組及映像內 488 個套件版本。
+
+**正式發布不等於完成實機或長期穩定性驗收。** 此映像尚未刷入目標設備驗證開機、Wi-Fi／USB、旁路由、私人插件及資料遷移；驗證資料仍如實保留 `live_acceptance=not-run`、`stable_eligible=false`。下載後另行安裝的程式不屬於本次映像安全檢查範圍。
+
+## 下載校驗與升級
+
+最新正式版的韌體檔為 `s20p-A-25.12-9f397975-sysupgrade.bin`，SHA256：
+
+```text
+40a26abc68162b86afd7fd5a001518caa7c25c084ee18554140d245e6590bff3
+```
+
+將該 release 的六個檔案下載到同一資料夾，再核對完整清單：
+
+```sh
+# macOS
+shasum -a 256 -c SHA256SUMS
+# Linux
+sha256sum -c SHA256SUMS
+```
+
+`SHA256SUMS` 列出其餘五個檔案；只下載 `.bin` 時，改用 `shasum -a 256 s20p-A-25.12-9f397975-sysupgrade.bin` 並比對上方雜湊。保留同一 run 的 `s20p-samebuild-*.tar.gz`，安裝 kmod／補充套件時使用其中相符 ABI 與簽章的套件源。
+
+OpenWrt 升級入口為 LuCI「系統 → 備份／升級」。先依[備份與還原流程](skills/clx-s20p-provisioning/references/openwrt-backup-restore.md)核對來源／目標的板型、分區、套件系統及設定相容性，再選擇保留設定或乾淨安裝。LuCI 設定備份不會重裝插件程式，插件資料與身分需另外備份及逐項還原。
+
+## 首次刷機與備份還原 Skill
 
 | 用途 | 入口 |
 | --- | --- |
-| 首次刷機：Telnet／SSH → eMMC 健康檢查 → 逐機原廠備份 → FIP U-Boot 寫入及讀回驗證 | [Skill 使用及安裝指南](skills/README.md) · [下載 .skill 安裝包](skills/clx-s20p-provisioning.skill) · [Skill 原始碼](skills/clx-s20p-provisioning/SKILL.md) |
-| OpenWrt 升級／還原：辨識備份範圍與分支相容性 → 安裝插件 → 還原設定／資料 → 逐項驗收 | [備份與還原流程](skills/clx-s20p-provisioning/references/openwrt-backup-restore.md) |
-| 固定下載版 A（10/17） | [Release、固件與校驗碼](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1) |
-| 每日 ImmortalWrt 25.12 候選 | [編譯及驗收規則](README_AUTOBUILD.md) · [所有 Releases](https://github.com/LucxXxifer/clx-s20p-firmware/releases) |
+| 安裝與使用 Codex skill | [使用指南](skills/README.md) · [下載 .skill 安裝包](skills/clx-s20p-provisioning.skill) · [Skill 原始碼](skills/clx-s20p-provisioning/SKILL.md) |
+| 首次刷機 | 核對設備身分與 eMMC 健康 → 逐機原廠備份 → FIP 寫入／讀回 → 手動進入 U-Boot、刷 GPT／系統 |
+| OpenWrt 升級／還原 | [辨識備份範圍、分支相容性、插件安裝及設定／資料恢復](skills/clx-s20p-provisioning/references/openwrt-backup-restore.md) |
 
-Skill 會先檢查 eMMC 壽命並保留每臺機器自己的原廠資料；預設不做 100+ GB 的 p6 原始映像克隆。完成 FIP 驗證後，斷電／Reset、進入 U-Boot 及刷 GPT／系統由使用者手動完成。備份驗證、七個實體網口測試與原廠還原實測會分別記錄；詳見[驗證範圍與限制](skills/README.md#驗證範圍與限制)。
+每臺 S20P 都需保存自己的 factory／boot 資料。Skill 可用於不同 S20P 韌體分支，但每次仍需核對相容性；不預設克隆整個 100+ GB 的資料分區，不公開設備備份、訂閱、私鑰或私人設定。
 
-> **CLX-S20P 固件線**：GitHub `main` 每日 04:20（Asia/Shanghai）追蹤 chasey ImmortalWrt 25.12、已選第三方插件來源（包括 iStore、OpenClash、Docker）及官方 CA／Go 更新。來源組合有變才編譯，全部差異、安全、套件與簽章檢查通過才建立 prerelease。移除 Honk／TingReader，暫不預裝 AdGuard Home，並納入控制面板修復。公開庫使用 GitHub-hosted 標準 Linux runner。
->
-> **固定下載版 A（10/17）**：[GitHub release 與下載](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-candidate-40095658212-1)／[固定來源分支](https://github.com/LucxXxifer/clx-s20p-firmware/tree/s20p-a-10-17)。此 release 保留原成品、校驗碼及說明；rolling `main` 不會改寫它。既有 B 候選也保留：[B 25.12 candidate](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-b-25.12-candidate-40420056051-1)。
->
-> 每日流程、候選發布規則與驗收限制見 [README_AUTOBUILD.md](README_AUTOBUILD.md)。原作者的一般編譯說明保留如下。
+## 每日編譯與來源
 
----
+GitHub Actions 每日 **04:20（Asia/Shanghai）** 追蹤相容的 ImmortalWrt 25.12 系統、已選第三方插件（包括 iStore、OpenClash、Docker）及官方 CA／Go 穩定更新。來源組合改變才建置，全部檢查通過後自動發布候選版；正式發布由維護者決定。每日流程不改寫上述固定版本，也不會自動刷寫設備。
 
-# 编译指南
+[編譯模式、來源鎖定與驗收規則](README_AUTOBUILD.md) · [安全政策](docs/SECURITY-BUILD.md) · [Actions](https://github.com/LucxXxifer/clx-s20p-firmware/actions/workflows/s20p-daily.yml) · [Releases](https://github.com/LucxXxifer/clx-s20p-firmware/releases)
 
-本仓库用于按设备配置自动拉取 OpenWrt / ImmortalWrt / LiBwrt 源码、应用自定义补丁与软件包配置，并输出固件到 `firmware/` 目录。
-
-## 1. 环境准备
-
-推荐使用 Ubuntu LTS 或其他主流 Linux 发行版。OpenWrt 编译对磁盘空间、内存和文件系统大小写敏感性有要求，建议预留充足磁盘空间并在原生 Linux 文件系统中编译。
-
-## 2. 安装编译依赖
-
-```bash
-sudo apt -y update
-sudo apt -y full-upgrade
-sudo apt install -y dos2unix libfuse-dev
-sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
-```
-
-容器构建还需要已安装并可正常运行的 Docker。
-
-## 3. 获取源码
-
-```bash
-git clone https://github.com/dqsq2e2/wrt_release.git
-cd wrt_release
-```
-
-## 4. 编译用法
-
-### 交互式选择
-
-直接运行脚本会列出当前 `wrt_core/compilecfg/*.ini` 与 `wrt_core/deconfig/*.config` 同时存在的设备配置，并提示选择构建模式：
-
-```bash
-./build.sh
-```
-
-### 直接指定设备
-
-```bash
-./build.sh <设备配置名> [debug|container|container_debug|config_preview]
-```
-
-构建模式说明：
-
-| 模式 | 命令示例 | 说明 |
-| --- | --- | --- |
-| 默认 | `./build.sh x64_immwrt` | 拉取源码、应用配置、下载依赖并完整编译固件。 |
-| `debug` | `./build.sh x64_immwrt debug` | 执行到 `make defconfig` 后停止，用于检查配置，不产出固件。 |
-| `container` | `./build.sh x64_immwrt container` | 使用 Docker 容器执行完整构建，减少本机环境差异。 |
-| `container_debug` | `./build.sh x64_immwrt container_debug` | 在 Docker 容器中执行 debug 流程并进入交互 shell。 |
-| `config_preview` | `./build.sh x64_immwrt config_preview` | 只预览配置片段组合，不拉取源码、不写构建目录。 |
-
-可通过环境变量临时追加或移除配置片段：
-
-```bash
-ADD_CONFIG_FRAGMENTS=docker_deps ./build.sh gemtek_w1701k_immwrt config_preview
-REMOVE_CONFIG_FRAGMENTS=proxy ./build.sh x64_immwrt config_preview
-```
-
-原始 `wrt_release` 的 GitHub Actions 手动构建曾提供 `add_fragments` 与 `remove_fragments` 输入项；本仓库現行的 S20P rolling workflow 不會透過這些輸入改動 package 選擇。
-
-编译完成后，脚本会从 `<BUILD_DIR>/bin/targets/` 收集固件文件到仓库根目录的 `firmware/`。每次完整构建前会清理旧的目标固件文件，`firmware/Packages.manifest` 会被移除。
-
-### 自动云编译
-
-本仓库現行的自動編譯是上方說明的 S20P rolling workflow：每日追蹤系統、插件及安全元件的精確來源組合，通過全部 gates 後發 prerelease。原多設備 `upstream_watch`、`build_wrt`、`release_wrt` 與維護 workflow 已移到 `docs/upstream-workflows/` 並改為 `.disabled` 保存，不會在 GitHub Actions 中執行。
-
-## 5. 支持设备
-
-设备配置名来自 `wrt_core/compilecfg/` 和 `wrt_core/deconfig/` 中同名文件。当前支持：
-
-| 厂商 / 平台 | 设备 | 配置名 |
-| --- | --- | --- |
-| 京东云 | 雅典娜(02)、亚瑟(01)、太乙(07)、AX5(JDC版) | `jdcloud_ipq60xx_immwrt` |
-| 京东云 | 雅典娜(02)、亚瑟(01)、太乙(07)、AX5(JDC版) - LiBwrt | `jdcloud_ipq60xx_libwrt` |
-| 京东云 | 百里 / AX6000 | `jdcloud_ax6000_immwrt` |
-| 京东云 | 百里 / AX6000 - Linux 6.18 / Honk | `jdcloud_ax6000_immwrt_honk` |
-| CLX | S20L（AX4200 WiFi） | `S20L-WIFI-YES` |
-| CLX | S20P（AX6000 WiFi） | `S20P-WIFI-YES` |
-| CLX | S20L、S20M、S20P（移除 WiFi） | `S20-WIFI-NO` |
-| 阿里云 | AP8220 | `aliyun_ap8220_immwrt` |
-| 阿里云 | AP8220 - LiBwrt | `aliyun_ap8220_libwrt` |
-| Linksys | MX4200v1、MX4200v2、MX4300 | `linksys_mx4x00_immwrt` |
-| Link | NN6000v2 | `link_nn6000v2_immwrt` |
-| 奇虎 | 360v6 | `qihoo_360v6_immwrt` |
-| 红米 | AX5 | `redmi_ax5_immwrt` |
-| 红米 | AX6 | `redmi_ax6_immwrt` |
-| 红米 | AX6 - LiBwrt | `redmi_ax6_libwrt` |
-| 红米 | AX6000 | `redmi_ax6000_immwrt21` |
-| CMCC（中国移动） | RAX3000M | `cmcc_rax3000m_immwrt` |
-| MediaTek / Filogic | 67 个设备 Profile（保留 WiFi） | `MEDIATEK-WIFI-YES` |
-| MediaTek / Filogic | S20L、S20M、S20P、EX5700（移除 WiFi） | `MEDIATEK-WIFI-NO` |
-| 斐讯 | N1 | `n1_immwrt` |
-| 兆能 | M2 | `zn_m2_immwrt` |
-| 兆能 | M2 - LiBwrt | `zn_m2_libwrt` |
-| Gemtek | W1701K | `gemtek_w1701k_immwrt` |
-| x86 | X64 | `x64_immwrt` |
-
-示例：
-
-```bash
-./build.sh jdcloud_ipq60xx_immwrt
-./build.sh aliyun_ap8220_libwrt
-./build.sh redmi_ax6_libwrt container
-./build.sh S20L-WIFI-YES
-./build.sh S20P-WIFI-YES
-./build.sh S20-WIFI-NO config_preview
-./build.sh jdcloud_ax6000_immwrt_honk
-```
-
-## 6. 配置来源
-
-每个设备由两类文件共同定义：
-
-- `wrt_core/compilecfg/<设备配置名>.ini`：定义源码仓库、分支、构建目录、默认配置片段、可选提交哈希和容器 SDK 镜像。
-- `wrt_core/deconfig/<设备配置名>.config`：定义 OpenWrt 目标平台、设备和软件包配置。
-
-不同设备会使用不同上游源码，例如 `VIKINGYFY/immortalwrt`、`immortalwrt/immortalwrt`、`LiBwrt/openwrt-6.x`、`padavanonly/immortalwrt-mt798x` 或本仓库维护的特定分支。`BUILD_TARGET_SDK` 未配置时，容器构建默认使用 `immortalwrt/sdk:openwrt-25.12`。
-
-`S20L-WIFI-YES`、`S20P-WIFI-YES` 和 `S20-WIFI-NO` 均使用 `chasey-dev/immortalwrt-mt798x-rebase` 的 `25.12` 分支。两个 WiFi 配置分别只构建 S20L（AX4200）和 S20P（AX6000），避免不同无线规格共用全局 SKU；无 WiFi 配置继续一次构建 S20L、S20M、S20P。S20P 使用 `docker_deps,migration,mobile_usb`，不包含 Honk／TingReader；其他机型片段保持各自配置，只有 S20P 启用本仓库每日 workflow。
-
-`jdcloud_ax6000_immwrt_honk` 使用 `VIKINGYFY/immortalwrt` 的 `owrt` 分支，目标为 `jdcloud_re-cp-03`，通过 `EXPECTED_KERNEL=6.18` 检查内核主次版本，构建目录为 `immortalwrt-honk/`。原来的 `jdcloud_ax6000_immwrt` 继续使用 6.12 厂商驱动，两者独立保留。
-
-此配置的应用选择沿用 `jdcloud_ax6000_immwrt.config` 与公共配置，将厂商 WiFi/HNAT 组件换为 mac80211 WiFi 和原生 PPE/nft flowtable，去掉只适用于厂商驱动的 eQoS/Turbo ACC 插件，通过 LuCI 防火墙设置管理流量卸载，并追加 `honk` 片段。参考 `kwrum1/honk-ImmortalWRT-CI`，从 `kenzok8/openwrt-honk` 同步 honk 核心与 luci-app-honk（含 Doona 界面），从 `kenzok8/wall` 同步 v2ray-geodata，为 Honk 提供 GeoIP/GeoSite 数据。核心使用软件包指定的 AArch64 musl 发行包；构建前从同仓库的 `staging` 发布同步 `generated-stage.mk` 和 `generated-provenance.json`，校验核心提交一致并使用发布清单中的 SHA256。若 `main` 的核心版本与发布清单不同，则从 `main` 历史中选择最近一个核心提交匹配、Doona 资源已发布且发布哈希一致的完整快照，同时同步 honk 与 luci-app-honk，再执行相同校验；找不到匹配快照或清单异常时停止构建。BTF 直接编入本机内核，不依赖外置 BTF 文件。Honk 保留软件包默认的未初始化、未启用状态，刷机后在「服务 → Honk」中初始化并配置订阅和分流后启动；不预置旁路由 IP、上游网关或订阅。
-
-此配置还预装 `luci-app-fullconenat-sonic`，使用源码内置的 Sonic 全锥 NAT 管理界面，不混用旧版独立 fullconenat 内核模块。
-
-构建时会按顺序组合配置：
-
-1. 设备专用 `.config`
-2. `compile_base.config`
-3. `wrt_core/deconfig/fragments/<name>.config` 中的有效配置片段
-
-默认片段由 `compilecfg/*.ini` 的 `CONFIG_FRAGMENTS` 指定：
-
-- `proxy` 选择代理相关软件包，是否默认包含以各设备的 `CONFIG_FRAGMENTS` 为准。
-- `honk` 选择 honk、luci-app-honk、GeoIP/GeoSite 数据和 eBPF/BTF 依赖，并控制对应 custom_feed 源码同步与配置校验；默认由 `jdcloud_ax6000_immwrt_honk` 使用。可通过 `ADD_CONFIG_FRAGMENTS=honk` 追加到兼容的 AArch64/x86_64 配置，或通过 `REMOVE_CONFIG_FRAGMENTS=honk` 移除。
-- `daed` 片段保留为可选项，选择 daed、luci-app-daede 和 eBPF/BTF 依赖，按需通过 `ADD_CONFIG_FRAGMENTS=daed` 使用。
-- IPQ60xx / IPQ807x 设备默认额外包含 `nss`。
-- 只有已显式选择 Dockerman 或明确适合运行 Docker 的设备默认包含 `docker_deps`，统一选择 `luci-app-dockerman`、`docker-compose` 及运行依赖，避免 NAND 空间紧张或无 USB 设备被默认加入 Docker 软件包。
-
-`ADD_CONFIG_FRAGMENTS` 会在默认片段后追加，`REMOVE_CONFIG_FRAGMENTS` 会从最终片段中移除对应配置片段。移除只表示“不追加这个 fragment”，不会反向修改设备 `.config` 或 `compile_base.config` 中已经写明的配置。
-
-Dockerman 源码更新和 Docker nftables 兼容补丁同样以最终生效的 `docker_deps` 片段为开关：包含该片段时执行，不包含时跳过。因此通过 `ADD_CONFIG_FRAGMENTS=docker_deps` 可以临时加入 Docker 软件包并启用补丁，通过 `REMOVE_CONFIG_FRAGMENTS=docker_deps` 可以不再追加 Docker 软件包并禁用补丁。单独调用 `wrt_core/update.sh` 时，Docker 更新和补丁默认关闭，由构建入口传入片段解析结果。
-
-## 7. 三方插件
-
-三方插件主要通过 feeds 机制加入，其中 small-package 源自：
-
-```text
-https://github.com/kenzok8/small-package.git
-```
-
-相关增删和同步逻辑位于 `wrt_core/update.sh` 编排的 `wrt_core/modules/` 静态阶段。配置片段只选择 Kconfig，不负责 clone 仓库、修改 feeds 或安装 feeds。
-
-## 8. 项目结构说明
-
-- `build.sh`：主编译入口，负责设备选择、模式选择、配置组合、容器构建和固件收集。
-- `firmware/`：完整构建后的固件输出目录，由脚本自动创建和刷新。
-- `wrt_core/build_container.sh`：容器内构建入口。
-- `wrt_core/update.sh`：源码更新、feeds 调整、软件包同步和补丁应用主流程。
-- `wrt_core/pre_clone_action.sh`：GitHub Actions 预克隆辅助脚本。
-- `wrt_core/ci/detect_upstream_changes.sh`：读取设备源码元数据、计算上游与配置指纹并生成自动构建矩阵。
-- `wrt_core/compilecfg/`：设备构建元信息 `.ini`。
-- `wrt_core/deconfig/`：设备和共享默认配置 `.config`。
-- `wrt_core/deconfig/fragments/`：可组合配置片段。
-- `wrt_core/modules/`：模块化脚本，包括仓库准备、网络重试、feeds/custom_feed、源码修正、LuCI 修正、服务修正、验证、Docker、CUPS 等静态职责模块。
-- `wrt_core/patches/`：补丁、默认设置、Wi-Fi 初始化、NSS 诊断、PBR 规则和其他构建时注入文件。
-- `.github/workflows/upstream_watch.yml`：定时检测五个重点配置的上游源码变更并自动发布。
-- `.github/workflows/ci_maintenance.yml`：定期清理旧缓存、旧工作流记录和旧 Release。
-
-## 9. OAF（应用过滤）功能使用说明
-
-使用 OAF（应用过滤）功能前，需先完成以下操作：
-
-1. 打开系统设置 → 启动项 → 定位到「appfilter」
-2. 将「appfilter」当前状态从已禁用更改为已启用
-3. 完成配置后，点击启动按钮激活服务
+本倉庫的建置框架源自 [dqsq2e2/wrt_release](https://github.com/dqsq2e2/wrt_release)，S20P 系統來源為 [chasey-dev/immortalwrt-mt798x-rebase](https://github.com/chasey-dev/immortalwrt-mt798x-rebase)。上游框架內的其他設備設定不屬於本倉庫的發布與驗收範圍。

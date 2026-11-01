@@ -39,11 +39,16 @@
 3. 請 Agent 讀取該目錄的 `SKILL.md`，說明設備、目標及授權範圍。[使用指南](skills/README.md)附一個跨 Agent 通用範例，涵蓋 Codex、Claude Code、Gemini CLI、Cursor、WorkBuddy、OpenCode、DeepSeek harness、Pi、OpenClaw、Hermes 等宿主的能力要求。
 
 執行端需 Python 3.10+、OpenSSH、`curl` 與 Unix `fcntl`，不需額外 Python 套件；網路指引以 macOS 為基礎，Linux／WSL 需核對主機環境，Windows 原生未支援。純聊天或無法連到設備的雲端 Agent 不能直接執行。安裝包不包含 FIP／GPT／韌體，請從各下載頁另行取得。每臺設備使用自己的 factory／boot 備份與實際 eMMC 幾何；Skill 已通過 42 項離線測試，各 Agent 的整套實機刷機及原廠還原仍需逐項驗收。詳細限制與更新方式見[使用指南](skills/README.md)。
-# 方式 A：telnet 直接進（原廠默認開啟，無需任何配置）
+
+方式 A：telnet 直接進（原廠默認開啟，無需任何配置）
+
 telnet 192.168.8.1
+
 賬號 root，密碼 tty996icu
+
 方式 B：开 SSH（可選）
 uci set dropbear.@dropbear[0].enable='1'
+
 uci commit dropbear/etc/init.d/dropbear restart
 
 ## 3. U-Boot GPT 修正正式版

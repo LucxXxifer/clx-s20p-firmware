@@ -1,6 +1,8 @@
 # CLX-S20P 刷機、升級與備份還原 Skill
 
-`clx-s20p-provisioning` 供 Codex 協助 CLX-S20P 首次刷機，以及 OpenWrt 插件備份、升級規劃與逐項還原。它與本倉庫固件集中管理，也可用於其他 S20P 分支；每次都按來源／目標的型號、布局、套件與設定 schema 判斷，不以分支名稱保證相容。
+`clx-s20p-provisioning` 供**任意具備所需本機工具與網路權限的 Agent 使用**，協助 CLX-S20P 首次刷機，以及 OpenWrt 插件備份、升級規劃與逐項還原。它與本倉庫固件集中管理，也可用於其他 S20P 分支；每次都按來源／目標的型號、布局、套件與設定 schema 判斷，不以分支名稱保證相容。
+
+Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、`references/` 與 `scripts/` 結構，沒有 Codex SDK、專用 MCP 或固定廠商工具名稱依賴。Codex、Claude Code、Gemini CLI、Cursor、WorkBuddy、OpenCode、DeepSeek harness、Pi、OpenClaw、Hermes 等宿主，只要能讀取完整 Skill、執行本機命令並存取目標區域網路，便可使用下方同一個通用範例。這是能力條件說明，並非上述產品均已完成實機刷機驗收；只有模型 API 或純聊天介面仍需由 harness 提供這些工具。
 
 ## 流程
 
@@ -23,35 +25,41 @@
 ## 安裝
 
 1. [下載 clx-s20p-provisioning.skill](https://github.com/LucxXxifer/clx-s20p-firmware/raw/refs/heads/main/skills/clx-s20p-provisioning.skill)。這是 ZIP 格式；解壓縮後取得 `clx-s20p-provisioning/`。解壓工具需要時，可將下載檔的副檔名改為 `.zip`。
-2. 將完整資料夾放入 `~/.agents/skills/`，確認存在 `~/.agents/skills/clx-s20p-provisioning/SKILL.md`。已有版本時，先將舊資料夾備份到 skills 目錄以外，再更新。
-3. 在 Codex 開啟新對話，使用 `$clx-s20p-provisioning`。也可取得本倉庫 [skills/clx-s20p-provisioning/](clx-s20p-provisioning/) 原始碼作相同安裝。
+2. 保留完整資料夾，**不可只複製 `SKILL.md`**；工具與參考文件也必須可讀取。已有版本時，先將舊資料夾備份到 skills 目錄以外，再更新。也可取得本倉庫 [skills/clx-s20p-provisioning/](clx-s20p-provisioning/) 原始碼作相同安裝。
+3. 支援原生 Skill 的宿主，將資料夾放入其指定目錄，再依該宿主方式重新載入；不支援或不確定時，放在可讀取的一般目錄，直接使用下方通用範例指定 `SKILL.md` 的絕對路徑，不必轉成專用插件。
 
-執行環境以 macOS 為基礎：Python 3.10+、OpenSSH，U-Boot HTTP 操作另用 `curl`。執行工具不需額外 Python 套件。其他平台需自行核對網路設定、外部備份路徑及可用工具。
+原生目錄例：Codex 使用 `~/.agents/skills/`；[Claude Code](https://code.claude.com/docs/en/skills) 使用 `~/.claude/skills/`；[Gemini CLI](https://geminicli.com/docs/cli/skills/) 支援 `~/.agents/skills/` 或 `~/.gemini/skills/`；[Cursor](https://cursor.com/docs/context/skills) 支援 `~/.agents/skills/` 或 `~/.cursor/skills/`。其他宿主依其文件配置；自動發現與 `$技能名`、`/技能名` 等快捷語法由宿主決定，不是本 Skill 的必要條件。`agents/openai.yaml` 僅為 Codex 可選 UI 中繼資料，其他宿主可忽略。
 
-## 使用
+## 執行環境
 
-首次刷機可以向 Codex 說：
+- Agent 需要檔案讀寫、終端命令及目標區域網路存取能力；SSH 認證／control socket 必須在實際執行主機可用。只有瀏覽器登入或 GUI SSH 分頁，不代表腳本已取得認證。
+- 主機需 Python 3.10+、OpenSSH，U-Boot HTTP 操作另用 `curl`。腳本只用 Python 標準函式庫，但備份及 FIP 工具使用 Unix `fcntl` 鎖定，Windows 原生不支援這些工具。
+- 網路操作指引以 macOS 為基礎；Linux／WSL 需先核對等價網路設定、設備可達性、SSH socket、外部備份路徑與可用工具，未完成全流程驗收。不可直接套用 macOS 的 `networksetup` 或路由命令。
+- 純雲端聊天或隔離沙箱若無法連到家中 S20P，只能閱讀、分析及規劃；需改用可存取設備的執行主機。安裝 Skill 本身不會新增工具或繞過宿主權限。
 
-```text
-使用 $clx-s20p-provisioning，處理這臺新的 CLX-S20P。
-機身 SN 末四碼是 A1B2；原廠 IP 是 192.168.8.1。
-先核對身份及 eMMC 健康，再備份原廠必要資料、檢查元件及網口，
-最後刷入並讀回驗證我指定的 FIP U-Boot。
-完成後由我手動進入 U-Boot、刷 GPT 和系統。
-```
+核心不需為各家 Agent 分別重寫；通常只需調整 Skill 載入位置、工具對應與主機網路／備份路徑。若要支援 Windows 原生，才需另行修改及驗證鎖定、SSH 與網路操作，不能只更換安裝目錄。
 
-`A1B2` 只是示例，請提供實際機身 SN。原廠 IP 通常是 `192.168.8.1`，第三方 U-Boot 通常是 `192.168.1.1`，仍需核對當前設備。密碼由使用者互動輸入，不填入 skill 或公開紀錄。
+## 一個跨 Agent 通用範例
 
-只檢查壽命或續傳備份也可直接提出；這兩種用途不會自行刷寫。需要有線直連設備同時保留 Wi-Fi 上網時，skill 會先核對 macOS 的實際網路服務，再處理指定的有線連線。
-
-備份與升級可向 Codex 說：
+將路徑、IP、SN 末四碼與目標換成自己的實際資料後，貼到上述任一具備所需能力的 Agent：
 
 ```text
-使用 $clx-s20p-provisioning，先辨識這臺 S20P 的 OpenWrt 系統及插件。
-把設定、插件程式與持久資料分別備份到我指定的外部目錄，核對完整性。
-對照我指定的目標韌體判斷相容性，生成刷機／安裝插件／還原資料的 .md 順序。
-暫時只做備份和規劃，不刷機或重啟。
+請讀取並遵循 /absolute/path/to/clx-s20p-provisioning/SKILL.md。
+references/ 與 scripts/ 均相對於該 Skill 目錄，請使用你現有的檔案、終端與網路工具。
+本次目標：辨識這臺 CLX-S20P 的系統、檢查 eMMC 健康，
+備份相應的必要資料，並產生下一階段操作指南。
+目標 IP：192.168.8.1；機身 SN 末四碼：A1B2。
+備份到已存在的外部目錄：/absolute/external-backup-root。
+先確認工具、路由、設備身分與備份空間，依現有系統選擇原廠或 OpenWrt 備份流程。
+本次只授權讀取、檢查和備份，不刷寫、不重啟。
+需要密碼、移線、斷電或按 Reset 時交由我操作；未驗證的結果標為未測試。
 ```
+
+範例中的路徑與 `A1B2` 都是佔位值，執行前必須替換。原廠 IP 通常是 `192.168.8.1`，第三方 U-Boot 通常是 `192.168.1.1`，仍需核對當前設備。密碼由使用者互動輸入，不填入 Skill 或公開紀錄。
+
+首次刷機、只查壽命、續傳備份、升級規劃或已授權的逐項還原，都可沿用此範例，修改目標與授權範圍；備份不會自行授權刷寫。需要有線直連設備同時保留 Wi-Fi 上網時，Agent 會先核對實際主機的介面與路由，再處理指定的有線連線。
+
+## 備份、升級與還原說明
 
 已有備份並已刷好系統時，可直接要求「辨識此備份與現機相容性，再逐項安裝及還原」。skill 會先核對新系統，已正確保留的檔案不重複覆蓋。APK／opkg、核心 ABI 或設定 schema 不同時，使用目標分支套件與選擇性轉換，不整包套回舊系統。
 
@@ -65,7 +73,7 @@ FIP、GPT 及固件需另外取得，skill 安裝包不附帶映像。兩種標�
 
 ## 驗證範圍與限制
 
-此版通過 42 項離線測試，涵蓋 synthetic GPT／FIP／備份資料與模擬 SSH／console 行為，並通過 skill 結構、Python 3.10 語法與安裝包內容核對。測試不連接設備、不執行刷寫。
+此版通過 42 項離線測試，涵蓋 synthetic GPT／FIP／備份資料與模擬 SSH／console 行為，並通過 Skill 結構、Python 3.10 語法與安裝包內容核對。測試不連接設備、不執行刷寫，也不代表各家 Agent 或各作業系統均已完成實機驗收。
 
 實際使用經驗已納入備份、網路切換及已知副 GPT 修復指引；新版工具尚未完成整套實機刷機及原廠還原測試。檔案與雜湊驗證不等於已驗證可以還原；p6 檔案備份也不包含完整檔案系統中繼資料、已刪除／空白空間。還原需按該機原始分區、檔案系統及 UUID／掛載條件規劃。
 

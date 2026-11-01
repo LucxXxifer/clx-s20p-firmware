@@ -9,12 +9,13 @@ Use after an authorized GPT upload; GPT/firmware uploads remain manual when rese
 3. Run strict pair validation:
 
    ```sh
-   python3 "$HOME/.agents/skills/clx-s20p-provisioning/scripts/s20p_gpt.py" \
+   s20p_skill_dir="/absolute/path/to/clx-s20p-provisioning"
+   python3 "${s20p_skill_dir:?Set the absolute skill directory}/scripts/s20p_gpt.py" \
      --first34 /absolute/run/first34.bin --final33 /absolute/run/final33.bin \
      --sectors LIVE_SECTOR_COUNT
    ```
 
-   Replace the illustrative paths/count before execution. Check reciprocal pointers, current locations, shared disk GUID/usable bounds, equal entry arrays/CRCs, partition bounds/no overlap and PMBR geometry. **Already valid → no repair.** A fixed U-Boot needs no agent repair once this verification passes. Upgrading U-Boot alone does not modify an already defective GPT.
+   Replace the illustrative skill directory, paths and count before execution. Check reciprocal pointers, current locations, shared disk GUID/usable bounds, equal entry arrays/CRCs, partition bounds/no overlap and PMBR geometry. **Already valid → no repair.** A fixed U-Boot needs no agent repair once this verification passes. Upgrading U-Boot alone does not modify an already defective GPT.
 
 ## The only supported repair case
 

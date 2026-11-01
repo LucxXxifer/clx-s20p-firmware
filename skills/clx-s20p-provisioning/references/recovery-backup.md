@@ -26,20 +26,22 @@ The runner deliberately supports the reviewed 512-byte, 128×128-byte GPT. It fa
 
 ## Run and resume
 
-Use a known authenticated OpenSSH control connection; see [access/network](access-network.md). Examples run on the Mac and contain illustrative target values:
+Use a known authenticated OpenSSH control connection on the execution host; see [access/network](access-network.md). Replace every illustrative path/target value below. Set `s20p_skill_dir` to the absolute directory containing this Skill's `SKILL.md`; it is independent of the agent's installation layout:
 
 ```sh
-python3 "$HOME/.agents/skills/clx-s20p-provisioning/scripts/s20p_recovery.py" backup \
+s20p_skill_dir="/absolute/path/to/clx-s20p-provisioning"
+python3 "${s20p_skill_dir:?Set the absolute skill directory}/scripts/s20p_recovery.py" backup \
   --host 192.168.8.1 --serial-suffix A1B2 \
-  --control-path /tmp/s20p-A1B2.sock
+  --control-path /tmp/s20p-A1B2.sock \
+  --destination-root /absolute/external-backup-root
 ```
 
-The existing backup root must be present. A first run creates `clx-s20-A1B2/unit.json` and an exclusive timestamped `capture-*/manifest.json`; the same command resumes the latest new manifest. A local lock prevents concurrent captures in that directory. No device write, reboot, service stop, mount change, `force_ro` change or p6 deletion occurs.
+The external backup root must already exist; the tool's default `/Volumes/Storage/CLX-S20P/0.1 原厂备份` belongs to the original Mac and must not be assumed on another host. A first run creates `clx-s20-A1B2/unit.json` and an exclusive timestamped `capture-*/manifest.json`; the same command resumes the latest new manifest. A local lock prevents concurrent captures in that directory. No device write, reboot, service stop, mount change, `force_ro` change or p6 deletion occurs.
 
-For a reviewed legacy directory, explicitly select its manifest:
+For a reviewed legacy directory, explicitly select its manifest. These original Mac paths are examples; substitute the actual existing paths on the execution host:
 
 ```sh
-python3 "$HOME/.agents/skills/clx-s20p-provisioning/scripts/s20p_recovery.py" backup \
+python3 "${s20p_skill_dir:?Set the absolute skill directory}/scripts/s20p_recovery.py" backup \
   --host 192.168.8.1 --serial-suffix A1B2 --control-path /tmp/s20p-A1B2.sock \
   --unit-dir "/Volumes/Storage/CLX-S20P/0.1 原厂备份/clx-s20a1b2" \
   --resume-manifest "/Volumes/Storage/CLX-S20P/0.1 原厂备份/clx-s20a1b2/backup-manifest.json"
@@ -66,8 +68,8 @@ First preserve necessary small artifacts. Only with explicit user opt-in, use `b
 For an additional full image under an already verified unit:
 
 ```sh
-s20p_full_root="/Volumes/Storage/CLX-S20P/0.1 原厂备份/clx-s20-A1B2/full-image-$(date -u +%Y%m%dT%H%M%SZ)"
-python3 "$HOME/.agents/skills/clx-s20p-provisioning/scripts/backup_restore_image.py" \
+s20p_full_root="/absolute/external-backup-root/clx-s20-A1B2/full-image-$(date -u +%Y%m%dT%H%M%SZ)"
+python3 "${s20p_skill_dir:?Set the absolute skill directory}/scripts/backup_restore_image.py" \
   --host 192.168.8.1 --serial-suffix A1B2 --full-image \
   --destination-root "$s20p_full_root"
 ```

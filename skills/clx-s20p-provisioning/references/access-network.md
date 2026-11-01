@@ -1,4 +1,6 @@
-# Access and Mac dual connection
+# Access and host networking
+
+Access and SSH requirements below apply to any agent execution host with the required tools and device access. The dual-connection commands are macOS-specific examples. On Linux/WSL or another host, inspect its actual networking tools, interfaces and routes first; use verified equivalents to preserve Internet access and reach only the identified device. Do not assume Mac service names, `en0`, `networksetup` or macOS `route` syntax. Native Windows recovery/FIP scripts are unsupported because they require Unix `fcntl`.
 
 ## Isolate and identify
 
@@ -26,7 +28,7 @@ Keep that terminal/master open; supply the same `--control-path` to the tools. V
 
 In a native Terminal, use short commands, inspect each response, and cancel an unfinished `>` continuation before pasting another command. Never interrupt the terminal doing a backup to run diagnostics; use independent read-only access.
 
-## Keep Internet on Wi-Fi, device on Ethernet
+## macOS: keep Internet on Wi-Fi, device on Ethernet
 
 Discover actual service and interface; never assume `en0` is Ethernet:
 

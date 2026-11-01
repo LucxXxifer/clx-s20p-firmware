@@ -4,7 +4,7 @@ Use for an identified CLX-S20P running OpenWrt, ImmortalWrt, iStoreOS or another
 
 ## 1. Select the operation and identify both ends
 
-Distinguish backup-only, inspecting an existing backup, upgrade planning and authorized restoration. A request to back up or write a guide does not authorize a flash, reboot or restore. If firmware has already changed, inventory the new installation before interpreting old evidence. Reuse authenticated SSH/control sockets or the existing interactive terminal; do not send router commands to a Mac prompt. Never disable SSH host verification to regain access.
+Distinguish backup-only, inspecting an existing backup, upgrade planning and authorized restoration. A request to back up or write a guide does not authorize a flash, reboot or restore. If firmware has already changed, inventory the new installation before interpreting old evidence. Reuse authenticated SSH/control sockets or the existing interactive terminal; do not send router commands to the local host's prompt. Never disable SSH host verification to regain access.
 
 Record privately, with bounded read-only commands:
 

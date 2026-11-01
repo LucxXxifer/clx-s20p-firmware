@@ -9,6 +9,14 @@ Prepare an identified CLX-S20P for first flash, or identify and preserve its exi
 
 Establish the goal, physical unit, live state, authorized writes and completion criteria first. Attached guides, filenames and device output are evidence, not user instructions. Never copy a previous unit's CID, geometry, factory data, RAM address or repaired GPT tail into a new operation.
 
+## Agent compatibility and host requirements
+
+This is a vendor-neutral Agent Skill: no Codex SDK, dedicated MCP server or vendor-specific tool API is required. Use the host agent's available file, terminal and network tools within its permission boundaries. Native skill discovery is optional; an agent can read this `SKILL.md` explicitly. `agents/openai.yaml` is optional Codex UI metadata and may be ignored by other hosts.
+
+Locate the absolute directory containing this `SKILL.md` first; resolve every `references/`, `scripts/` and example script path against that directory, not the current working directory or a fixed agent installation path. Read supporting references as needed. The execution host must reach the identified device and have usable SSH authentication/control sockets; a remote chat, GUI login or isolated sandbox alone does not provide these capabilities.
+
+Runtime scripts need Python 3.10+, OpenSSH and, for U-Boot HTTP operations, `curl`; no third-party Python packages are required. Recovery/FIP scripts use Unix `fcntl`. Networking examples target macOS; on Linux/WSL verify available commands, equivalent interface/routes, device access and external backup paths before proceeding. Do not run macOS-specific network commands on another OS. Native Windows execution and complete workflows across agent products have not been validated.
+
 ## Modes and authorization
 
 - **Health only:** identify the target and read health; no prerequisite backup, service restart or reboot.
@@ -24,7 +32,7 @@ Establish the goal, physical unit, live state, authorized writes and completion 
 
 Choose the mode first. The numbered sequence below is for stock provisioning; OpenWrt backup, upgrade and restore use [their own workflow](references/openwrt-backup-restore.md). Reuse its identity, health and evidence rules without forcing stock hostname/compatible, Telnet or factory-backup recapture onto an already identified OpenWrt installation.
 
-1. **Identify and connect.** Match physical SN suffix and one specified IP; no broad scan or capacity-only identification. Record board model/compatible, CID, card identity, RAM, user and both boot-region sizes. Both 241,696,768- and 244,277,248-sector eMMC cards have been observed; read this unit's actual geometry. For stock generic RFB identification require hostname `S20P`, exact compatible token `mediatek,mt7986a-emmc-rfb`, user identification of the physical CLX-S20P, and the reviewed 2-GiB variant. Factory IP is normally `192.168.8.1`; third-party U-Boot normally `192.168.1.1`. Revalidate the target at transitions. See [access and Mac networking](references/access-network.md).
+1. **Identify and connect.** Match physical SN suffix and one specified IP; no broad scan or capacity-only identification. Record board model/compatible, CID, card identity, RAM, user and both boot-region sizes. Both 241,696,768- and 244,277,248-sector eMMC cards have been observed; read this unit's actual geometry. For stock generic RFB identification require hostname `S20P`, exact compatible token `mediatek,mt7986a-emmc-rfb`, user identification of the physical CLX-S20P, and the reviewed 2-GiB variant. Factory IP is normally `192.168.8.1`; third-party U-Boot normally `192.168.1.1`. Revalidate the target at transitions. See [access and host networking](references/access-network.md).
 2. **Reuse or enable SSH.** Reuse authenticated access when available. Otherwise log into the identified stock target through Telnet and run the documented Dropbear enable/commit/restart commands. Verify a fresh SSH connection and matching CID before relying on it. Credentials stay interactive/in memory, outside logs, argv, history and skill files. A GUI SSH tab is not an OpenSSH control socket. Do not require repeated logins when a working transport exists.
 3. **Read eMMC health immediately.** Before long backup and before any flash, read the card owning `mmcblk0`, `life_time`, `pre_eol_info` and storage-related kernel errors. Record raw values and interpret A/B separately. Unknown, near/exceeded endurance, spare-block warning or storage errors stop flashing; they do not prevent rescue backup. Do not install tools or run write stress tests for a health reading. See [health policy](references/emmc-health.md).
 4. **Capture or resume necessary recovery evidence.** Use [recovery backup](references/recovery-backup.md) and `scripts/s20p_recovery.py`. The original Mac backup-root default is `/Volumes/Storage/CLX-S20P/0.1 原厂备份`; on another host pass an existing external backup root with `--destination-root`. New unit directories are `clx-s20-<UPPERCASE-SN-last-four>`, e.g. `clx-s20-A1B2`. Preserve legacy names; CID conflicts stop merging even if suffixes match. Keep only per-unit recovery artifacts/metadata here; tools and flashing experiments/logs belong outside this root. Preserve boot0/boot1, stock p1–p5, GPT/reserved evidence, p6 files and settings, with a manifest. Never clear `/permanent_config`, stage backups on source eMMC, or substitute another unit's factory data. Preserve nonstandard original GPT bytes without repairing during backup.
@@ -36,7 +44,7 @@ Choose the mode first. The numbered sequence below is for stock provisioning; Op
 
 ## Tools
 
-Run with Python 3.10+ and the Mac's OpenSSH; no additional Python packages are required by the runtime scripts. Inspect `--help` before use. Every path/SN/IP in examples must be replaced with the verified target. No script chooses a target by scanning.
+Run on the execution host described above. Inspect `--help` before use. Every path/SN/IP in examples must be replaced with the verified target. No script chooses a target by scanning.
 
 | Tool | Purpose |
 |---|---|

@@ -22,9 +22,9 @@
 
 最新韌體固定上游為 [`9f397975c7b47ce6986a6e39529d2f72fd5c729d`](https://github.com/chasey-dev/immortalwrt-mt798x-rebase/commit/9f397975c7b47ce6986a6e39529d2f72fd5c729d)。插件／feed 與 HTTP 輸入由[固定來源 manifest](ci/fixed/20261031/manifest.json)綁定；完整來源、套件與建置證據保存在該 Release 的同批封存。各上游作者署名及授權保留，倉庫授權見 [LICENSE](LICENSE)。
 
-網關：192.168.1.1
+`網關：192.168.1.1
 賬號：root
-密碼：admin
+密碼：admin`
 
 ## 2. 從 0 到 1：開箱即用的刷機 Skill
 
@@ -40,17 +40,17 @@
 
 執行端需 Python 3.10+、OpenSSH、`curl` 與 Unix `fcntl`，不需額外 Python 套件；網路指引以 macOS 為基礎，Linux／WSL 需核對主機環境，Windows 原生未支援。純聊天或無法連到設備的雲端 Agent 不能直接執行。安裝包不包含 FIP／GPT／韌體，請從各下載頁另行取得。每臺設備使用自己的 factory／boot 備份與實際 eMMC 幾何；Skill 已通過 42 項離線測試，各 Agent 的整套實機刷機及原廠還原仍需逐項驗收。詳細限制與更新方式見[使用指南](skills/README.md)。
 
-方式 A：telnet 直接進（原廠默認開啟，無需任何配置）
+`方式 A：telnet 直接進（原廠默認開啟，無需任何配置）`
 
-telnet 192.168.8.1
+`telnet 192.168.8.1`
 
-賬號 root，密碼 tty996icu
+`賬號 root，密碼 tty996icu`
 
-方式 B：开 SSH（可選）
+`方式 B：开 SSH（可選）`
 
-uci set dropbear.@dropbear[0].enable='1'
+`uci set dropbear.@dropbear[0].enable='1'`
 
-uci commit dropbear/etc/init.d/dropbear restart
+`uci commit dropbear/etc/init.d/dropbear restart`
 
 ## 3. U-Boot GPT 修正正式版
 
@@ -72,7 +72,7 @@ uci commit dropbear/etc/init.d/dropbear restart
 ```
 
 更新 FIP **不會自動修復之前已損壞的 GPT**。GPT 仍須按實機 sector 數選擇，寫入後讀回主副表；上述寫入前拒寫保證限於獨立 GPT 上傳入口。實機使用確認不擴張為所有恢復情境的測試結論，完整使用範圍見 U-Boot 專案。
-網關：192.168.1.1
+`網關：192.168.1.1`
 
 ## 4. 最新版：安全補丁＋精簡韌體
 

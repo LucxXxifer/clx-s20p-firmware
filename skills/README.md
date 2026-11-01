@@ -2,7 +2,7 @@
 
 `clx-s20p-provisioning` 供**任意具備所需本機工具與網路權限的 Agent 使用**，協助 CLX-S20P 首次刷機，以及 OpenWrt 插件備份、升級規劃與逐項還原。它與本倉庫固件集中管理，也可用於其他 S20P 分支；每次都按來源／目標的型號、布局、套件與設定 schema 判斷，不以分支名稱保證相容。
 
-Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、`references/` 與 `scripts/` 結構，沒有 Codex SDK、專用 MCP 或固定廠商工具名稱依賴。Codex、Claude Code、Gemini CLI、Cursor、WorkBuddy、OpenCode、DeepSeek harness、Pi、OpenClaw、Hermes 等宿主，只要能讀取完整 Skill、執行本機命令並存取目標區域網路，便可使用下方同一個通用範例。這是能力條件說明，並非上述產品均已完成實機刷機驗收；只有模型 API 或純聊天介面仍需由 harness 提供這些工具。
+Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、`references/` 與 `scripts/` 結構，只要能讀取完整 Skill、執行本機命令並存取目標區域網路，便可使用下方同一個通用範例，自行測試。
 
 ## 流程
 

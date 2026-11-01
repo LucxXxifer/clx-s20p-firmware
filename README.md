@@ -47,6 +47,7 @@ telnet 192.168.8.1
 賬號 root，密碼 tty996icu
 
 方式 B：开 SSH（可選）
+
 uci set dropbear.@dropbear[0].enable='1'
 
 uci commit dropbear/etc/init.d/dropbear restart

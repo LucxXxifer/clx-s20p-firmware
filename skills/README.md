@@ -39,6 +39,20 @@ Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、
 
 核心不需為各家 Agent 分別重寫；通常只需調整 Skill 載入位置、工具對應與主機網路／備份路徑。若要支援 Windows 原生，才需另行修改及驗證鎖定、SSH 與網路操作，不能只更換安裝目錄。
 
+方式 A：telnet 直接進（原廠默認開啟，無需任何配置）
+
+telnet 192.168.8.1
+
+賬號 root，密碼 tty996icu
+
+方式 B：开 SSH（可選）
+
+uci set dropbear.@dropbear[0].enable='1'
+
+uci commit dropbear/etc/init.d/dropbear restart
+
+
+
 ## 一個跨 Agent 通用範例
 
 將路徑、IP、SN 末四碼與目標換成自己的實際資料後，貼到上述任一具備所需能力的 Agent：

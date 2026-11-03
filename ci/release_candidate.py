@@ -17,6 +17,7 @@ import upstream_sync
 import go_security
 import dashboard
 import component_gate
+import wifi_logging
 from preservation import (OMITTED_APPLICATION_PACKAGES, REQUIRED_APPLICATION_PACKAGES, EXCLUDED_APPLICATION_PACKAGES, load_application_selection,
                           application_selection_evidence)
 
@@ -437,6 +438,15 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
                                        {row["name"]: row for row in packages})
         if report != preservation.get("checks", {}).get("minimal_security"):
             raise ValueError("release minimal security report differs from preservation evidence")
+    wifi_report = None
+    if wifi_logging.required(root / "provenance", build_commit):
+        wifi_report = read_json(root, "reports/wifi-logging.json")
+        wifi_logging.verify_release(root, wifi_report, {row["name"]: row for row in packages}, build_commit)
+        if wifi_report != preservation.get("checks", {}).get("wifi_logging"):
+            raise ValueError("release Wi-Fi logging report differs from preservation evidence")
+    elif ((root / "reports/wifi-logging.json").exists() or
+          "wifi_logging" in preservation.get("checks", {})):
+        raise ValueError("historical candidate cannot claim new Wi-Fi logging verification")
     if upstream_resolution.get("schema_version") == 2:
         report = read_json(root, "reports/components.json")
         component_gate.verify_release(root / "provenance", report, sha256_file(rootfs_payload),
@@ -448,6 +458,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
     if len(images) != 1 or images[0] != image_path:
         raise ValueError("bundle must contain exactly one captured S20P sysupgrade image")
     result = {
+        "wifi_logging": wifi_report,
         "fixed_inputs": fixed,
         "image_path": image,
         "image_sha256": sha256_file(image_path),
@@ -545,6 +556,16 @@ def security_exception_notice(security):
         for row in security["known_exceptions"])
 
 
+def wifi_logging_notice(report):
+    if report is None:
+        return ""
+    return ("Wi-Fi diagnostics: kmod-mt_wifi r2 limits AP PMF SubType 13 rejection diagnostics "
+            "to WARN in a global 5-second bucket with a saturating suppression count, and logs normal "
+            "GTK start/success at INFO. PMF rejection policy and real timeout behavior are unchanged. "
+            "This logging change does not repair the observed GTK handshake timeout; hardware/runtime "
+            "validation has not been performed (runtime_tested=false).")
+
+
 def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, build_commit, upstream_commit):
     outer = Path(artifact_dir)
     archive = verify_outer_artifact(outer, run_id, run_attempt)
@@ -610,6 +631,8 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
                       "QuickStart retains its existing packages and disclosed unpatched Go exception. "
                       "No kernel, ubus ABI or Docker migration is included. Existing overlay files "
                       "and post-install packages still require separate migration/runtime checks.\n")
+    if verified["wifi_logging"] is not None:
+        guide += "\n" + wifi_logging_notice(verified["wifi_logging"]) + "\n"
     (output / "INSTALLATION.md").write_text(guide)
     metadata = {
         "schema_version": 1,
@@ -621,6 +644,7 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
         "source_lock_sha256": verified["source_lock_sha256"],
         "public_key_sha256": verified["public_key_sha256"],
         "go_security": verified["go_security"],
+        "wifi_logging": verified["wifi_logging"],
         "fixed_inputs": verified["fixed_inputs"],
         "live_acceptance": "not-run", "stable_eligible": False,
     }
@@ -661,6 +685,7 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
             metadata.get("image_sha256") != verified["image_sha256"] or
             metadata.get("upstream_commit") != upstream_commit or
             metadata.get("go_security") != verified["go_security"] or
+            metadata.get("wifi_logging") != verified["wifi_logging"] or
             metadata.get("fixed_inputs") != verified["fixed_inputs"] or
             metadata.get("build_date") != verified.get("build_date") or
             ("build_date" in metadata) != ("build_date" in verified) or
@@ -672,6 +697,9 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
     notice = security_exception_notice(verified["go_security"])
     if notice and notice not in guide:
         raise ValueError("release installation guidance hides a known security exception")
+    notice = wifi_logging_notice(verified["wifi_logging"])
+    if notice and notice not in guide:
+        raise ValueError("release installation guidance hides Wi-Fi diagnostic scope/limits")
     return {"pass": True, "image_sha256": verified["image_sha256"], "kernel_abi": verified["kernel_abi"]}
 
 

@@ -522,6 +522,10 @@ def capture(build, output):
     write_json(inspection / "installed-packages.json", {"packages": [
         {"name": name, "version": version} for name, version in sorted(installed.items())]})
     verify_feeds(build, output, installed)
+    if os.environ.get("S20P_AUTOBUILD") == "1":
+        sys.path.insert(0, str(Path(sys.argv[3]).resolve().parent))
+        import wifi_logging
+        wifi_logging.capture(build, output / "provenance/wifi-logging-build.json")
     audit(output)
     write_json(output / "reports/capture.json", {
         "status": "captured", "acceptance": "pending-preservation-and-live-validation",

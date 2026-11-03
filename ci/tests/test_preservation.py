@@ -101,9 +101,15 @@ class PreservationFixtures(unittest.TestCase):
         self.dtb.write_bytes(dtb())
         (self.baseline / "original-board.dtb").write_bytes(dtb())
         self.lock = self.base / "source-lock.json"
+        historical = json.loads((SCRIPT.parent / "wifi-logging/20261103/historical-wrappers.json").read_text())
+        wrapper_commit = "59e093e6c5f33591eebe9e332898bf111ed64b0a"
+        wrapper_rows = historical[wrapper_commit]
+        self.write_json(self.base / "wrapper-source-files.json", wrapper_rows)
         self.write_json(self.lock, {
             "wrapper_commit": "c" * 40, "upstream_commit": UPSTREAM_COMMIT,
-            "wrapper_tree_hash": "1" * 64, "build_fingerprint": "2" * 64,
+            "wrapper_checkout_commit": wrapper_commit,
+            "wrapper_tree_hash": hashlib.sha256(json.dumps(wrapper_rows, sort_keys=True).encode()).hexdigest(),
+            "build_fingerprint": "2" * 64,
             "sources": [
                 {"name": "github.com/chasey-dev/immortalwrt-mt798x-rebase",
                  "url": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase.git",

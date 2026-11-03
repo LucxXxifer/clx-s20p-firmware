@@ -1087,6 +1087,26 @@ class Gate:
                     der = base64.b64decode(re.sub(rb"\s+", b"", block), validate=True)
                     exact_der_certificate(der, label)
 
+    def wifi_logging(self, root, provenance_ok):
+        # This profile is mandatory for every new wrapper, independently of
+        # report existence. Historical replay requires frozen pipeline bytes.
+        self.checks.pop("wifi_logging", None)
+        if not self._source_evidence:
+            return
+        try:
+            import wifi_logging
+            provenance = self._source_evidence[0].parent
+            if not wifi_logging.required(provenance):
+                return
+            if not provenance_ok:
+                raise ValueError("validated Wi-Fi logging source provenance required")
+            report = wifi_logging.inspect(root, provenance.parent / "inspection/rootfs.squashfs", provenance)
+            if report != read_json(provenance.parent / "reports/wifi-logging.json"):
+                raise ValueError("Wi-Fi logging report differs from inspected rootfs")
+            self.checks["wifi_logging"] = report
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            self.error("wifi_logging_guard", "mt_wifi diagnostics", "source/ABI/module-bound report", str(error))
+
     def packages(self, root, inventory, optional_package_policy=None):
         installed = safe_path(root, "/lib/apk/db/installed")
         actual = parse_packages(installed)
@@ -1164,9 +1184,14 @@ class Gate:
                                 "requested increment dependency closure" if name in reachable else "outside increment closure")
                 continue
             if package["version"] != original["version"]:
+                wifi_transition = (name == "kmod-mt_wifi" and
+                                   original["version"] == "6.12.112.7.6.7.3-r1" and
+                                   package["version"] == "6.12.112.7.6.7.3-r2" and
+                                   "wifi_logging" in self.checks)
                 self.difference("package_version", name, original["version"], package["version"],
-                                "expected" if name == "kernel" and kernel != self.policy["original_kernel"] else "review_required",
-                                "same-build generated ABI" if name == "kernel" else "source/version delta")
+                                "expected" if wifi_transition or (name == "kernel" and kernel != self.policy["original_kernel"]) else "review_required",
+                                ("exact source-bound Wi-Fi logging r1-to-r2 transition" if wifi_transition else
+                                 "same-build generated ABI" if name == "kernel" else "source/version delta"))
             old_deps = original.get("depends", "").replace("kernel=" + self.policy["original_kernel"], "kernel=" + kernel)
             if sorted(old_deps.split()) != sorted(package.get("depends", "").split()):
                 self.difference("package_dependencies", name, old_deps, package.get("depends", ""))
@@ -1534,6 +1559,7 @@ def main(argv=None):
         else:
             root = args.rootfs.resolve()
             provenance_ok = gate.source_lock(args.source_lock)
+            gate.wifi_logging(root, provenance_ok)
             gate.b_optional_package_policy = load_b_optional_package_policy(
                 args.baseline_dir, args.source_lock, upstream_evidence_path=args.upstream_evidence)
             actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy)

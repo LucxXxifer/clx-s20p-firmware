@@ -1,0 +1,658 @@
+{
+  "archive": {
+    "name": "mt79xx_20250408-705eb4.tar.xz",
+    "sha256": "b029d7b43c498193092dc6a3c857361c8835ce34bb306561c550ac0539784a78"
+  },
+  "files": [
+    {
+      "mode": "0o644",
+      "path": "100-s20p-bound-pmf-action-and-gtk-diagnostics.patch",
+      "sha256": "823cc30c5513b8cd15408b93069f925a365a2f16271ba087a1687ccd55f6f327",
+      "size": 3831
+    },
+    {
+      "mode": "0o644",
+      "path": "Makefile.before",
+      "sha256": "2e9dbb7dfd0434762e4eed4fa02b95ffacd1de540c7e4e06571ddc7c13b457a1",
+      "size": 9191
+    },
+    {
+      "mode": "0o644",
+      "path": "README.md",
+      "sha256": "be1a15ba5ace580c1e271814ffa8a85252e27fa1de36dbb2bc0c76053f5ce761",
+      "size": 3306
+    },
+    {
+      "mode": "0o644",
+      "path": "config.in.before",
+      "sha256": "d0169130534e6fd32d85f319af89f55d20b1c364c7ceb8659340d093bc9dbcd5",
+      "size": 34051
+    },
+    {
+      "mode": "0o644",
+      "path": "driver.config",
+      "sha256": "5459ce8624fe475918029971dead4ea66155b39e9e89c0477ee15516fac19e20",
+      "size": 3217
+    },
+    {
+      "mode": "0o644",
+      "path": "helper-test.c",
+      "sha256": "5477d7268ae008edd84d2bb18d9115f0a45492935794de349312013fbca7ae30",
+      "size": 2675
+    },
+    {
+      "mode": "0o644",
+      "path": "historical-wrappers.json",
+      "sha256": "7f7ddd130cd867820619cd8354f55216fd63c5a849a52aed19090cb94c7a0659",
+      "size": 2251
+    },
+    {
+      "mode": "0o644",
+      "path": "logger-test.c",
+      "sha256": "acf84cff09097873ea105e0012ba450c73e949c04d991c87da000e0746af2525",
+      "size": 4418
+    },
+    {
+      "mode": "0o644",
+      "path": "logger.c",
+      "sha256": "a4ba8a66673e06ca01b2d03f23d7ed94cfed15573316a01f904cdea6d5786e57",
+      "size": 3024
+    },
+    {
+      "mode": "0o644",
+      "path": "logging-evidence.json",
+      "sha256": "9f5d24354c9addde931c921eb941aa3d7a91562f5cd60b2e35b56db40431428c",
+      "size": 1644
+    },
+    {
+      "mode": "0o644",
+      "path": "logging-test.c",
+      "sha256": "1a4f7dc502cf5c390376946da342996ac6e94f6cf5361aa3fdd0bfe5ca609193",
+      "size": 1125
+    },
+    {
+      "mode": "0o644",
+      "path": "pmf-diagnostic.after",
+      "sha256": "7630a6e5bfeb197aba3b5298e05f4b2956a693c5c0811931cf00c42436422e85",
+      "size": 510
+    },
+    {
+      "mode": "0o644",
+      "path": "pmf-diagnostic.before",
+      "sha256": "4ae795874a3021b798d286cc17b56a1fa950b1eb7903b4f3a05b200df1be6397",
+      "size": 162
+    },
+    {
+      "mode": "0o644",
+      "path": "source-before/cmm_wpa.c",
+      "sha256": "79418b6436194d60d08e5fb9efd566d99b372528193618d48f1b512b05ac4c65",
+      "size": 257490
+    },
+    {
+      "mode": "0o644",
+      "path": "source-before/pmf.c",
+      "sha256": "517aa81c0c9f3195ff2d393e789d05feadf728c241094ca11b355a79d0783c86",
+      "size": 63851
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/001-eeprom-flash-api.patch",
+      "sha256": "7cda7740c69788241c7561eeaeca85a328cabf9c20b12b429acc0dca81d8492a",
+      "size": 3862
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/002-sort-site-survey-table.patch",
+      "sha256": "595f788baba16c1995eb8694af993da35493c49d7a0bf1f22912832ac54d1319",
+      "size": 282
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/003-fix-rxrate-stainfo.patch",
+      "sha256": "1b471780cbd5dd9053bec239507549b70b17112a09997341f8d69a234cc16de2",
+      "size": 2638
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/004-remove-apcli-bgprotect-log.patch",
+      "sha256": "40cf67e6cf55b845b2c43db1db2a5326ff14b3ed5b9a4dd6dd805bdfbedf0bb5",
+      "size": 418
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/005-use-ext-warp-code.patch",
+      "sha256": "b902c11736d34e6747b16f3634602b1ddff7b8317ae93f5b411e1bce701c9d6d",
+      "size": 502
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/006-fix-stainfo_struct.patch",
+      "sha256": "ed56cd917eaca199e12073fe3f1c9732d57e47e6cb480b8c47f6444d72cf7f43",
+      "size": 5610
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/007-fix-tx-phymode.patch",
+      "sha256": "78eb479ad73a04f932a41d26d69fd3d226104863e5c40de5476d883cdc6a3f44",
+      "size": 1016
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/008-fix-he-gi-stainfo.patch",
+      "sha256": "e17c687cc6544436982f4156bfc2b8813d72c72b3b4e163914b8a2b40152ebec",
+      "size": 1523
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/009-add-secinfo-to-stainfo.patch",
+      "sha256": "077c84710d00e18c65711e94677a50b1aeba7222e1195ade0e4f321131866a0b",
+      "size": 1161
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/010-remove-addba-noisy-log.patch",
+      "sha256": "604b6e79bfc4b4485c847829aa426a8c41d31472551bb56acc5f52e2784f225f",
+      "size": 541
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/011-fix-wext-txpwr.patch",
+      "sha256": "adbbdbffe2c415dc4b020bd9b3779f5ffb154d811cc6d82058e3f52bb5964115",
+      "size": 3039
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/012-add-mt7986-memory-shrink-aggress.patch",
+      "sha256": "0fcb00373a9288b169ca3b2d245d88a6e483ef82b3f13b690c160e049044ad95",
+      "size": 448
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/013-add-rssi-for-sitesurvey.patch",
+      "sha256": "2c44f34f47c61dfdbf46c01c264ece7604aaa1c4af00798fffc7b76f1f9a7594",
+      "size": 2050
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/014-fix-iwrange.patch",
+      "sha256": "5bf3c5da8db7d45e8421824c5d37fcbbce498398728811763e16cd02d2534d4d",
+      "size": 2303
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/015-fix-apcli-stainfo.patch",
+      "sha256": "f7494577dad2b41638694dfc35fc451a44ec15e60cfb50e4f135792a3e7b7c43",
+      "size": 515
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/016-fix-apcli-scan-no-ascii-ssid.patch",
+      "sha256": "b0abd71f6029b160715288a0b41f190ccbbd24bae8dcf5035538fcd2c3713110",
+      "size": 1952
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/017-fix-secinfo-for-iwinfo.patch",
+      "sha256": "3a44aa11ba36ddb8a215def2b31914c9888461c4435dd66aea15fd1cc020feeb",
+      "size": 2541
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/020-fix-6ghz-channel-list.patch",
+      "sha256": "3000ea91593cf0977a5060124a0c398cbae4adbb693eeba9d851302811fc7f92",
+      "size": 2031
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/021-fix-return-type.patch",
+      "sha256": "774e3eaac3c835b2a234165a20ac2544eca39d6f02c216a9a2ae8ee63e2c49f2",
+      "size": 406
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/022-since-v5.18-drop-deprecated-mm_segment_t-usages.patch",
+      "sha256": "a6a746ec988cc90591e869147741a8d48116190816e675bd9f341c679ceb3e47",
+      "size": 10778
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/023-since-v5.5-fix-printk-redefined-in-rt_linux.patch",
+      "sha256": "b3cb75d5d65ee2d02291f3930736d0da68e42d0498aa7f028d9f00e03a9bae99",
+      "size": 612
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/024-since-v5.16-fix-stdarg_h-not-found-error.patch",
+      "sha256": "8bdd01b8268518098d110fc087985a923ce56dd10987c6eb0bffe83d1efe8ff3",
+      "size": 453
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/025-since-v5.6-remove-rt_os-h-kernel-version-check.patch",
+      "sha256": "a173562f6eb8f05cdf38b6e2ec64bc08e3ccfeb04517f7078bac8ac903327cdb",
+      "size": 820
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/026-since-v6.1-replace-deprecated-prandom_u32-usage.patch",
+      "sha256": "5402e47b5c847c63483dcd907c61e943d59e99002ac9254e5de04a9704a19971",
+      "size": 459
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/027-since-v5.6-replace-deprecated-ioremap_nocache-usage.patch",
+      "sha256": "48637e5ffacfd7495c96ae6aaf437516bc04798510b9f1d726ca0663dc9a96d4",
+      "size": 513
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/028-since-v5.18-replace-deprecated-PCI_DMA_FROMDEVICE-macro.patch",
+      "sha256": "89e89a868a484a41b05c0f2b2c69b3a21af64079577075f6e45851a3f9520da4",
+      "size": 3248
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/029-since-v5.5-replace-deprecated-pr_warning-define.patch",
+      "sha256": "d15e2ce58ffd69a4868e640189c7010e0ee18c9d47b80ea92cb4b2d883695e93",
+      "size": 628
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/030-since-v5.18-replace-deprecated-pci_set_dma_mask-usage.patch",
+      "sha256": "2b9994b0a659ff7b8ddcfd977ec8b3ee377ff22926f885869fa8da512a08392f",
+      "size": 2861
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/031-remove-unused-and-deprecated-tim-in-bn_lib.patch",
+      "sha256": "35607fe365061e1b3cda43fa3ec4700e167c2512acb897e613327c3d93050caf",
+      "size": 485
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/032-since-v6.3-remove-deprecated-compound_dtor-in-printk.patch",
+      "sha256": "600d79088031df12f8773be33141176b66f509f4d22ce9af1cadde0c68433d4f",
+      "size": 638
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/033-since-v5.17-replace-illegal-memmove-with-dev_addr_set.patch",
+      "sha256": "fcad7199f47aefd68bc10b1b72d8951905f572e89d3303fdfbcebd5b21edbf34",
+      "size": 2588
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/034-since-v6.12-fix-unaligned_h-not-found-error.patch",
+      "sha256": "d814d58f251cec9dca6c195aa9b9e0155cf12771fb22bea0dd385c0f61552380",
+      "size": 424
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/035-since-v6.8-change-strlcpy-to-strscpy.patch",
+      "sha256": "93a04b5f7e1b784b3171dbb6d7f5d5f4a37c4d3e941bd72d7b469ec0f1141cf0",
+      "size": 1768
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/037-fix-fortify-warning-1-cmm_wpa.patch",
+      "sha256": "4ea2ce47cc5d849bc36dedde593963921512c6d1dfa77dfdb5e6c26a29f8d0c0",
+      "size": 440
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/037-fix-fortify-warning-2-pmf.patch",
+      "sha256": "9cdb39875484c327319448e0e84207ac8f831b6d6d7859bb74bec0a0c6d4867d",
+      "size": 527
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/037-fix-fortify-warning-3-sta-sanity-memmove-overflow.patch",
+      "sha256": "77a76f7747e0f045c2eb78b4e972e5c0fa3abadbf99c2a5f49d6157a81caa512",
+      "size": 502
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/037-fix-fortify-warning-4-qos.patch",
+      "sha256": "9d192e0421633d7aa92a637ac99c8ec11b498664eb19739ebb9f7ee478b05d51",
+      "size": 2175
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/038-fix-rrm-snprintf-read-overflow.patch",
+      "sha256": "dbfd6e46158fb347d176d7659762f9df4ef3c738a26af004f94113fa9f4e2303",
+      "size": 1180
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/039-fix-qos-peer_vendor_spec_action-frame-check.patch",
+      "sha256": "d3ddaa67391ad49b3b826bd39400de56e7db42a715cd934c12b43533f1babe6f",
+      "size": 944
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/040-ap_mgmt_assoc-dont-reject-oversized-supported-channels-ie.patch",
+      "sha256": "5094c6a81a8967f9c1525b9b8c0bb025205cb7669047acb0e698b0e48da57593",
+      "size": 882
+    },
+    {
+      "mode": "0o644",
+      "path": "upstream-patches/041-fix-cmm_data-header-translated-port-security.patch",
+      "sha256": "b8be9e00bef41d8321c511a0b499239615afb9ffb5e65afe2764528c9fc1c3da",
+      "size": 2179
+    }
+  ],
+  "id": "s20p-wifi-logging-20261103",
+  "limits": {
+    "counter": "saturating-unsigned-int-lower-bound-at-UINT_MAX",
+    "pmf_aggregate": "global-not-per-peer",
+    "pmf_interval_seconds": 5,
+    "pmf_subtype": 13,
+    "tail_summary": "next-eligible-event-only"
+  },
+  "patch_dir": "package/mtk/drivers/mt_wifi/patches-7673",
+  "patch_dir_git_tree": "9279c5b0c0b7ef7fedd09f2807dfa9a371cc3b98",
+  "patched_sources": {
+    "mt_wifi/embedded/common/dbg_ctrl.c": "0f419e5495b3b537be43b515ea0c254aa67d94596775f36b59c09e735219e8b8",
+    "mt_wifi/embedded/include/dbg_ctrl.h": "dbb880e38999e3141e56ac72458ccb8c9e8c6b08e006f5461e7fe5e93c161f36",
+    "mt_wifi/embedded/plug_in/warp_proxy/warp_proxy.c": "675bac3614539edd1189ea7e17720587a1eb3d84744e716a00a936f24db5dca1",
+    "mt_wifi/embedded/security/cmm_wpa.c": "2d6d52134d9cffd4aff05d192c28548ecf7946ed00734ac53ef985223d7ecd31",
+    "mt_wifi/embedded/security/pmf.c": "6c8f48189983cb6e15c41a557146c6e308d107f0cfc9c2bcf85d74dfe1e4dd7d",
+    "mt_wifi/include/common/debug.h": "3ba35f25bc2c4907113ca5e0cb891f2945ba17f5a03c69ea01e8a879c0f90a13",
+    "mt_wifi/include/os/rt_linux.h": "9bc5837af82b3ec37d181a114ef54454e6b6d709166327b95856347aed397555",
+    "mt_wifi_ap/Makefile": "791ee07ec8a78d588f37ee895127743495bf5a7ae7fd25ba26b661535aaf2ac0"
+  },
+  "recipe": "package/mtk/drivers/mt_wifi/Makefile",
+  "recipe_git_blob": "7372049f426c983898a8c0a8c8ea78977a9e6dff",
+  "schema_version": 1,
+  "upstream_commit": "9f397975c7b47ce6986a6e39529d2f72fd5c729d",
+  "upstream_patches": [
+    {
+      "git_blob": "dea92044d56c3e57342edbb6eb33fe2f77981e1b",
+      "mode": "0o644",
+      "path": "001-eeprom-flash-api.patch",
+      "sha256": "7cda7740c69788241c7561eeaeca85a328cabf9c20b12b429acc0dca81d8492a",
+      "size": 3862
+    },
+    {
+      "git_blob": "1768b58c136996bbdb6afcb09767b2bc1999b94f",
+      "mode": "0o644",
+      "path": "002-sort-site-survey-table.patch",
+      "sha256": "595f788baba16c1995eb8694af993da35493c49d7a0bf1f22912832ac54d1319",
+      "size": 282
+    },
+    {
+      "git_blob": "a9f6157e6a26b70b18502209573b553a8f2df123",
+      "mode": "0o644",
+      "path": "003-fix-rxrate-stainfo.patch",
+      "sha256": "1b471780cbd5dd9053bec239507549b70b17112a09997341f8d69a234cc16de2",
+      "size": 2638
+    },
+    {
+      "git_blob": "563130b34f7c9938800fa064ad0826e6522a67f6",
+      "mode": "0o644",
+      "path": "004-remove-apcli-bgprotect-log.patch",
+      "sha256": "40cf67e6cf55b845b2c43db1db2a5326ff14b3ed5b9a4dd6dd805bdfbedf0bb5",
+      "size": 418
+    },
+    {
+      "git_blob": "e1c4564b6dd98febb6d645f860655b046363605c",
+      "mode": "0o644",
+      "path": "005-use-ext-warp-code.patch",
+      "sha256": "b902c11736d34e6747b16f3634602b1ddff7b8317ae93f5b411e1bce701c9d6d",
+      "size": 502
+    },
+    {
+      "git_blob": "9ed0ca29ba2ffb1ea46584f7b5ef6b8837271b70",
+      "mode": "0o644",
+      "path": "006-fix-stainfo_struct.patch",
+      "sha256": "ed56cd917eaca199e12073fe3f1c9732d57e47e6cb480b8c47f6444d72cf7f43",
+      "size": 5610
+    },
+    {
+      "git_blob": "97e13701df962e770ed3318056b6db65772debd0",
+      "mode": "0o644",
+      "path": "007-fix-tx-phymode.patch",
+      "sha256": "78eb479ad73a04f932a41d26d69fd3d226104863e5c40de5476d883cdc6a3f44",
+      "size": 1016
+    },
+    {
+      "git_blob": "8d7b38ee23485f230a8836f8c07482957647b270",
+      "mode": "0o644",
+      "path": "008-fix-he-gi-stainfo.patch",
+      "sha256": "e17c687cc6544436982f4156bfc2b8813d72c72b3b4e163914b8a2b40152ebec",
+      "size": 1523
+    },
+    {
+      "git_blob": "a8f96e3bf648b91116cfe73f6366ca71c2a574c4",
+      "mode": "0o644",
+      "path": "009-add-secinfo-to-stainfo.patch",
+      "sha256": "077c84710d00e18c65711e94677a50b1aeba7222e1195ade0e4f321131866a0b",
+      "size": 1161
+    },
+    {
+      "git_blob": "ec5d26eb26ac2ca824800409ac919ae58ebc8548",
+      "mode": "0o644",
+      "path": "010-remove-addba-noisy-log.patch",
+      "sha256": "604b6e79bfc4b4485c847829aa426a8c41d31472551bb56acc5f52e2784f225f",
+      "size": 541
+    },
+    {
+      "git_blob": "da74f7762f2cbcb66bce377b8b6e259f6eda7a00",
+      "mode": "0o644",
+      "path": "011-fix-wext-txpwr.patch",
+      "sha256": "adbbdbffe2c415dc4b020bd9b3779f5ffb154d811cc6d82058e3f52bb5964115",
+      "size": 3039
+    },
+    {
+      "git_blob": "2246a23333e9bb8316e0de4f2cb6b339e54cbb0d",
+      "mode": "0o644",
+      "path": "012-add-mt7986-memory-shrink-aggress.patch",
+      "sha256": "0fcb00373a9288b169ca3b2d245d88a6e483ef82b3f13b690c160e049044ad95",
+      "size": 448
+    },
+    {
+      "git_blob": "51cc71ed55c0be88cf1562131cf0bcbb4a072397",
+      "mode": "0o644",
+      "path": "013-add-rssi-for-sitesurvey.patch",
+      "sha256": "2c44f34f47c61dfdbf46c01c264ece7604aaa1c4af00798fffc7b76f1f9a7594",
+      "size": 2050
+    },
+    {
+      "git_blob": "8603417eb834c83af1720ce5f372e323f06be27c",
+      "mode": "0o644",
+      "path": "014-fix-iwrange.patch",
+      "sha256": "5bf3c5da8db7d45e8421824c5d37fcbbce498398728811763e16cd02d2534d4d",
+      "size": 2303
+    },
+    {
+      "git_blob": "f69d72b051d4887ea9c0dacf1bb5aeac92db0f54",
+      "mode": "0o644",
+      "path": "015-fix-apcli-stainfo.patch",
+      "sha256": "f7494577dad2b41638694dfc35fc451a44ec15e60cfb50e4f135792a3e7b7c43",
+      "size": 515
+    },
+    {
+      "git_blob": "cf46080666f772ae838e7e3639b7f6443c3ff1e4",
+      "mode": "0o644",
+      "path": "016-fix-apcli-scan-no-ascii-ssid.patch",
+      "sha256": "b0abd71f6029b160715288a0b41f190ccbbd24bae8dcf5035538fcd2c3713110",
+      "size": 1952
+    },
+    {
+      "git_blob": "0501edaa221f23a6d819407d53ddf299e4031117",
+      "mode": "0o644",
+      "path": "017-fix-secinfo-for-iwinfo.patch",
+      "sha256": "3a44aa11ba36ddb8a215def2b31914c9888461c4435dd66aea15fd1cc020feeb",
+      "size": 2541
+    },
+    {
+      "git_blob": "7f1d9d1bb7c2c2589c99797abd6c54b6a96f68ea",
+      "mode": "0o644",
+      "path": "020-fix-6ghz-channel-list.patch",
+      "sha256": "3000ea91593cf0977a5060124a0c398cbae4adbb693eeba9d851302811fc7f92",
+      "size": 2031
+    },
+    {
+      "git_blob": "4c9a3abe36150c816b50f2e68659951a62a48f9f",
+      "mode": "0o644",
+      "path": "021-fix-return-type.patch",
+      "sha256": "774e3eaac3c835b2a234165a20ac2544eca39d6f02c216a9a2ae8ee63e2c49f2",
+      "size": 406
+    },
+    {
+      "git_blob": "336a1bc9e7faefdbe51c51958433757cac4e4513",
+      "mode": "0o644",
+      "path": "022-since-v5.18-drop-deprecated-mm_segment_t-usages.patch",
+      "sha256": "a6a746ec988cc90591e869147741a8d48116190816e675bd9f341c679ceb3e47",
+      "size": 10778
+    },
+    {
+      "git_blob": "74d60d81d02411a0a3f6136acf9ef919e25339a6",
+      "mode": "0o644",
+      "path": "023-since-v5.5-fix-printk-redefined-in-rt_linux.patch",
+      "sha256": "b3cb75d5d65ee2d02291f3930736d0da68e42d0498aa7f028d9f00e03a9bae99",
+      "size": 612
+    },
+    {
+      "git_blob": "9acf122a07c1eeb5f59eaf29642649e6ad651dd5",
+      "mode": "0o644",
+      "path": "024-since-v5.16-fix-stdarg_h-not-found-error.patch",
+      "sha256": "8bdd01b8268518098d110fc087985a923ce56dd10987c6eb0bffe83d1efe8ff3",
+      "size": 453
+    },
+    {
+      "git_blob": "8d4cc651e844ef9a8eebe883f590a4d918af9a3f",
+      "mode": "0o644",
+      "path": "025-since-v5.6-remove-rt_os-h-kernel-version-check.patch",
+      "sha256": "a173562f6eb8f05cdf38b6e2ec64bc08e3ccfeb04517f7078bac8ac903327cdb",
+      "size": 820
+    },
+    {
+      "git_blob": "03c707c3e2e794ecbc84d7e438d83c3e632dcc20",
+      "mode": "0o644",
+      "path": "026-since-v6.1-replace-deprecated-prandom_u32-usage.patch",
+      "sha256": "5402e47b5c847c63483dcd907c61e943d59e99002ac9254e5de04a9704a19971",
+      "size": 459
+    },
+    {
+      "git_blob": "43c2a9e8d9b79df49e1746da98dffe1d88385584",
+      "mode": "0o644",
+      "path": "027-since-v5.6-replace-deprecated-ioremap_nocache-usage.patch",
+      "sha256": "48637e5ffacfd7495c96ae6aaf437516bc04798510b9f1d726ca0663dc9a96d4",
+      "size": 513
+    },
+    {
+      "git_blob": "0275fca9131c99bd5a7af933d3ae2ec2de4f41c6",
+      "mode": "0o644",
+      "path": "028-since-v5.18-replace-deprecated-PCI_DMA_FROMDEVICE-macro.patch",
+      "sha256": "89e89a868a484a41b05c0f2b2c69b3a21af64079577075f6e45851a3f9520da4",
+      "size": 3248
+    },
+    {
+      "git_blob": "2b0cfe9f86732be33fab2ce645ba2fe6095e4de2",
+      "mode": "0o644",
+      "path": "029-since-v5.5-replace-deprecated-pr_warning-define.patch",
+      "sha256": "d15e2ce58ffd69a4868e640189c7010e0ee18c9d47b80ea92cb4b2d883695e93",
+      "size": 628
+    },
+    {
+      "git_blob": "2da7a9653f0a09bb329bd01c70efdda1aa14d9d4",
+      "mode": "0o644",
+      "path": "030-since-v5.18-replace-deprecated-pci_set_dma_mask-usage.patch",
+      "sha256": "2b9994b0a659ff7b8ddcfd977ec8b3ee377ff22926f885869fa8da512a08392f",
+      "size": 2861
+    },
+    {
+      "git_blob": "76839a39896813c3834c7c93cdc2768bf6a011c2",
+      "mode": "0o644",
+      "path": "031-remove-unused-and-deprecated-tim-in-bn_lib.patch",
+      "sha256": "35607fe365061e1b3cda43fa3ec4700e167c2512acb897e613327c3d93050caf",
+      "size": 485
+    },
+    {
+      "git_blob": "7d5ebd19b2de1dbf235fe1febb669cea5c1216d0",
+      "mode": "0o644",
+      "path": "032-since-v6.3-remove-deprecated-compound_dtor-in-printk.patch",
+      "sha256": "600d79088031df12f8773be33141176b66f509f4d22ce9af1cadde0c68433d4f",
+      "size": 638
+    },
+    {
+      "git_blob": "9c882659b55bb3ddba85633588c94e6de8e3a1ee",
+      "mode": "0o644",
+      "path": "033-since-v5.17-replace-illegal-memmove-with-dev_addr_set.patch",
+      "sha256": "fcad7199f47aefd68bc10b1b72d8951905f572e89d3303fdfbcebd5b21edbf34",
+      "size": 2588
+    },
+    {
+      "git_blob": "9f2abf4d4a19ee423aed78e755cda6f83c2bccde",
+      "mode": "0o644",
+      "path": "034-since-v6.12-fix-unaligned_h-not-found-error.patch",
+      "sha256": "d814d58f251cec9dca6c195aa9b9e0155cf12771fb22bea0dd385c0f61552380",
+      "size": 424
+    },
+    {
+      "git_blob": "3574d0ac694c4f8694a169e26f02547bf7ff96a7",
+      "mode": "0o644",
+      "path": "035-since-v6.8-change-strlcpy-to-strscpy.patch",
+      "sha256": "93a04b5f7e1b784b3171dbb6d7f5d5f4a37c4d3e941bd72d7b469ec0f1141cf0",
+      "size": 1768
+    },
+    {
+      "git_blob": "4b2ebd1a671d1c2c274b1dc2b13c1e5cd437a6c8",
+      "mode": "0o644",
+      "path": "037-fix-fortify-warning-1-cmm_wpa.patch",
+      "sha256": "4ea2ce47cc5d849bc36dedde593963921512c6d1dfa77dfdb5e6c26a29f8d0c0",
+      "size": 440
+    },
+    {
+      "git_blob": "13c50aea408a5f10061c07b77ca438eb26fc4df9",
+      "mode": "0o644",
+      "path": "037-fix-fortify-warning-2-pmf.patch",
+      "sha256": "9cdb39875484c327319448e0e84207ac8f831b6d6d7859bb74bec0a0c6d4867d",
+      "size": 527
+    },
+    {
+      "git_blob": "81a53c513ec577ada6cdb1e4830e204968377194",
+      "mode": "0o644",
+      "path": "037-fix-fortify-warning-3-sta-sanity-memmove-overflow.patch",
+      "sha256": "77a76f7747e0f045c2eb78b4e972e5c0fa3abadbf99c2a5f49d6157a81caa512",
+      "size": 502
+    },
+    {
+      "git_blob": "559318a823becbba33cc64a9b0e6adb8fed39da4",
+      "mode": "0o644",
+      "path": "037-fix-fortify-warning-4-qos.patch",
+      "sha256": "9d192e0421633d7aa92a637ac99c8ec11b498664eb19739ebb9f7ee478b05d51",
+      "size": 2175
+    },
+    {
+      "git_blob": "cc89cff8643680ef503523605b42b0f5e4a53f31",
+      "mode": "0o644",
+      "path": "038-fix-rrm-snprintf-read-overflow.patch",
+      "sha256": "dbfd6e46158fb347d176d7659762f9df4ef3c738a26af004f94113fa9f4e2303",
+      "size": 1180
+    },
+    {
+      "git_blob": "22d80d8ea338e50d3ed40107e8ab313928cd6bb8",
+      "mode": "0o644",
+      "path": "039-fix-qos-peer_vendor_spec_action-frame-check.patch",
+      "sha256": "d3ddaa67391ad49b3b826bd39400de56e7db42a715cd934c12b43533f1babe6f",
+      "size": 944
+    },
+    {
+      "git_blob": "91fdda9210dc970b74c6f36f4fbe5ebbfa497a8b",
+      "mode": "0o644",
+      "path": "040-ap_mgmt_assoc-dont-reject-oversized-supported-channels-ie.patch",
+      "sha256": "5094c6a81a8967f9c1525b9b8c0bb025205cb7669047acb0e698b0e48da57593",
+      "size": 882
+    },
+    {
+      "git_blob": "db09423f747e993725945c0a5e47f1448171ead0",
+      "mode": "0o644",
+      "path": "041-fix-cmm_data-header-translated-port-security.patch",
+      "sha256": "b8be9e00bef41d8321c511a0b499239615afb9ffb5e65afe2764528c9fc1c3da",
+      "size": 2179
+    }
+  ],
+  "upstream_repository": "https://github.com/chasey-dev/immortalwrt-mt798x-rebase"
+}

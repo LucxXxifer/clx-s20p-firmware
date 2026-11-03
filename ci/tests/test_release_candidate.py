@@ -23,12 +23,13 @@ import go_security
 import dashboard
 import fixed_inputs
 import minimal_security
+import wifi_logging
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
 
 
-TEST_WRAPPER_COMMIT = "d" * 40
+TEST_WRAPPER_COMMIT = "59e093e6c5f33591eebe9e332898bf111ed64b0a"
 TEST_KERNEL_ABI = "6.12.112~" + "b" * 32 + "-r1"
 TEST_PUBLIC_KEY = b"-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----\n"
 IMAGE_PATH = "bin/targets/mediatek/filogic/immortalwrt-mediatek-filogic-clx_s20p-squashfs-sysupgrade.bin"
@@ -64,6 +65,7 @@ class ReleaseCandidateTests(unittest.TestCase):
         self.assertIn(TEST_WRAPPER_COMMIT, guide)
         self.assertIn("not a stable release", guide.lower())
         self.assertIn("rolling prerelease candidate", guide.lower())
+        self.assertNotIn('Wi-Fi diagnostics:', guide)
         self.assertTrue(release.verify_release_assets(
             self.output, run_id="1234", run_attempt="2", build_commit=TEST_WRAPPER_COMMIT,
             upstream_commit=release.UPSTREAM_BASE_COMMIT,
@@ -177,6 +179,88 @@ class ReleaseCandidateTests(unittest.TestCase):
         with patch.dict(os.environ, {"S20P_FIXED_INPUTS": str(path)}):
             with self.assertRaisesRegex(ValueError, "minimal-security"):
                 self.prepare()
+
+    def test_new_wrapper_cannot_omit_wifi_report_or_self_select_historical_policy(self):
+        release_fixture(self.artifact, commit='e' * 40)
+        with self.assertRaisesRegex(ValueError, 'wifi-logging'):
+            release.prepare_release_assets(
+                self.artifact, self.output, run_id='1234', run_attempt='2',
+                build_commit='e' * 40, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def wifi_fixture(self):
+        from test_wifi_logging import WifiLoggingTests
+        provenance, prepared, packages, image, _ = WifiLoggingTests().evidence(self.root / 'wifi', wifi_logging)
+        payload = provenance.parent / 'inspection/rootfs.squashfs'
+        payload.write_bytes(TEST_ROOTFS_PAYLOAD)
+        packages['base-files'] = {'name': 'base-files', 'version': '1~b25.12'}
+        (image / 'lib/apk/db/installed').write_text(json.dumps({'packages': list(packages.values())}))
+        with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)):
+            report = wifi_logging.inspect(image, payload, provenance)
+        extras = {path.relative_to(provenance.parent).as_posix(): path.read_bytes()
+                  for path in provenance.parent.rglob('*') if path.is_file() and not path.is_relative_to(image)}
+        # release_fixture builds source-lock/requested-lock itself; retain its
+        # exact lock with our new wrapper/config/module evidence and rebind.
+        source_extra = json.loads(extras.pop('provenance/source-lock.json'))
+        extras['reports/wifi-logging.json'] = json_bytes(report)
+        archive = release_fixture(self.artifact, commit='e' * 40, extra_files=extras,
+                                  extra_packages=[packages[wifi_logging.PACKAGE_NAME]])
+        def bind(source):
+            source.update({key: source_extra[key] for key in
+                           ('wrapper_tree_hash', 'prepared_tree_hash', 'build_fingerprint')})
+            report['source_binding']['source_lock_sha256'] = source['source_lock_sha256']
+        rewrite_archive_json(archive, 'provenance/source-lock.json', bind)
+        rewrite_archive_json(archive, 'reports/wifi-logging.json', lambda value: value.update(report))
+        rewrite_archive_json(archive, 'reports/preservation-image.json',
+                             lambda value: value['checks'].update(wifi_logging=report))
+        files = {'/lib/apk/db/installed': (image / 'lib/apk/db/installed').read_bytes()}
+        files.update({path: (image / path.lstrip('/')).read_bytes() for path in wifi_logging.MODULES})
+        return archive, prepared, files
+
+    def test_new_release_rechecks_wifi_report_and_actual_module_bytes(self):
+        archive, prepared, files = self.wifi_fixture()
+        arguments = dict(run_id='1234', run_attempt='2', build_commit='e' * 40,
+                         upstream_commit=release.UPSTREAM_BASE_COMMIT)
+        with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)), \
+                patch.object(wifi_logging, 'payload_files', return_value=files):
+            result = release.prepare_release_assets(self.artifact, self.output, **arguments)
+            self.assertEqual(result['verified']['wifi_logging']['package']['version'], wifi_logging.PACKAGE_VERSION)
+            self.assertFalse(result['verified']['wifi_logging']['runtime_tested'])
+            guide = (self.output / 'INSTALLATION.md').read_text()
+            self.assertIn('Wi-Fi diagnostics:', guide)
+            self.assertIn('global 5-second', guide)
+            self.assertIn('GTK start/success at INFO', guide)
+            self.assertIn('does not repair the observed GTK handshake timeout', guide)
+            (self.output / 'INSTALLATION.md').write_text(guide.split('Wi-Fi diagnostics:', 1)[0])
+            write_checksums(self.output, exclude={'SHA256SUMS'})
+            with self.assertRaisesRegex(ValueError, 'Wi-Fi diagnostic scope/limits'):
+                release.verify_release_assets(self.output, **arguments)
+            (self.output / 'INSTALLATION.md').write_text(guide)
+            write_checksums(self.output, exclude={'SHA256SUMS'})
+            files[wifi_logging.MODULES[1]] += b'changed module bytes'
+            with self.assertRaisesRegex(ValueError, 'module/payload'):
+                release.verify_release_assets(self.output, **arguments)
+
+    def test_new_release_rejects_coherent_wifi_report_tampering(self):
+        archive, prepared, files = self.wifi_fixture()
+        rewrite_archive_json(archive, 'reports/wifi-logging.json',
+                             lambda value: value['modules'][0].update(sha256='a' * 64))
+        rewrite_archive_json(archive, 'reports/preservation-image.json',
+                             lambda value: value['checks']['wifi_logging']['modules'][0].update(sha256='a' * 64))
+        with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)), \
+                patch.object(wifi_logging, 'payload_files', return_value=files), \
+                self.assertRaisesRegex(ValueError, 'module/payload'):
+            release.prepare_release_assets(self.artifact, self.output, run_id='1234', run_attempt='2',
+                                          build_commit='e' * 40, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def test_new_release_rejects_missing_wifi_preservation_check(self):
+        archive, prepared, files = self.wifi_fixture()
+        rewrite_archive_json(archive, 'reports/preservation-image.json',
+                             lambda value: value['checks'].pop('wifi_logging'))
+        with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)), \
+                patch.object(wifi_logging, 'payload_files', return_value=files), \
+                self.assertRaisesRegex(ValueError, 'Wi-Fi logging report differs from preservation evidence'):
+            release.prepare_release_assets(self.artifact, self.output, run_id='1234', run_attempt='2',
+                                          build_commit='e' * 40, upstream_commit=release.UPSTREAM_BASE_COMMIT)
 
     def test_minimal_release_independently_verifies_security_report_and_profile(self):
         path, _, _ = self.minimal_fixture()
@@ -762,6 +846,16 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
     if extra_image:
         files["bin/targets/mediatek/filogic/clx_s20p-extra-sysupgrade.bin"] = b"second-image"
     files.update(extra_files or {})
+    historical = json.loads((wifi_logging.HERE / 'historical-wrappers.json').read_text())
+    if commit in historical:
+        wrapper_path = 'provenance/wrapper-source-files.json'
+        wrapper = json.loads(files.get(wrapper_path, b'[]'))
+        paths = {row['path'] for row in wrapper}
+        wrapper.extend(row for row in historical[commit] if row['path'] not in paths)
+        files[wrapper_path] = json_bytes(wrapper)
+        source = json.loads(files['provenance/source-lock.json'])
+        source['wrapper_tree_hash'] = wifi_logging.digest(json.dumps(wrapper, sort_keys=True).encode())
+        files['provenance/source-lock.json'] = json_bytes(source)
     build = artifact / "fixture"
     for name, data in files.items():
         path = build / name

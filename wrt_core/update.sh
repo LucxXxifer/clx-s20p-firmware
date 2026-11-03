@@ -182,6 +182,8 @@ stage_post_install_package_fixes() {
             python3 "${S20P_CI_DIR:?}/minimal_security.py" prepare --source-root "$BUILD_DIR" \
                 --output "${S20P_CAPTURE_DIR:?}/provenance/minimal-security-preparation.json" || return 1
         fi
+        python3 "${S20P_CI_DIR:?}/wifi_logging.py" prepare --source-root "$BUILD_DIR" \
+            --output "${S20P_CAPTURE_DIR:?}/provenance/wifi-logging-preparation.json" || return 1
     fi
     # apply_hash_fixes
 }

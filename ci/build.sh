@@ -100,6 +100,11 @@ if [[ -n $S20P_FIXED_INPUTS ]]; then
         --head "$locked_upstream" --components "$S20P_COMPONENT_INPUTS"
     python3 ci/fixed_inputs.py verify-http "$S20P_FIXED_INPUTS" --log "$S20P_HTTP_LOG"
 fi
+# Normal crond job starts must retain LOG_INFO after Kconfig expansion.
+grep -Fxq 'CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=y' output/metadata/final.config || {
+    echo 'S20P BusyBox informational syslog support is missing from the final build configuration.' >&2
+    exit 1
+}
 python3 ci/dashboard.py inspect \
     --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
     --output output/reports/dashboard.json

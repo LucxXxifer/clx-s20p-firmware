@@ -95,6 +95,8 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 
 ## 本地驗證
 
+S20P profile 啟用 BusyBox `FEATURE_SYSLOG_INFO`，讓正常 cron 任務啟動訊息使用 `LOG_INFO`，實際錯誤仍使用 `LOG_ERR`。CI 會核對同批產物的 `metadata/final.config`；選項若被 Kconfig 移除，就停止候選版發布。此設定不更改 ShellCrash 任務、syslog 全域等級或無線安全設定；設備端效果仍須升級後驗證。
+
 ```sh
 python3 -m unittest discover -s ci/tests -v
 bash ci/tests/test_network.sh

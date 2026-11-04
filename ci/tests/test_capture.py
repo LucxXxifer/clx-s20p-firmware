@@ -653,7 +653,8 @@ mkdir action_build
         (self.repo / "build.sh").write_text('''#!/usr/bin/env bash
 set -eu
 if [[ ${S20P_TEST_BUILD_EXIT:-0} != 0 ]]; then exit "$S20P_TEST_BUILD_EXIT"; fi
-mkdir -p output/reports output/inspection/rootfs
+mkdir -p output/reports output/inspection/rootfs output/metadata
+printf '%s\\n' CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=y > output/metadata/final.config
 printf '%s\\n' fixture-state > output/.fakeroot.state
 printf '%s\n' '{"status":"captured"}' > output/reports/capture.json
 printf '%s\n' '{"status":"pass"}' > output/reports/signed-feeds.json
@@ -723,6 +724,27 @@ sys.exit(status)
         self.assertEqual(result.returncode, 7, result.stderr + result.stdout)
         status = json.loads((self.repo / "output/reports/build-status.json").read_text())
         self.assertEqual(status["build_exit"], 7)
+        self.assertFalse(self.github_output.exists())
+        self.assertFalse((self.repo / "output/release").exists())
+
+    def test_disabled_busybox_info_logging_blocks_candidate(self):
+        builder = self.repo / "build.sh"
+        builder.write_text(builder.read_text().replace(
+            "CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=y",
+            "CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=n"))
+        result = self.build()
+        self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertIn("informational syslog support is missing", result.stderr)
+        self.assertFalse(self.github_output.exists())
+        self.assertFalse((self.repo / "output/release").exists())
+
+    def test_missing_busybox_info_logging_blocks_candidate(self):
+        builder = self.repo / "build.sh"
+        builder.write_text(builder.read_text().replace(
+            "CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=y", ""))
+        result = self.build()
+        self.assertNotEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertIn("informational syslog support is missing", result.stderr)
         self.assertFalse(self.github_output.exists())
         self.assertFalse((self.repo / "output/release").exists())
 

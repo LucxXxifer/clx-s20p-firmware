@@ -74,6 +74,9 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 - 編譯成功後、原流程清理前保存完整 `bin/`、所有 APK／已簽名 `packages.adb`、公開key、kernel config／Module.symvers、final config、buildinfo、來源與HTTP輸入紀錄、logs與SHA256。
 - 使用同批 host apk 驗證 signed index，再核 APK payload 與 index identity。沿用原 `CONFIG_SIGN_EACH_PACKAGE=n` 的模型，不假裝 unsigned APK 有單獨簽章，不降低安裝信任要求。
 - 全部自動檢查通過時僅發佈 **prerelease candidate**；仍需上機驗證 USB／Wi-Fi／加速／重啟及遷移，不能宣稱 stable。
+- 新 Release 自動附上繁體中文更新日誌：依發布時間選取前一個成功發布的同系列候選，核對精確 CI attempt、tag commit、API SHA256 與 release checksums，再比較同批套件／kernel ABI、公開來源 SHA、wrapper 補丁檔案、安全與 logging 報告。基準可為 fixed 或 rolling，不以 Latest 或較大 run ID 代替發布時間；不修改歷史 Release。首次無基準會明示；基準驗證失敗會停止發布。
+- 日誌區分「上游宣稱」、「同批產物證據」與「硬體未驗收」。上游提交摘要最多查詢10個 GitHub repository、各20筆，截斷／API 無法取得時明示；不憑 commit message、檔名或版本號宣稱 CVE 已修復。套件表最多80項、來源40項、補丁30項，超出時列總數及同批完整清單位置。
+- `BUILD-VERIFICATION.json` 的 `changelog_inventory` 綁定本版公開證據，prepare／verify 重讀同批封存比對，仍維持原六個 release 資產。舊候選缺少此欄位時，下載其 checksum-verified archive，以既有安全 reader 核內層 SHA256 再重讀清單；不執行 archive 內的工具、不以新版政策重審歷史來源。私人 DNS／啟動修補、安裝後下載及本機個性化資料不在此映像日誌內。
 - evidence 與未發布的候選 artifact 保留7天；發布成功的候選以 GitHub prerelease 保存，並附上完整 same-build feed，避免只剩 ROM 而失去配套 kmod。
 
 每日解析後建立暫存 source lock，固定當次精確來源；不提交動態 lock、不混入其他 ABI 的 kmod、不 force dependencies。人工 `force` 只是重試，不會批准差異或改變來源。追蹤更新、編譯成功和通過發佈驗收是三個不同結果；未知設定／依賴／來源結構差異會保存報告並停止發佈。

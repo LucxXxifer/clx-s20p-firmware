@@ -17,6 +17,7 @@ import upstream_sync
 import go_security
 import dashboard
 import component_gate
+import release_inventory
 from preservation import (OMITTED_APPLICATION_PACKAGES, REQUIRED_APPLICATION_PACKAGES, EXCLUDED_APPLICATION_PACKAGES, load_application_selection,
                           application_selection_evidence)
 
@@ -464,6 +465,7 @@ def verify_candidate_bundle(root, run_id, run_attempt, build_commit, upstream_co
                         "policy_sha256": go_report["policy_sha256"],
                         "binary_count": len(go_report["binaries"]),
                         "versions": sorted({row["go_version"] for row in go_report["binaries"]})},
+        "changelog_inventory": release_inventory.build_inventory(root),
     }
     if build_date:
         result["build_date"] = build_date
@@ -622,6 +624,7 @@ The exact run passed its same-build package, signed-feed, source, ABI, image-saf
         "public_key_sha256": verified["public_key_sha256"],
         "go_security": verified["go_security"],
         "fixed_inputs": verified["fixed_inputs"],
+        "changelog_inventory": verified["changelog_inventory"],
         "live_acceptance": "not-run", "stable_eligible": False,
     }
     if "build_date" in verified:
@@ -662,6 +665,7 @@ def verify_release_assets(output_dir, *, run_id, run_attempt, build_commit, upst
             metadata.get("upstream_commit") != upstream_commit or
             metadata.get("go_security") != verified["go_security"] or
             metadata.get("fixed_inputs") != verified["fixed_inputs"] or
+            metadata.get("changelog_inventory") != verified["changelog_inventory"] or
             metadata.get("build_date") != verified.get("build_date") or
             ("build_date" in metadata) != ("build_date" in verified) or
             metadata.get("live_acceptance") != "not-run" or metadata.get("stable_eligible") is not False):

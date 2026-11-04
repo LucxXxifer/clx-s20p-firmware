@@ -21,6 +21,49 @@ class DailyWorkflowTests(unittest.TestCase):
     def setUpClass(cls):
         cls.text = WORKFLOW.read_text()
 
+    def test_release_changelog_is_appended_and_failure_blocks_six_asset_publication(self):
+        shell = textwrap.dedent(self.text.split('- name: Publish verified CLX-S20P mainline prerelease', 1)[1]
+                                .split('run: |\n', 1)[1])
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            assets = root / 'assets'
+            assets.mkdir()
+            for name in ('image.bin', 'samebuild.tar.gz', 'BUILD-VERIFICATION.json', 'INSTALLATION.md', 'archive.SHA256SUMS'):
+                (assets / name).write_text('fixture\n')
+            (assets / 'SHA256SUMS').write_text(''.join(
+                hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.name + '\n' for p in sorted(assets.iterdir())))
+            (root / 's20p-a-assets-dir').write_text(str(assets) + '\n')
+            helper = root / 'python3'
+            helper.write_text('#!' + sys.executable + '\n' + textwrap.dedent('''\
+                import os, pathlib, sys
+                assert sys.argv[1] == 'ci/release_changelog.py', sys.argv
+                if os.environ.get('FAIL_CHANGELOG') == '1':
+                    sys.exit(1)
+                pathlib.Path(sys.argv[sys.argv.index('--output') + 1]).write_text('CHANGELOG_TEST_MARKER\\n')
+                '''))
+            helper.chmod(0o755)
+            gh = root / 'gh'
+            gh.write_text('#!' + sys.executable + '\n' + textwrap.dedent('''\
+                import json, pathlib, sys
+                assert sys.argv[1:3] == ['release', 'create'], sys.argv
+                pathlib.Path('published.json').write_text(json.dumps(sys.argv[1:]))
+                '''))
+            gh.chmod(0o755)
+            env = {**os.environ, 'PATH': str(root) + os.pathsep + os.environ['PATH'],
+                   'RUNNER_TEMP': str(root), 'GH_REPO': 'owner/firmware', 'GH_RUN_ID': '100',
+                   'GH_RUN_ATTEMPT': '1', 'GH_BUILD_COMMIT': 'a' * 40,
+                   'GH_UPSTREAM_COMMIT': 'b' * 40, 'GH_FIXED': 'false'}
+            result = subprocess.run(['bash', '-c', shell], cwd=root, env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('CHANGELOG_TEST_MARKER', (root / 'release-notes.md').read_text())
+            published = json.loads((root / 'published.json').read_text())
+            self.assertEqual(sum(str(assets) + '/' in a for a in published), 6)
+            (root / 'published.json').unlink()
+            result = subprocess.run(['bash', '-c', shell], cwd=root,
+                                    env={**env, 'FAIL_CHANGELOG': '1'}, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse((root / 'published.json').exists())
+
     def test_schedule_and_manual_force_input_are_present(self):
         self.assertRegex(self.text, r"(?m)^  schedule:")
         self.assertRegex(self.text, r"(?m)^  workflow_dispatch:")

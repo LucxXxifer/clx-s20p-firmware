@@ -369,6 +369,10 @@ jobs:
           Fixed-source candidate: system, 31 plugin/feed inputs, CA/Go/QuickStart and wrapper HTTP inputs retain the reviewed run 41031102553 snapshot. The separate ci/fixed/20261031/manifest.json binds the official uhttpd list-type backport, scoped LuCI mounts ACL removal and three-package EasyTier exclusion. QuickStart remains installed with its explicitly disclosed legacy Go exception; its source rebuild is deferred. The same-build archive contains the verified fixed-input manifest and bytes. Daily rolling builds remain separate. Hardware acceptance remains required.
           FIXED_NOTES
           fi
+          python3 ci/release_changelog.py --repository "$GH_REPO" \
+            --assets-dir "$assets_dir" --cache-dir "$RUNNER_TEMP/s20p-changelog-cache" \
+            --output "$RUNNER_TEMP/s20p-changelog.md"
+          cat "$RUNNER_TEMP/s20p-changelog.md" >> release-notes.md
           cat "$assets_dir/INSTALLATION.md" >> release-notes.md
           shopt -s nullglob
           assets=("$assets_dir"/*)

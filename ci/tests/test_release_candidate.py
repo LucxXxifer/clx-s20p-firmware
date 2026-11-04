@@ -50,6 +50,20 @@ class ReleaseCandidateTests(unittest.TestCase):
             build_commit=TEST_WRAPPER_COMMIT, upstream_commit=upstream_commit, **options,
         )
 
+    def test_changelog_inventory_is_bound_to_the_verified_bundle(self):
+        release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
+        result = self.prepare()
+        snapshot = result['verified']['changelog_inventory']
+        self.assertEqual(snapshot['packages']['kernel'], TEST_KERNEL_ABI)
+        metadata_path = self.output / 'BUILD-VERIFICATION.json'
+        metadata = json.loads(metadata_path.read_text())
+        metadata['changelog_inventory']['packages']['kernel'] = 'different-kernel'
+        metadata_path.write_text(json.dumps(metadata))
+        (self.output / 'SHA256SUMS').write_text(release.checksum_lines(self.output, exclude={'SHA256SUMS'}))
+        with self.assertRaisesRegex(ValueError, 'verification record'):
+            release.verify_release_assets(self.output, run_id='1234', run_attempt='2',
+                build_commit=TEST_WRAPPER_COMMIT, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
     def test_prepares_a_direct_bin_archive_checksums_and_install_guide(self):
         archive = release_fixture(self.artifact, commit=TEST_WRAPPER_COMMIT)
         result = self.prepare()

@@ -526,6 +526,8 @@ def capture(build, output):
         sys.path.insert(0, str(Path(sys.argv[3]).resolve().parent))
         import wifi_logging
         wifi_logging.capture(build, output / "provenance/wifi-logging-build.json")
+        import kernel_security
+        kernel_security.capture(build, output)
     audit(output)
     write_json(output / "reports/capture.json", {
         "status": "captured", "acceptance": "pending-preservation-and-live-validation",

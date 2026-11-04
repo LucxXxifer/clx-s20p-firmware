@@ -24,6 +24,7 @@ import dashboard
 import fixed_inputs
 import minimal_security
 import wifi_logging
+import kernel_security
 SPEC = importlib.util.spec_from_file_location("release_candidate", CI / "release_candidate.py")
 release = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release)
@@ -189,7 +190,32 @@ class ReleaseCandidateTests(unittest.TestCase):
 
     def wifi_fixture(self):
         from test_wifi_logging import WifiLoggingTests
+        from test_kernel_security import KernelSecurityTests
         provenance, prepared, packages, image, _ = WifiLoggingTests().evidence(self.root / 'wifi', wifi_logging)
+        prepared.append(kernel_security.file_row(kernel_security.PATCH_DESTINATION, kernel_security.patch_bytes()))
+        wrapper = json.loads((provenance / 'wrapper-source-files.json').read_text())
+        paths = {row['path'] for row in wrapper}
+        wrapper.extend(row for row in kernel_security.wrapper_rows() if row['path'] not in paths)
+        (provenance / 'wrapper-source-files.json').write_text(json.dumps(wrapper))
+        (provenance / 'prepared-source-files.json').write_text(json.dumps(prepared))
+        source = json.loads((provenance / 'source-lock.json').read_text())
+        source['wrapper_tree_hash'] = kernel_security.digest(json.dumps(wrapper, sort_keys=True).encode())
+        source['prepared_tree_hash'] = kernel_security.digest(json.dumps(prepared, sort_keys=True).encode())
+        (provenance / 'source-lock.json').write_text(json.dumps(source))
+        (provenance / kernel_security.PREPARATION_NAME).write_text(json.dumps(kernel_security.preparation_report()))
+        output = provenance.parent
+        kernel_build = self.root / 'kernel-build'
+        kernel = kernel_build / 'build_dir/target-test/linux-mediatek_filogic/linux-6.12.112'
+        KernelSecurityTests().write_source_tree(kernel, patched=True)
+        (kernel / '.config').write_bytes((output / 'metadata/kernel/.config').read_bytes())
+        (kernel / 'Module.symvers').write_text('symvers\n')
+        (output / 'metadata/kernel/Module.symvers').write_text('symvers\n')
+        (output / 'inspection/kernel.fit').write_bytes(TEST_KERNEL_PAYLOAD)
+        (output / 'inspection/installed-packages.json').write_text(json.dumps({'packages': list(packages.values())}))
+        with patch.object(kernel_security, 'bound_sources', return_value=(None, prepared)):
+            kernel_report = kernel_security.capture(kernel_build, output)
+        (output / 'reports').mkdir()
+        (output / 'reports/kernel-security.json').write_text(json.dumps(kernel_report))
         payload = provenance.parent / 'inspection/rootfs.squashfs'
         payload.write_bytes(TEST_ROOTFS_PAYLOAD)
         packages['base-files'] = {'name': 'base-files', 'version': '1~b25.12'}
@@ -201,6 +227,7 @@ class ReleaseCandidateTests(unittest.TestCase):
         # release_fixture builds source-lock/requested-lock itself; retain its
         # exact lock with our new wrapper/config/module evidence and rebind.
         source_extra = json.loads(extras.pop('provenance/source-lock.json'))
+        extras.pop('inspection/installed-packages.json')
         extras['reports/wifi-logging.json'] = json_bytes(report)
         archive = release_fixture(self.artifact, commit='e' * 40, extra_files=extras,
                                   extra_packages=[packages[wifi_logging.PACKAGE_NAME]])
@@ -211,7 +238,7 @@ class ReleaseCandidateTests(unittest.TestCase):
         rewrite_archive_json(archive, 'provenance/source-lock.json', bind)
         rewrite_archive_json(archive, 'reports/wifi-logging.json', lambda value: value.update(report))
         rewrite_archive_json(archive, 'reports/preservation-image.json',
-                             lambda value: value['checks'].update(wifi_logging=report))
+                             lambda value: value['checks'].update(wifi_logging=report, kernel_security=kernel_report))
         files = {'/lib/apk/db/installed': (image / 'lib/apk/db/installed').read_bytes()}
         files.update({path: (image / path.lstrip('/')).read_bytes() for path in wifi_logging.MODULES})
         return archive, prepared, files
@@ -221,10 +248,13 @@ class ReleaseCandidateTests(unittest.TestCase):
         arguments = dict(run_id='1234', run_attempt='2', build_commit='e' * 40,
                          upstream_commit=release.UPSTREAM_BASE_COMMIT)
         with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)), \
+                patch.object(kernel_security, 'bound_sources', return_value=(None, prepared)), \
                 patch.object(wifi_logging, 'payload_files', return_value=files):
             result = release.prepare_release_assets(self.artifact, self.output, **arguments)
             self.assertEqual(result['verified']['wifi_logging']['package']['version'], wifi_logging.PACKAGE_VERSION)
             self.assertFalse(result['verified']['wifi_logging']['runtime_tested'])
+            self.assertEqual(result['verified']['kernel_security']['cve'], 'CVE-2026-98432')
+            self.assertFalse(result['verified']['kernel_security']['runtime_tested'])
             guide = (self.output / 'INSTALLATION.md').read_text()
             self.assertIn('Wi-Fi diagnostics:', guide)
             self.assertIn('kmod-mt_wifi r3', guide)
@@ -232,6 +262,7 @@ class ReleaseCandidateTests(unittest.TestCase):
             self.assertIn('does not repair a real GTK handshake timeout', guide)
             self.assertIn('global 5-second', guide)
             self.assertIn('all three routine GTK start callsites', guide)
+            self.assertIn('a Wi-Fi module-only update cannot activate this fix', guide)
             self.assertIn('does not repair a real GTK handshake timeout or prove M2 reception', guide)
             (self.output / 'INSTALLATION.md').write_text(guide.split('Wi-Fi diagnostics:', 1)[0])
             write_checksums(self.output, exclude={'SHA256SUMS'})
@@ -254,6 +285,40 @@ class ReleaseCandidateTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, 'module/payload'):
             release.prepare_release_assets(self.artifact, self.output, run_id='1234', run_attempt='2',
                                           build_commit='e' * 40, upstream_commit=release.UPSTREAM_BASE_COMMIT)
+
+    def test_combined_release_rejects_removed_or_mutated_kernel_security_evidence(self):
+        for change in ('erased-evidence', 'preservation-check', 'source', 'kernel-fit'):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as name:
+                helper = ReleaseCandidateTests()
+                helper.root = Path(name)
+                helper.artifact = helper.root / 'candidate'; helper.artifact.mkdir()
+                archive, prepared, files = helper.wifi_fixture()
+                if change == 'erased-evidence':
+                    # Removing both reports and every marker must not opt a new
+                    # Actions commit into the historical bypass.
+                    for member in {
+                        'provenance/kernel-security-preparation.json',
+                        'provenance/kernel-security-build.json', 'reports/kernel-security.json'}:
+                        rewrite_archive_entry(archive, member, None)
+                    rewrite_archive_json(archive, 'reports/preservation-image.json',
+                                         lambda value: value['checks'].pop('kernel_security'))
+                    rewrite_archive_json(archive, 'provenance/wrapper-source-files.json',
+                                         lambda rows: rows.__setitem__(slice(None), [row for row in rows
+                                             if not row['path'].startswith(('ci/kernel_security.py', 'ci/security/kernel-cve-2026-98432/'))]))
+                elif change == 'preservation-check':
+                    rewrite_archive_json(archive, 'reports/preservation-image.json',
+                                         lambda value: value['checks'].pop('kernel_security'))
+                elif change == 'source':
+                    rewrite_archive_bytes(archive, 'provenance/kernel-source-after/net/ipv4/af_inet.c',
+                                          lambda data: data.replace(b'kfree_rcu(', b'kfree('))
+                else:
+                    rewrite_archive_bytes(archive, 'inspection/kernel.fit', lambda data: data + b'changed')
+                with patch.object(wifi_logging, 'bound_sources', return_value=(None, prepared)), \
+                        patch.object(kernel_security, 'bound_sources', return_value=(None, prepared)), \
+                        patch.object(wifi_logging, 'payload_files', return_value=files), \
+                        self.assertRaisesRegex(ValueError, 'kernel.security|kernel source|kernel artifacts'):
+                    release.prepare_release_assets(helper.artifact, helper.root / 'assets',
+                        run_id='1234', run_attempt='2', build_commit='e' * 40, upstream_commit=release.UPSTREAM_BASE_COMMIT)
 
     def test_new_release_rejects_missing_wifi_preservation_check(self):
         archive, prepared, files = self.wifi_fixture()
@@ -850,6 +915,10 @@ def release_fixture(artifact, commit, tamper_checksum=False, extra_image=False,
         files["bin/targets/mediatek/filogic/clx_s20p-extra-sysupgrade.bin"] = b"second-image"
     files.update(extra_files or {})
     historical = json.loads((wifi_logging.HERE / 'historical-wrappers.json').read_text())
+    kernel_historical = json.loads((kernel_security.HERE / 'historical-wrappers.json').read_text())
+    historical = {commit: rows + [row for row in kernel_historical.get(commit, [])
+                                  if row['path'] not in {item['path'] for item in rows}]
+                  for commit, rows in historical.items()}
     if commit in historical:
         wrapper_path = 'provenance/wrapper-source-files.json'
         wrapper = json.loads(files.get(wrapper_path, b'[]'))
@@ -977,6 +1046,12 @@ def rewrite_archive_json(archive, name, mutate):
         data = json.load(source.extractfile(member))
     mutate(data)
     rewrite_archive_entry(archive, name, json_bytes(data))
+
+
+def rewrite_archive_bytes(archive, name, mutate):
+    with tarfile.open(archive, 'r:gz') as source:
+        payload = source.extractfile(name).read()
+    rewrite_archive_entry(archive, name, mutate(payload))
 
 
 def rewrite_archive_entry(archive, name, replacement):

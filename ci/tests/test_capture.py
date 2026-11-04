@@ -691,16 +691,31 @@ path = pathlib.Path(sys.argv[sys.argv.index('--output') + 1])
 path.write_text(json.dumps({'status': 'pass' if status == 0 else 'fail'}))
 sys.exit(status)
 ''')
+        (self.repo / "ci/kernel_security.py").write_text('''import json, os, sys
+assert sys.argv[1] == 'verify-artifact'
+assert sys.argv[sys.argv.index('--wrapper-commit') + 1] == 'a' * 40
+assert sys.argv[sys.argv.index('--upstream-commit') + 1] == '9f397975c7b47ce6986a6e39529d2f72fd5c729d'
+status = int(os.environ.get('S20P_TEST_KERNEL_EXIT', '0'))
+print(json.dumps({'status': 'pass' if status == 0 else 'fail'}))
+sys.exit(status)
+''')
         self.github_output = self.repo / "github-output"
 
-    def build(self, gate=0, compile_exit=0, go_exit=0, dashboard_exit=0, wifi_exit=0):
+    def build(self, gate=0, compile_exit=0, go_exit=0, dashboard_exit=0, wifi_exit=0, kernel_exit=0):
         environment = dict(os.environ, S20P_TEST_GATE_EXIT=str(gate),
                            S20P_TEST_WIFI_EXIT=str(wifi_exit),
+                           S20P_TEST_KERNEL_EXIT=str(kernel_exit), GITHUB_SHA='a' * 40,
                            S20P_TEST_DASHBOARD_EXIT=str(dashboard_exit),
                            S20P_TEST_BUILD_EXIT=str(compile_exit), S20P_TEST_GO_EXIT=str(go_exit), GITHUB_RUN_ID="123",
                            GITHUB_RUN_ATTEMPT="1", GITHUB_OUTPUT=str(self.github_output))
         return subprocess.run(["bash", str(self.repo / "ci/build.sh")],
                               capture_output=True, text=True, env=environment)
+
+    def test_kernel_security_failure_blocks_candidate_publication(self):
+        result = self.build(kernel_exit=1)
+        self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
+        self.assertFalse(self.github_output.exists())
+        self.assertFalse((self.repo / 'output/release').exists())
 
     def test_wifi_inspection_failure_blocks_candidate_publication(self):
         result = self.build(wifi_exit=1)

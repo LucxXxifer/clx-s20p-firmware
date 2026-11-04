@@ -1107,6 +1107,26 @@ class Gate:
         except (OSError, ValueError, KeyError, TypeError) as error:
             self.error("wifi_logging_guard", "mt_wifi diagnostics", "source/ABI/module-bound report", str(error))
 
+    def kernel_security(self, provenance_ok):
+        self.checks.pop("kernel_security", None)
+        if not self._source_evidence:
+            return
+        try:
+            import kernel_security
+            provenance = self._source_evidence[0].parent
+            source = read_json(self._source_evidence[0])
+            if not kernel_security.required(provenance):
+                return
+            if not provenance_ok:
+                raise ValueError("validated kernel security source provenance required")
+            report = kernel_security.verify_artifact(
+                provenance.parent, source.get("wrapper_checkout_commit"), source.get("upstream_commit"))
+            if report != read_json(provenance.parent / "reports/kernel-security.json"):
+                raise ValueError("kernel security report differs from captured sources and kernel")
+            self.checks["kernel_security"] = report
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            self.error("kernel_security_guard", "CVE-2026-98432", "source/kernel-bound report", str(error))
+
     def packages(self, root, inventory, optional_package_policy=None):
         installed = safe_path(root, "/lib/apk/db/installed")
         actual = parse_packages(installed)
@@ -1561,6 +1581,7 @@ def main(argv=None):
             root = args.rootfs.resolve()
             provenance_ok = gate.source_lock(args.source_lock)
             gate.wifi_logging(root, provenance_ok)
+            gate.kernel_security(provenance_ok)
             gate.b_optional_package_policy = load_b_optional_package_policy(
                 args.baseline_dir, args.source_lock, upstream_evidence_path=args.upstream_evidence)
             actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy)

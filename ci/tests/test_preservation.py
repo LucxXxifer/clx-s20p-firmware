@@ -104,6 +104,9 @@ class PreservationFixtures(unittest.TestCase):
         historical = json.loads((SCRIPT.parent / "wifi-logging/20261103/historical-wrappers.json").read_text())
         wrapper_commit = "59e093e6c5f33591eebe9e332898bf111ed64b0a"
         wrapper_rows = historical[wrapper_commit]
+        kernel_historical = json.loads((SCRIPT.parent / "security/kernel-cve-2026-98432/historical-wrappers.json").read_text())
+        wrapper_rows += [row for row in kernel_historical[wrapper_commit]
+                         if row['path'] not in {item['path'] for item in wrapper_rows}]
         self.write_json(self.base / "wrapper-source-files.json", wrapper_rows)
         self.write_json(self.lock, {
             "wrapper_commit": "c" * 40, "upstream_commit": UPSTREAM_COMMIT,

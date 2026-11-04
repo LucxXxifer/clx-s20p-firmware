@@ -1,0 +1,80 @@
+{
+  "1a52a56785ce1aac0cf5b30c446ac8c8e4a7d74d": [
+    {
+      "mode": "0o755",
+      "path": "ci/build.sh",
+      "sha256": "98d309192abca65e812cfa2f43e0246a7d64afeece46bd495ce5346df537c2e8",
+      "size": 6784
+    },
+    {
+      "mode": "0o755",
+      "path": "wrt_core/update.sh",
+      "sha256": "514e9430590c1ef7a0b308231191f182b9377029dce9422222f7c75d5c94454d",
+      "size": 4904
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/provenance.py",
+      "sha256": "8fbb8dcbf3af356ad0c9f600f9996ac85d92e14272f51be7d4f6a8753b23df74",
+      "size": 10041
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/release_candidate.py",
+      "sha256": "a015ce34e8758a360071cd58d86802f727ff9d49fbcd577cf5a9730e2fec8d2f",
+      "size": 31929
+    }
+  ],
+  "59e093e6c5f33591eebe9e332898bf111ed64b0a": [
+    {
+      "mode": "0o755",
+      "path": "ci/build.sh",
+      "sha256": "f40e2741968c3d0e7ceeeada425d183a772245ed49dade68ab2e942a7ff66664",
+      "size": 9296
+    },
+    {
+      "mode": "0o755",
+      "path": "wrt_core/update.sh",
+      "sha256": "ac94d1efc418588b5f8bec76466c3f86198c07f84e5490b4261dc0e5b16336b0",
+      "size": 5575
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/provenance.py",
+      "sha256": "e9e6f63c2110288e3953b4d605383148a1077641f6f26239ba37e306cc0f4065",
+      "size": 9459
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/release_candidate.py",
+      "sha256": "34d6e6092eef323eae9c547ae5fe079e51d1b6602e0a5473d821d9618a91ea49",
+      "size": 40978
+    }
+  ],
+  "f5ce16d9ac320ee492385d13e48a327320f0b179": [
+    {
+      "mode": "0o755",
+      "path": "ci/build.sh",
+      "sha256": "20a0f00523ac3a7bfa80135b7064648f6bc95b2a04432e1dbb62530958aa5b5d",
+      "size": 9017
+    },
+    {
+      "mode": "0o755",
+      "path": "wrt_core/update.sh",
+      "sha256": "ac94d1efc418588b5f8bec76466c3f86198c07f84e5490b4261dc0e5b16336b0",
+      "size": 5575
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/provenance.py",
+      "sha256": "e9e6f63c2110288e3953b4d605383148a1077641f6f26239ba37e306cc0f4065",
+      "size": 9459
+    },
+    {
+      "mode": "0o644",
+      "path": "ci/release_candidate.py",
+      "sha256": "34d6e6092eef323eae9c547ae5fe079e51d1b6602e0a5473d821d9618a91ea49",
+      "size": 40978
+    }
+  ]
+}

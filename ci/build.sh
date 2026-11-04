@@ -108,6 +108,12 @@ grep -Fxq 'CONFIG_BUSYBOX_CONFIG_FEATURE_SYSLOG_INFO=y' output/metadata/final.co
 python3 ci/dashboard.py inspect \
     --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
     --output output/reports/dashboard.json
+python3 ci/wifi_logging.py inspect \
+    --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \
+    --provenance output/provenance --output output/reports/wifi-logging.json
+python3 ci/kernel_security.py verify-artifact --root output \
+    --wrapper-commit "${GITHUB_SHA:?}" --upstream-commit "$locked_upstream" \
+    > output/reports/kernel-security.json
 if [[ $S20P_APPLICATION_POLICY == minimal-20261031 ]]; then
     python3 ci/minimal_security.py inspect \
         --rootfs output/inspection/rootfs --payload output/inspection/rootfs.squashfs \

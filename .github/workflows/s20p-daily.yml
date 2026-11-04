@@ -299,6 +299,11 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
 
+      - name: Install trusted host SquashFS reader
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends squashfs-tools
+
       - name: Verify exact artifact and prepare release assets
         env:
           GH_TOKEN: ${{ github.token }}

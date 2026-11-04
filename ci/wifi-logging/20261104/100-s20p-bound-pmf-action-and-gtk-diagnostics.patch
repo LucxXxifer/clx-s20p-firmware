@@ -1,0 +1,93 @@
+--- a/mt_wifi/embedded/security/pmf.c
++++ b/mt_wifi/embedded/security/pmf.c
+@@ -23,6 +23,38 @@
+ #ifdef DOT11W_PMF_SUPPORT
+ 
+ #include "rt_config.h"
++
++/* Bound only the AP action-frame diagnostic; rejection policy is unchanged.
++ * One global bucket across radios/peers, never keyed by reusable WCID.
++ * A saturated count is a lower bound. Pending counts need another event to print.
++ */
++#include <linux/jiffies.h>
++#include <linux/spinlock.h>
++
++static DEFINE_SPINLOCK(pmf_action_log_lock);
++static unsigned long pmf_action_log_next;
++static unsigned int pmf_action_log_suppressed;
++static bool pmf_action_log_started;
++
++static bool pmf_action_log_allow(unsigned long now, unsigned int *suppressed)
++{
++	unsigned long flags;
++	bool emit = false;
++
++	spin_lock_irqsave(&pmf_action_log_lock, flags);
++	if (!pmf_action_log_started || time_after_eq(now, pmf_action_log_next)) {
++		*suppressed = pmf_action_log_suppressed;
++		pmf_action_log_suppressed = 0;
++		pmf_action_log_next = now + 5 * HZ;
++		pmf_action_log_started = true;
++		emit = true;
++	} else if (pmf_action_log_suppressed != ~0U) {
++		pmf_action_log_suppressed++;
++	}
++	spin_unlock_irqrestore(&pmf_action_log_lock, flags);
++	return emit;
++}
++/* End bounded PMF diagnostic. */
+ 
+ UCHAR OUI_PMF_BIP_CMAC_128_CIPHER[4] = {0x00, 0x0F, 0xAC, 0x06};
+ UCHAR OUI_PMF_BIP_CMAC_256_CIPHER[4] = {0x00, 0x0F, 0xAC, 0x0d};
+@@ -1493,9 +1525,19 @@
+ 			}
+ 
+ #endif /* APCLI_SUPPORT */
+-			MTWF_DBG(pAd, DBG_CAT_SEC, CATSEC_PMF, DBG_LVL_ERROR,
+-					 "[PMF] : NOT_ROBUST_UNICAST_FRAME, FC->SubType=%d (wcid=%d)\n",
+-					  FC->SubType, pRxBlk->wcid);
++			if (FC->SubType == SUBTYPE_ACTION) {
++				unsigned int suppressed;
++
++				if (pmf_action_log_allow(jiffies, &suppressed))
++					MTWF_DBG(pAd, DBG_CAT_SEC, CATSEC_PMF, DBG_LVL_WARN,
++						"PMF NR_UCAST global suppressed=%u%s SubType=%u WCID=%u\n",
++						suppressed, suppressed == ~0U ? "+" : "",
++						FC->SubType, pRxBlk->wcid);
++			} else {
++				MTWF_DBG(pAd, DBG_CAT_SEC, CATSEC_PMF, DBG_LVL_ERROR,
++						 "[PMF] : NOT_ROBUST_UNICAST_FRAME, FC->SubType=%d (wcid=%d)\n",
++						  FC->SubType, pRxBlk->wcid);
++			}
+ 			return FALSE;
+ 
+ 		case UNICAST_ROBUST_FRAME: {
+--- a/mt_wifi/embedded/security/cmm_wpa.c
++++ b/mt_wifi/embedded/security/cmm_wpa.c
+@@ -5884,7 +5884,7 @@
+ 			&& sec_cfg_pair->GroupKeyId != sec_cfg_group->GroupKeyId) {
+ 				entry_count++;
+ 				RTMPSetTimer(&pEntry->SecConfig.StartFor2WayTimer, ENQUEUE_EAPOL_2WAY_START_TIMER);
+-				MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
++				MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+ 				"Rekey interval excess, Update Group Key for  %02X:%02X:%02X:%02X:%02X:%02X , DefaultKeyId= %x\n",
+ 				PRINT_MAC(pEntry->Addr), sec_cfg_group->GroupKeyId);
+ 		} else if (sec_cfg_pair->Handshake.GTKState == REKEY_NEGOTIATING)
+@@ -7097,7 +7097,7 @@
+ 			MboIndicateStaBssidInfo(pAd, &pAd->ApCfg.MBSSID[pEntry->func_tb_idx].wdev, pEntry->Addr);
+ #endif /* MBO_SUPPORT */
+ 
+-		MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_WARN,
++		MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+ 				 "AP SETKEYS DONE(%s) - AKMMap=%s, PairwiseCipher=%s, GroupCipher=%s, wcid=%d from "MACSTR"\n\n",
+ 				  RTMP_OS_NETDEV_GET_DEVNAME(pEntry->wdev->if_dev),
+ 				  GetAuthModeStr(pSecConfig->AKMMap),
+@@ -7342,7 +7342,7 @@
+ 		RTMPSendWirelessEvent(pAd, IW_SET_KEY_DONE_WPA1_EVENT_FLAG, pEntry->Addr, pEntry->wdev->wdev_idx, 0);
+ 	}
+ 
+-	MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_WARN, "AP SETKEYS DONE - AKMMap=%s, PairwiseCipher=%s, GroupCipher=%s from "MACSTR"\n\n",
++	MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_INFO, "AP SETKEYS DONE - AKMMap=%s, PairwiseCipher=%s, GroupCipher=%s from "MACSTR"\n\n",
+ 			 GetAuthModeStr(pSecConfig->AKMMap),
+ 			 GetEncryModeStr(pSecConfig->PairwiseCipher),
+ 			 GetEncryModeStr(pSecConfig->GroupCipher),

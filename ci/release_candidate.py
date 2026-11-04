@@ -559,11 +559,14 @@ def security_exception_notice(security):
 def wifi_logging_notice(report):
     if report is None:
         return ""
-    return ("Wi-Fi diagnostics: kmod-mt_wifi r2 limits AP PMF SubType 13 rejection diagnostics "
-            "to WARN in a global 5-second bucket with a saturating suppression count, and logs normal "
-            "GTK start/success at INFO. PMF rejection policy and real timeout behavior are unchanged. "
-            "This logging change does not repair the observed GTK handshake timeout; hardware/runtime "
-            "validation has not been performed (runtime_tested=false).")
+    return ("Wi-Fi diagnostics: kmod-mt_wifi r3 limits AP PMF SubType 13 rejection diagnostics "
+            "to WARN in a global 5-second bucket with a saturating suppression count, and classifies "
+            "all three routine GTK start callsites plus both successful AP SETKEYS messages as INFO. "
+            "With DBG_ENHANCE, INFO maps to pr_info; the driver's INFO category mask defaults to disabled "
+            "and category masks or logread filtering may also hide these messages. PMF rejection policy, "
+            "timers, retries, MIC/replay checks, deauthentication and real GTK timeout behavior are unchanged. "
+            "This logging change does not repair a real GTK handshake timeout or prove M2 reception or "
+            "REKEY_ESTABLISHED; hardware/runtime validation has not been performed (runtime_tested=false).")
 
 
 def prepare_release_assets(artifact_dir, output_dir, *, run_id, run_attempt, build_commit, upstream_commit):

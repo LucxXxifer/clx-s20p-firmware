@@ -15,15 +15,17 @@ from component_gate import bound_sources, manifest, read
 from minimal_security import atomic_write, payload_digest, regular
 from preservation import parse_config, parse_packages
 
-HERE = Path(__file__).resolve().parent / 'wifi-logging/20261103'
-MANIFEST_SHA256 = '3192d26eb76ecdd969833e15d58d09be75fd13e7273e07911bce1f0bd5bee310'
+HERE = Path(__file__).resolve().parent / 'wifi-logging/20261104'
+MANIFEST_SHA256 = '211ba91848d1b2c3e481fee7e7e36445b4da647951017493cf43790a0dbef619'
 RECIPE = 'package/mtk/drivers/mt_wifi/Makefile'
 PATCH_DIR = 'package/mtk/drivers/mt_wifi/patches-7673'
 PATCH_NAME = '100-s20p-bound-pmf-action-and-gtk-diagnostics.patch'
 PATCH_PATH = PATCH_DIR + '/' + PATCH_NAME
+FOLLOWUP_PATCH_NAME = '101-s20p-gtk-rekey-start-info.patch'
+FOLLOWUP_PATCH_PATH = PATCH_DIR + '/' + FOLLOWUP_PATCH_NAME
 KERNEL_VERSION = '6.12.112'
 PACKAGE_NAME = 'kmod-mt_wifi'
-PACKAGE_VERSION = KERNEL_VERSION + '.7.6.7.3-r2'
+PACKAGE_VERSION = KERNEL_VERSION + '.7.6.7.3-r3'
 MODULES = tuple('/lib/modules/' + KERNEL_VERSION + '/' + name + '.ko'
                 for name in ('mt_wifi', 'mtk_warp_proxy'))
 SCOPE = ('AP SubType 13 rejection diagnostics only: global 5-second bucket, '
@@ -35,6 +37,20 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def source_file(path, root):
+    path, root = Path(path), Path(root)
+    if root.is_symlink():
+        raise ValueError('Wi-Fi compiler source root symlink rejected')
+    current = root
+    for part in path.relative_to(root).parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError('Wi-Fi compiler source symlink rejected: ' + str(path))
+    if not path.is_file() or path.stat().st_size > 8 * 1024 * 1024 or path.stat().st_mode & 0o7777 != 0o644:
+        raise ValueError('bounded regular Wi-Fi compiler source required: ' + str(path))
+    return path.read_bytes()
+
+
 def file_row(path, data):
     return {'path': path, 'mode': '0o644', 'size': len(data), 'sha256': digest(data)}
 
@@ -44,6 +60,11 @@ def profile():
     if digest(raw) != MANIFEST_SHA256:
         raise ValueError('Wi-Fi logging profile digest mismatch')
     value = json.loads(raw)
+    listed = {row['path'] for row in value['files']}
+    actual = {path.relative_to(HERE).as_posix() for path in HERE.rglob('*')
+              if path.is_file() and path.name != 'manifest.json'}
+    if listed != actual:
+        raise ValueError('Wi-Fi logging profile complete file inventory mismatch')
     for row in value['files']:
         data = regular(HERE / row['path'], HERE)
         if file_row(row['path'], data) != row:
@@ -62,9 +83,10 @@ def source_payloads():
     if original.count(declaration) != 1 or b'PKG_RELEASE:=' in original:
         raise ValueError('exact implicit-r1 7673 recipe required')
     result = {
-        RECIPE: original.replace(declaration, declaration + b'PKG_RELEASE:=2\n', 1),
+        RECIPE: original.replace(declaration, declaration + b'PKG_RELEASE:=3\n', 1),
         str(Path(RECIPE).parent / 'config.in'): regular(HERE / 'config.in.before', HERE),
         PATCH_PATH: regular(HERE / PATCH_NAME, HERE),
+        FOLLOWUP_PATCH_PATH: regular(HERE / FOLLOWUP_PATCH_NAME, HERE),
     }
     for row in value['upstream_patches']:
         result[PATCH_DIR + '/' + row['path']] = regular(HERE / 'upstream-patches' / row['path'], HERE)
@@ -111,6 +133,9 @@ def prepare(source_root, output):
     patches = root / PATCH_DIR
     if {p.name for p in patches.iterdir()} != {row['path'] for row in value['upstream_patches']}:
         raise ValueError('Wi-Fi logging complete upstream patch inventory changed')
+    for relative in (PATCH_PATH, FOLLOWUP_PATCH_PATH):
+        if (root / relative).exists() or (root / relative).is_symlink():
+            raise ValueError('existing custom Wi-Fi logging patch path rejected: ' + relative)
     if output.exists() or output.is_symlink():
         raise ValueError('existing Wi-Fi logging preparation evidence rejected')
     if output.is_relative_to(root / PATCH_DIR):
@@ -127,14 +152,16 @@ def prepare(source_root, output):
     report = preparation_report()
     atomic_write(root / RECIPE, source_payloads()[RECIPE])
     atomic_write(root / PATCH_PATH, source_payloads()[PATCH_PATH])
+    atomic_write(root / FOLLOWUP_PATCH_PATH, source_payloads()[FOLLOWUP_PATCH_PATH])
     atomic_write(output, (json.dumps(report, indent=2, sort_keys=True) + '\n').encode())
     return report
 
 
 def wrapper_rows():
     value = profile()
-    rows = [file_row('ci/wifi-logging/20261103/manifest.json', regular(HERE / 'manifest.json', HERE))]
-    rows.extend(file_row('ci/wifi-logging/20261103/' + row['path'], regular(HERE / row['path'], HERE))
+    profile_dir = 'ci/wifi-logging/20261104/'
+    rows = [file_row(profile_dir + 'manifest.json', regular(HERE / 'manifest.json', HERE))]
+    rows.extend(file_row(profile_dir + row['path'], regular(HERE / row['path'], HERE))
                 for row in value['files'])
     wrapper = Path(__file__).resolve().parent.parent
     for relative in ('ci/wifi_logging.py', 'ci/build.sh', 'ci/capture.sh', 'ci/provenance.py',
@@ -218,7 +245,7 @@ def capture(build_root, output):
     if len(candidates) != 1:
         raise ValueError('one compiled mt_wifi source directory is required')
     for relative, expected_digest in expected['patched_sources'].items():
-        if digest(regular(candidates[0] / relative, root)) != expected_digest:
+        if digest(source_file(candidates[0] / relative, root)) != expected_digest:
             raise ValueError('Wi-Fi logging compiler source SHA256 mismatch: ' + relative)
     if output.exists() or output.is_symlink() or any(parent.is_symlink() for parent in output.parents):
         raise ValueError('fresh regular Wi-Fi logging build evidence path required')

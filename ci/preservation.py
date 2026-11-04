@@ -1186,11 +1186,12 @@ class Gate:
             if package["version"] != original["version"]:
                 wifi_transition = (name == "kmod-mt_wifi" and
                                    original["version"] == "6.12.112.7.6.7.3-r1" and
-                                   package["version"] == "6.12.112.7.6.7.3-r2" and
-                                   "wifi_logging" in self.checks)
+                                   package["version"] == "6.12.112.7.6.7.3-r3" and
+                                   self.checks.get("wifi_logging", {}).get("profile_id") ==
+                                   "s20p-wifi-logging-20261104")
                 self.difference("package_version", name, original["version"], package["version"],
                                 "expected" if wifi_transition or (name == "kernel" and kernel != self.policy["original_kernel"]) else "review_required",
-                                ("exact source-bound Wi-Fi logging r1-to-r2 transition" if wifi_transition else
+                                ("exact source-bound Wi-Fi logging r1-to-r3 transition" if wifi_transition else
                                  "same-build generated ABI" if name == "kernel" else "source/version delta"))
             old_deps = original.get("depends", "").replace("kernel=" + self.policy["original_kernel"], "kernel=" + kernel)
             if sorted(old_deps.split()) != sorted(package.get("depends", "").split()):

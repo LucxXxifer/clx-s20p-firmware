@@ -1,5 +1,6 @@
 """Frozen Wi-Fi diagnostics: real C accounting, exact inputs and image binding."""
 import copy
+import gzip
 import hashlib
 import importlib.util
 import json
@@ -15,7 +16,7 @@ from unittest.mock import patch
 
 CI = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CI))
-DATA = CI / 'wifi-logging/20261103'
+DATA = CI / 'wifi-logging/20261104'
 ARCHIVE = Path(os.environ.get('S20P_WIFI_TEST_ARCHIVE', '/nonexistent'))
 
 
@@ -51,8 +52,24 @@ class WifiLoggingTests(unittest.TestCase):
         self.assertEqual(value['archive']['sha256'], 'b029d7b43c498193092dc6a3c857361c8835ce34bb306561c550ac0539784a78')
         before = (DATA / 'Makefile.before').read_bytes()
         after = mod.source_payloads()[mod.RECIPE]
-        self.assertEqual(after, before.replace(b'PKG_VERSION:=7.6.7.3\n', b'PKG_VERSION:=7.6.7.3\nPKG_RELEASE:=2\n', 1))
-        self.assertEqual(mod.PACKAGE_VERSION, '6.12.112.7.6.7.3-r2')
+        self.assertEqual(after, before.replace(b'PKG_VERSION:=7.6.7.3\n', b'PKG_VERSION:=7.6.7.3\nPKG_RELEASE:=3\n', 1))
+        self.assertEqual(mod.PACKAGE_VERSION, '6.12.112.7.6.7.3-r3')
+        self.assertEqual(mod.FOLLOWUP_PATCH_NAME, '101-s20p-gtk-rekey-start-info.patch')
+
+    def test_r3_profile_rejects_missing_or_tampered_ap_source_input(self):
+        mod = self.module()
+        self.assertEqual(mod.profile_id(), 's20p-wifi-logging-20261104')
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name).resolve() / 'profile'
+            shutil.copytree(DATA, root)
+            (root / 'source-before/ap_sec.c.gz').unlink()
+            with patch.object(mod, 'HERE', root), self.assertRaisesRegex(ValueError, 'inventory'):
+                mod.profile()
+            shutil.copytree(DATA, root, dirs_exist_ok=True)
+            source = root / 'source-before/ap_cfg.c.gz'
+            source.write_bytes(source.read_bytes() + b'\n')
+            with patch.object(mod, 'HERE', root), self.assertRaisesRegex(ValueError, 'SHA256'):
+                mod.profile()
 
     def test_prepare_accepts_exact_inputs_and_rejects_duplicate_without_mutation(self):
         mod = self.module()
@@ -69,7 +86,7 @@ class WifiLoggingTests(unittest.TestCase):
 
     def test_recipe_config_patch_drift_and_extra_missing_duplicate_symlink_fail_before_writes(self):
         mod = self.module()
-        for change in ('recipe', 'config', 'patch', 'extra', 'missing', 'duplicate', 'symlink', 'parent', 'output'):
+        for change in ('recipe', 'config', 'patch', 'extra', 'missing', 'duplicate', 'symlink', 'parent', 'output', 'custom-patch'):
             with self.subTest(change=change), tempfile.TemporaryDirectory() as name:
                 root = self.source(Path(name).resolve(), mod)
                 patches = root / mod.PATCH_DIR
@@ -88,6 +105,8 @@ class WifiLoggingTests(unittest.TestCase):
                 elif change == 'symlink':
                     first.unlink()
                     first.symlink_to(sorted((DATA / 'upstream-patches').iterdir())[0])
+                elif change == 'custom-patch':
+                    (patches / mod.FOLLOWUP_PATCH_NAME).write_bytes(b'unreviewed custom patch')
                 elif change == 'parent':
                     saved = patches.with_name('real-patches')
                     patches.rename(saved)
@@ -137,16 +156,22 @@ class WifiLoggingTests(unittest.TestCase):
             target = root / 'mt_wifi/embedded/security' / source
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes((DATA / 'source-before' / source).read_bytes())
+        for source in ('ap_sec.c', 'ap_cfg.c'):
+            target = root / 'mt_wifi/embedded/ap' / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(gzip.decompress((DATA / 'source-before' / (source + '.gz')).read_bytes()))
         subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.PATCH_NAME)],
                        cwd=root, check=True, capture_output=True)
-        return root / 'mt_wifi/embedded/security'
+        subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.FOLLOWUP_PATCH_NAME)],
+                       cwd=root, check=True, capture_output=True)
+        return root / 'mt_wifi'
 
     def test_actual_patch_changes_only_ap_action_diagnostic_and_three_gtk_levels(self):
         mod = self.module()
         with tempfile.TemporaryDirectory() as name:
             sources = self.apply_fixture(Path(name).resolve(), mod)
             before = (DATA / 'source-before/cmm_wpa.c').read_text()
-            after = (sources / 'cmm_wpa.c').read_text()
+            after = (sources / 'embedded/security/cmm_wpa.c').read_text()
             # Undo just the approved severity changes; every timeout/retry/MIC/replay byte survives.
             restored = after.replace('DBG_LVL_INFO,\n\t\t\t\t"Rekey interval excess',
                                      'DBG_LVL_ERROR,\n\t\t\t\t"Rekey interval excess')
@@ -155,8 +180,21 @@ class WifiLoggingTests(unittest.TestCase):
             restored = restored.replace('DBG_LVL_INFO, "AP SETKEYS DONE -', 'DBG_LVL_WARN, "AP SETKEYS DONE -')
             self.assertEqual(restored, before)
             self.assertEqual(after.count('DBG_LVL_INFO') - before.count('DBG_LVL_INFO'), 3)
+            for source in ('ap_sec.c', 'ap_cfg.c'):
+                original = gzip.decompress((DATA / 'source-before' / (source + '.gz')).read_bytes())
+                patched = (sources / 'embedded/ap' / source).read_bytes()
+                needle = b'DBG_LVL_INFO,'
+                offset = original.index(b'Rekey interval excess, Update Group Key')
+                original_call = original.rfind(b'MTWF_DBG(', 0, offset)
+                original_token = original.index(b'DBG_LVL_ERROR,', original_call)
+                patched_offset = patched.index(b'Rekey interval excess, Update Group Key')
+                patched_call = patched.rfind(b'MTWF_DBG(', 0, patched_offset)
+                patched_token = patched.index(needle, patched_call)
+                expected = (original[:original_token] + needle +
+                            original[original_token + len(b'DBG_LVL_ERROR,'):])
+                self.assertEqual(patched, expected)
             original = (DATA / 'source-before/pmf.c').read_text()
-            patched = (sources / 'pmf.c').read_text()
+            patched = (sources / 'embedded/security/pmf.c').read_text()
             helper_start = patched.index('/* Bound only the AP action-frame diagnostic;')
             helper_end = patched.index('/* End bounded PMF diagnostic. */') + len('/* End bounded PMF diagnostic. */\n\n')
             patched = patched[:helper_start] + patched[helper_end:]
@@ -166,15 +204,17 @@ class WifiLoggingTests(unittest.TestCase):
             self.assertIn('if (FC->SubType == SUBTYPE_ACTION)', new)
             self.assertIn('DBG_LVL_ERROR', new)
             self.assertIn('PMF NR_UCAST global suppressed=%u%s SubType=%u WCID=%u', new)
-            for source in ('pmf.c', 'cmm_wpa.c'):
-                self.assertEqual(mod.digest((sources / source).read_bytes()), mod.profile()['patched_sources']['mt_wifi/embedded/security/' + source])
+            for relative in ('mt_wifi/embedded/security/pmf.c', 'mt_wifi/embedded/security/cmm_wpa.c',
+                             'mt_wifi/embedded/ap/ap_sec.c', 'mt_wifi/embedded/ap/ap_cfg.c'):
+                self.assertEqual(mod.digest((sources / relative.removeprefix('mt_wifi/')).read_bytes()),
+                                 mod.profile()['patched_sources'][relative])
 
     def test_real_helper_c_handles_bursts_rollover_saturation_and_concurrent_calls(self):
         mod = self.module()
         with tempfile.TemporaryDirectory() as name:
             root = Path(name).resolve()
             sources = self.apply_fixture(root, mod)
-            text = (sources / 'pmf.c').read_text()
+            text = (sources / 'embedded/security/pmf.c').read_text()
             helper = text[text.index('/* Bound only the AP action-frame diagnostic;'):text.index('/* End bounded PMF diagnostic. */')]
             (root / 'helper.c').write_text(helper)
             (root / 'linux').mkdir()
@@ -459,6 +499,190 @@ class WifiLoggingTests(unittest.TestCase):
         self.assertIn('wifi_logging.verify_release(', (CI / 'release_candidate.py').read_text())
         self.assertIn('gate.wifi_logging(root, provenance_ok)', (CI / 'preservation.py').read_text())
 
+    @unittest.skipUnless(ARCHIVE.is_file(), 'set S20P_WIFI_TEST_ARCHIVE for full archive/41-patch replay')
+    def test_replayed_gtk_start_and_success_callsites_emit_info_through_vendor_logger(self):
+        mod = self.module()
+        self.assertEqual(mod.payload_digest(ARCHIVE), 'b029d7b43c498193092dc6a3c857361c8835ce34bb306561c550ac0539784a78')
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name).resolve()
+            subprocess.run(['tar', '-xf', str(ARCHIVE), '-C', str(root)], check=True)
+            for path in sorted((DATA / 'upstream-patches').iterdir()):
+                subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(path)],
+                               cwd=root, check=True, capture_output=True)
+            subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.PATCH_NAME)],
+                           cwd=root, check=True, capture_output=True)
+            subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.FOLLOWUP_PATCH_NAME)],
+                           cwd=root, check=True, capture_output=True)
+
+            starts, successes = [], []
+            for source in sorted((root / 'mt_wifi').rglob('*')):
+                if source.suffix not in ('.c', '.h'):
+                    continue
+                text = source.read_text(errors='replace')
+                for marker, destination in (("Rekey interval excess, Update Group Key", starts),
+                                            ("AP SETKEYS DONE", successes)):
+                    offset = 0
+                    while (found := text.find(marker, offset)) >= 0:
+                        begin = text.rfind('MTWF_DBG(', 0, found)
+                        end = text.find(');', found)
+                        self.assertGreaterEqual(begin, 0, str(source))
+                        self.assertGreaterEqual(end, 0, str(source))
+                        destination.append((source, text[begin:end + 2]))
+                        offset = found + len(marker)
+            self.assertEqual([(p.relative_to(root).as_posix(), call.split('DBG_LVL_', 1)[1].split(',', 1)[0])
+                              for p, call in starts], [
+                                  ('mt_wifi/embedded/ap/ap_cfg.c', 'INFO'),
+                                  ('mt_wifi/embedded/ap/ap_sec.c', 'INFO'),
+                                  ('mt_wifi/embedded/security/cmm_wpa.c', 'INFO'),
+                              ])
+            self.assertEqual(len(successes), 2)
+
+            logger_source = (root / 'mt_wifi/embedded/common/dbg_ctrl.c').read_text()
+            logger_start = logger_source.index('void mtwf_dbg_prt(\n')
+            logger_end = logger_source.index('#endif /* DBG_ENHANCE */', logger_start)
+            with tempfile.TemporaryDirectory() as harness_name:
+                harness = Path(harness_name).resolve()
+                (harness / 'logger.c').write_text(logger_source[logger_start:logger_end])
+                (harness / 'mapping.h').write_text(json.loads((DATA / 'logging-evidence.json').read_text())['mapping'])
+                generated_calls = []
+                calls = [call for _, call in starts + successes]
+                for index, call in enumerate(calls):
+                    generated_calls.append(f'''static void emit_{index}(RTMP_ADAPTER *pAd)
+{{
+    struct net_device dev = {{"wlan0"}};
+    struct Entry entry = {{.Addr={{1,2,3,4,5,6}}, .wcid=7}};
+    struct Entry *pEntry = &entry;
+    struct SecConfig config = {{1,2,3,1}};
+    struct SecConfig *sec_cfg_group = &config;
+    struct SecConfig *pSecConfig = &config;
+    (void)sec_cfg_group;
+    (void)pSecConfig;
+    (void)pEntry;
+    entry.wdev = &pAd->ApCfg.MBSSID[0].wdev;
+    pAd->ApCfg.MBSSID[0].wdev.if_dev = &dev;
+{call}
+}}''')
+                driver = r'''#include <assert.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#define KERNEL_VERSION(a,b,c) (((a)<<16)+((b)<<8)+(c))
+#define LINUX_VERSION_CODE KERNEL_VERSION(6,12,112)
+#define DBG_ENHANCE
+#define KERN_CRIT "\0012"
+#define KERN_ERR "\0013"
+#define KERN_WARNING "\0014"
+#define KERN_NOTICE "\0015"
+#define KERN_INFO "\0016"
+#define pr_crit(fmt, ...) capture(2, fmt, __VA_ARGS__)
+#define pr_err(fmt, ...) capture(3, fmt, __VA_ARGS__)
+#define pr_warn(fmt, ...) capture(4, fmt, __VA_ARGS__)
+#define pr_warning(fmt, ...) capture(4, fmt, __VA_ARGS__)
+#define pr_notice(fmt, ...) capture(5, fmt, __VA_ARGS__)
+#define pr_info(fmt, ...) capture(6, fmt, __VA_ARGS__)
+#define IN
+#define DBG_PRINT_BUF_SIZE 160
+#define MAX_MULTI_STA 2
+#define MAX_WDS_ENTRY 2
+#define VALID_MBSS(p,i) ((i) < 2)
+#define INT_MAIN 0
+#define INT_MBSSID 1
+#define INT_APCLI 2
+#define INT_WDS 3
+#define DBG_LVL_OFF 0
+#define DBG_LVL_ERROR 1
+#define DBG_LVL_WARN 2
+#define DBG_LVL_NOTICE 3
+#define DBG_LVL_INFO 4
+#define DBG_LVL_DEBUG 5
+#define DBG_CAT_ALL 0
+#define DBG_CAT_SEC 15
+#define DBG_SUBCAT_ALL 0x00000001u
+#define DBG_LVL_MAX 5
+#define CATSEC_PMF 0
+#define os_snprintf_error(size,ret) ((ret)<0 || (size_t)(ret)>=(size_t)(size))
+#define UINT32 uint32_t
+#define INT8 char
+#define INT32 int
+#define UINT unsigned int
+static int emitted_level = -1;
+static char output[512];
+static UINT32 DebugCategory;
+static UINT32 DebugSubCategory[DBG_LVL_MAX + 1][32];
+static void capture(int level, const char *fmt, ...)
+{
+    va_list args;
+    emitted_level = level;
+    va_start(args, fmt);
+    vsnprintf(output, sizeof(output), fmt, args);
+    va_end(args);
+}
+struct net_device { char name[16]; };
+struct wifi_dev { struct net_device *if_dev; };
+struct vif { struct wifi_dev wdev; };
+struct Entry { struct wifi_dev *wdev; unsigned char Addr[6]; unsigned int wcid; };
+struct SecConfig { int AKMMap, PairwiseCipher, GroupCipher, GroupKeyId; };
+struct os_cookie { unsigned int ioctl_if, ioctl_if_type; };
+typedef struct os_cookie *POS_COOKIE;
+typedef struct { unsigned int ChipID; void *OS_Cookie; void *hdev_ctrl; struct { struct vif MBSSID[2]; } ApCfg; struct vif StaCfg[2]; struct { struct vif WdsEntry[2]; } WdsTab; } RTMP_ADAPTER;
+struct task { char comm[16]; } task = {"gtk-test"};
+struct task *current = &task;
+static bool mtwf_dbg_prtCatLvl = true, mtwf_dbg_prtIntfName = false;
+static bool mtwf_dbg_prtThreadId = false, mtwf_dbg_prtFuncLine = false;
+#define MTWF_PRINT(...) do { assert(0); } while(0)
+#define MACSTR "%02X:%02X:%02X:%02X:%02X:%02X"
+#define MAC2STR(a) (a)[0],(a)[1],(a)[2],(a)[3],(a)[4],(a)[5]
+#define PRINT_MAC(a) (a)[0],(a)[1],(a)[2],(a)[3],(a)[4],(a)[5]
+#define RTMP_OS_NETDEV_GET_DEVNAME(p) ((p)->name)
+static char *GetAuthModeStr(int mode) { (void)mode; return "auth"; }
+static char *GetEncryModeStr(int mode) { (void)mode; return "cipher"; }
+#include "mapping.h"
+#define MTWF_DBG(pAd, Category, SubCategory, Level, ...) \
+    do { \
+        if (((0x1u << (Category)) & DebugCategory) && \
+            ((SubCategory) & DebugSubCategory[(Level)][(Category)])) \
+            mtwf_dbg_prt(pAd, (Category), (Level), __func__, __LINE__, __VA_ARGS__); \
+    } while (0)
+#include "logger.c"
+CALLS
+int main(void)
+{
+    struct os_cookie cookie = {0, INT_MAIN};
+    RTMP_ADAPTER ad = {.ChipID=0x7981, .OS_Cookie=&cookie, .hdev_ctrl=&ad};
+    int expected[] = {6,6,6,6,6};
+    void (*emit[])(RTMP_ADAPTER *) = {EMITTERS};
+    DebugCategory = 1u << DBG_CAT_SEC;
+    for (unsigned int level=0; level<=DBG_LVL_MAX; ++level)
+        DebugSubCategory[level][DBG_CAT_SEC] = DBG_SUBCAT_ALL;
+    for (unsigned int i=0; i<sizeof(emit)/sizeof(emit[0]); ++i) {
+        emitted_level = -1;
+        output[0] = '\0';
+        emit[i](&ad);
+        if (emitted_level != expected[i]) {
+            fprintf(stderr, "callsite %u emitted KERN_%s: %s", i,
+                    emitted_level == 3 ? "ERR" : "other", output);
+            return 1;
+        }
+        assert(strstr(output, "Rekey interval excess") || strstr(output, "AP SETKEYS DONE"));
+    }
+    puts("all 3 GTK start and 2 success callsites emit KERN_INFO through vendor logger");
+    return 0;
+}
+'''
+                emitter_names = ','.join(f'emit_{index}' for index in range(len(calls)))
+                (harness / 'gtk.c').write_text(driver.replace('CALLS', '\n'.join(generated_calls))
+                                               .replace('EMITTERS', emitter_names))
+                executable = harness / 'gtk-logger'
+                compile_result = subprocess.run(['cc', '-std=c11', '-Wall', '-Wextra', '-Werror', '-I', str(harness),
+                                                  str(harness / 'gtk.c'), '-o', str(executable)],
+                                                 capture_output=True, text=True)
+                self.assertEqual(compile_result.returncode, 0, compile_result.stderr)
+                result = subprocess.run([str(executable)], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('all 3 GTK start and 2 success callsites emit KERN_INFO', result.stdout)
+
     def test_release_job_installs_trusted_host_squashfs_before_independent_verification(self):
         workflow = (CI.parent / '.github/workflows/s20p-daily.yml').read_text()
         publish = workflow.split('  publish-rolling-a-prerelease:', 1)[1]
@@ -469,7 +693,7 @@ class WifiLoggingTests(unittest.TestCase):
         verify = publish.index('python3 ci/release_candidate.py prepare')
         self.assertLess(install, verify)
 
-    def test_preservation_requires_exact_report_before_accepting_only_wifi_r2_transition(self):
+    def test_preservation_requires_exact_report_before_accepting_only_wifi_r3_transition(self):
         mod = self.module()
         import preservation
         with tempfile.TemporaryDirectory() as name:
@@ -489,7 +713,7 @@ class WifiLoggingTests(unittest.TestCase):
                 self.assertEqual(gate.checks['wifi_logging'], report)
                 for version, verified, disposition in ((mod.PACKAGE_VERSION, True, 'expected'),
                                                         (mod.PACKAGE_VERSION, False, 'review_required'),
-                                                        ('6.12.112.7.6.7.3-r3', True, 'review_required')):
+                                                        ('6.12.112.7.6.7.3-r2', True, 'review_required')):
                     candidate = preservation.Gate('image', CI / 'baseline')
                     if verified:
                         candidate.checks['wifi_logging'] = report
@@ -516,6 +740,9 @@ class WifiLoggingTests(unittest.TestCase):
             for source in ('pmf.c', 'cmm_wpa.c'):
                 self.assertEqual((root / 'mt_wifi/embedded/security' / source).read_bytes(),
                                  (DATA / 'source-before' / source).read_bytes())
+            for source in ('ap_sec.c', 'ap_cfg.c'):
+                self.assertEqual((root / 'mt_wifi/embedded/ap' / source).read_bytes(),
+                                 gzip.decompress((DATA / 'source-before' / (source + '.gz')).read_bytes()))
             logger = (root / 'mt_wifi/embedded/common/dbg_ctrl.c').read_text()
             start = logger.index('void mtwf_dbg_prt(\n')
             end = logger.index('#endif /* DBG_ENHANCE */', start)
@@ -523,6 +750,8 @@ class WifiLoggingTests(unittest.TestCase):
             self.assertIn('#define DBG_PRINT_BUF_SIZE\t160',
                           (root / 'mt_wifi/embedded/include/dbg_ctrl.h').read_text())
             subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.PATCH_NAME)],
+                           cwd=root, check=True, capture_output=True)
+            subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(DATA / mod.FOLLOWUP_PATCH_NAME)],
                            cwd=root, check=True, capture_output=True)
             for relative, digest in mod.profile()['patched_sources'].items():
                 self.assertEqual(mod.digest((root / relative).read_bytes()), digest)
@@ -545,6 +774,12 @@ class WifiLoggingTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'compiler source'):
                 mod.capture(build, root / 'drift.json')
             shutil.copyfile(root / 'mt_wifi/embedded/security/pmf.c', path)
+            for relative in ('mt_wifi/embedded/ap/ap_sec.c', 'mt_wifi/embedded/ap/ap_cfg.c'):
+                path = compiled / relative
+                path.write_bytes(path.read_bytes() + b'\n')
+                with self.assertRaisesRegex(ValueError, 'compiler source'):
+                    mod.capture(build, root / (Path(relative).stem + '-drift.json'))
+                shutil.copyfile(root / relative, path)
             archive.write_bytes(b'bad source archive')
             with self.assertRaisesRegex(ValueError, 'archive'):
                 mod.capture(build, root / 'archive-drift.json')

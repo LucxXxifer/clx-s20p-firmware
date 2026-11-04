@@ -1,0 +1,18 @@
+--- a/mt_wifi/embedded/ap/ap_sec.c
++++ b/mt_wifi/embedded/ap/ap_sec.c
+@@ -677,5 +677,5 @@
+ 					entry_count++;
+ 					RTMPSetTimer(&pEntry->SecConfig.StartFor2WayTimer, ENQUEUE_EAPOL_2WAY_START_TIMER);
+-					MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
++					MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+ 					"Rekey interval excess, Update Group Key for  %02X:%02X:%02X:%02X:%02X:%02X , DefaultKeyId= %x\n",
+ 					 PRINT_MAC(pEntry->Addr), sec_cfg_group->GroupKeyId);
+--- a/mt_wifi/embedded/ap/ap_cfg.c
++++ b/mt_wifi/embedded/ap/ap_cfg.c
+@@ -14738,5 +14738,5 @@
+ 				entry_count++;
+ 				RTMPSetTimer(&pEntry->SecConfig.StartFor2WayTimer, ENQUEUE_EAPOL_2WAY_START_TIMER);
+-				MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
++				MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+ 				"Rekey interval excess, Update Group Key for  %02X:%02X:%02X:%02X:%02X:%02X , DefaultKeyId= %x\n",
+ 				 PRINT_MAC(pEntry->Addr), sec_cfg_group->GroupKeyId);

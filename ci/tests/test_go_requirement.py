@@ -7,6 +7,7 @@ upstream head therefore has to be re-pointed when its go.mod floor moves.
 """
 from pathlib import Path
 import json
+import re
 import tempfile
 import unittest
 
@@ -31,8 +32,7 @@ def compiler(series, patch):
     major, minor = series.split('.')
     return ("PKG_NAME:=golang" + series + "\n"
             "GO_VERSION_MAJOR_MINOR:=" + series + "\n"
-            "GO_VERSION_PATCH:=" + str(patch) + "\n"
-            "PKG_HOST_ONLY:=1\n")
+            "GO_VERSION_PATCH:=" + str(patch) + "\n")
 
 
 def tree(root, series):
@@ -179,6 +179,25 @@ class GoRequirementTests(unittest.TestCase):
         self.assertFalse(satisfies("1.27", {"patch": 2}, ((1, 27), 3)))
         self.assertFalse(satisfies("1.26", {"patch": 10}, ((1, 27), 3)))
         self.assertTrue(satisfies("1.28", {"patch": 0}, ((1, 27), 3)))
+
+    def test_real_tree_recipes_parse_although_only_one_marks_host_only(self):
+        # The shipped golang1.26 recipe has no PKG_HOST_ONLY line while
+        # golang1.27 has one; neither shape may be treated as drift.
+        fixtures = Path(__file__).resolve().parent / "fixtures/go-security"
+        with tempfile.TemporaryDirectory() as folder:
+            lang = Path(folder) / "lang"
+            for series, patch in (("1.26", "10"), ("1.27", "3")):
+                target = lang / ("golang" + series) / "Makefile"
+                target.parent.mkdir(parents=True)
+                data = (fixtures / (series + ".mk")).read_text()
+                data = re.sub(r"^GO_VERSION_PATCH:=\d+$", "GO_VERSION_PATCH:=" + patch,
+                              data, flags=re.MULTILINE)
+                target.write_text(data)
+            (lang / "golang-values.mk").write_text("GO_DEFAULT_VERSION:=1.26\n")
+            recipes = load_recipes(lang)
+            self.assertEqual(recipes["1.26"]["patch"], 10)
+            self.assertEqual(recipes["1.27"]["patch"], 3)
+            self.assertNotIn("PKG_HOST_ONLY", recipes["1.26"]["path"].read_text())
 
 
 if __name__ == "__main__":

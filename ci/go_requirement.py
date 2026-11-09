@@ -88,8 +88,6 @@ def load_recipes(lang_dir):
             raise RequirementError('unreviewed Go host recipe structure: ' + str(makefile))
         if makefile.parent.name != 'golang' + series.group(1).decode() + '.' + series.group(2).decode():
             raise RequirementError('Go host recipe directory/series mismatch: ' + str(makefile))
-        if b'PKG_HOST_ONLY:=1' not in data:
-            raise RequirementError('Go host recipe is not host-only: ' + str(makefile))
         recipes[series.group(1).decode() + '.' + series.group(2).decode()] = {
             'name': makefile.parent.name, 'patch': int(patch.group(1)), 'path': makefile}
     if not recipes:

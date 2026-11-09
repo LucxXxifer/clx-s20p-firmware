@@ -18,7 +18,10 @@ package archive and the Go source archive remain the reviewed ones.
 
 The requirement is read from the immutable go.mod at the commit the recipe
 already pins, so the decision is derived from real upstream data instead of a
-guess about which series a package needs.
+guess about which series a package needs.  Selection follows upstream: the
+series upstream declares as default wins whenever it clears the floor, and a
+package that outgrows it is moved to the newest reviewed series in the tree, so
+the firmware keeps tracking upstream releases without further edits here.
 """
 import argparse
 import hashlib
@@ -111,11 +114,20 @@ def satisfies(series, recipe, requirement):
     return (major, minor, recipe['patch']) >= (want_major, want_minor, want_patch)
 
 
-def select_recipe(requirement, recipes):
-    """Lowest reviewed series that still satisfies the go.mod floor."""
+def select_recipe(requirement, recipes, default):
+    """Follow upstream: its default series when it clears the floor, else the newest.
+
+    The tree tracks the upstream feed branch, so the default it declares is the
+    version upstream builds with.  Keep that whenever the package can use it and
+    only move up when the go.mod floor demands it, then take the newest reviewed
+    series rather than the lowest one so the firmware keeps following upstream
+    as it adds series.
+    """
+    if default in recipes and satisfies(default, recipes[default], requirement):
+        return default
     qualifying = [(tuple(int(part) for part in series.split('.')), series)
                   for series, recipe in recipes.items() if satisfies(series, recipe, requirement)]
-    return min(qualifying)[1] if qualifying else None
+    return max(qualifying)[1] if qualifying else None
 
 
 def go_mod_source(makefile):
@@ -149,10 +161,12 @@ def decide(makefile, package, recipes, default, fetch=fetch_bytes):
     status.update({'go_mod_url': url, 'repository': repository, 'source_commit': commit,
                    'go_mod_sha256': sha256(go_mod),
                    'required_go': 'go%d.%d.%d' % (requirement[0][0], requirement[0][1], requirement[1]),
-                   'default_go_series': default})
+                   'default_go_series': default,
+                   'available_go_series': {series: recipe['patch']
+                                           for series, recipe in sorted(recipes.items())}})
 
     if bare:
-        selected = select_recipe(requirement, recipes)
+        selected = select_recipe(requirement, recipes, default)
         if selected is None:
             raise RequirementError(
                 'no reviewed Go host recipe satisfies %s for %s (tree has %s); '
@@ -162,6 +176,7 @@ def decide(makefile, package, recipes, default, fetch=fetch_bytes):
                    ', '.join('%s (%d)' % (key, value['patch']) for key, value in sorted(recipes.items()))))
         status['selected_series'] = selected
         status['selected_go'] = 'go%s.%d' % (selected, recipes[selected]['patch'])
+        status['selection_policy'] = 'upstream-default' if selected == default else 'upstream-newest'
         if selected == default:
             status['status'] = 'default-satisfies'
             status['recipe_sha256_after'] = status['recipe_sha256_before']

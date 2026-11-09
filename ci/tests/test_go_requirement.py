@@ -100,13 +100,28 @@ class GoRequirementTests(unittest.TestCase):
                        fetcher(b"module github.com/looplj/axonhub\n\ngo 1.27.9\n"))
         self.assertIn("no reviewed Go host recipe satisfies go1.27.9", str(caught.exception))
 
-    def test_newer_series_covers_an_older_floor(self):
+    def test_package_outgrowing_upstream_default_takes_the_newest_series(self):
         with tempfile.TemporaryDirectory() as folder:
             recipes = load_recipes(tree(folder, {"1.26": 10, "1.27": 3, "1.28": 1}))
             row, rewritten = decide(RECIPE, "axonhub", recipes, "1.26",
                                     fetcher(b"module github.com/looplj/axonhub\n\ngo 1.27.3\n"))
-        self.assertEqual(row["selected_series"], "1.27")
+        self.assertEqual(row["selected_series"], "1.28")
+        self.assertEqual(row["selected_go"], "go1.28.1")
+        self.assertEqual(row["selection_policy"], "upstream-newest")
         self.assertIsNotNone(rewritten)
+
+    def test_upstream_default_wins_even_when_a_newer_series_exists(self):
+        # Upstream 25.12 still declares 1.26 as default while shipping 1.27:
+        # a package whose floor 1.26 clears must stay on the upstream default
+        # instead of being pushed to the newest series.
+        with tempfile.TemporaryDirectory() as folder:
+            recipes = load_recipes(tree(folder, {"1.26": 10, "1.27": 3, "1.28": 1}))
+            row, rewritten = decide(RECIPE, "axonhub", recipes, "1.26",
+                                    fetcher(b"module github.com/looplj/axonhub\n\ngo 1.26.4\n"))
+        self.assertIsNone(rewritten)
+        self.assertEqual(row["status"], "default-satisfies")
+        self.assertEqual(row["selected_series"], "1.26")
+        self.assertEqual(row["selection_policy"], "upstream-default")
 
     def test_go_mod_without_directive_is_rejected(self):
         with tempfile.TemporaryDirectory() as folder:

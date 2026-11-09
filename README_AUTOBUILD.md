@@ -83,7 +83,7 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 
 歷史固定版保留原 CA 精確審查。每日模式改由來源綁定及獨立重建驗證更新後 CA；只有重建證明的憑證差異可自動接受，不是整個 `/etc/ssl` 的豁免。Dashboard 上游三個輸入有變時停止套用舊修復，須重新整合並通過測試，避免覆蓋上游新版。
 
-原流程的核心版本合併核對、WeeChat virtual provider 修正及版本化 Go host tree 仍保留。Go recipe 的版本／官方 archive hash 可隨穩定 patch 更新；未知 recipe 結構或 host alias 會停止，不能用整棵 Go override 刪除 Tailscale 所需工具鏈。當追蹤上游 main 的套件（如 AxonHub）自行把 go.mod 門檻抬到預設 1.26 以上時，CI 依 recipe 鎖定的 commit 讀取 go.mod，只把 host 工具鏈選擇子改指向樹內已審查的 `golang1.27`，不開啟工具鏈下載（維持 `GOTOOLCHAIN=local`）、不改來源 pin、`PKG_HASH` 或任何校驗步驟。每日模式停用歷史復刻用的舊 geodata／AxonHub recipe pin，避免把新來源降回舊版。原 fragment 的無效 TurboACC selector 亦有[政策說明](docs/preservation-gates.md)。
+原流程的核心版本合併核對、WeeChat virtual provider 修正及版本化 Go host tree 仍保留。Go recipe 的版本／官方 archive hash 可隨穩定 patch 更新；未知 recipe 結構或 host alias 會停止，不能用整棵 Go override 刪除 Tailscale 所需工具鏈。當追蹤上游 main 的套件（如 AxonHub）自行把 go.mod 門檻抬到預設 1.26 以上時，CI 依 recipe 鎖定的 commit 讀取 go.mod，只把 host 工具鏈選擇子改指向樹內已審查的 `golang1.27`，不開啟工具鏈下載（維持 `GOTOOLCHAIN=local`）、不改來源 pin、`PKG_HASH` 或任何校驗步驟。選擇順序以上游為準：上游 `GO_DEFAULT_VERSION` 仍滿足門檻就維持預設系列（不主動跳版），不足時取樹內最接近上游的最新已審查系列，因此上游發布新系列後只要 feed 同步進來就會自動跟上，無須再改此腳本。每日模式停用歷史復刻用的舊 geodata／AxonHub recipe pin，避免把新來源降回舊版。原 fragment 的無效 TurboACC selector 亦有[政策說明](docs/preservation-gates.md)。
 
 每次 Git 來源均已固定，但 wrapper 仍讀取部分 HTTP 發布資訊及資產；記錄 URL、payload hash 與準備後來源 hash。這不等於所有歷史 HTTP／runner 輸入均已還原或凍結。動態內容改變可能產生待審差異／建置失敗，不會繞過檢查。
 

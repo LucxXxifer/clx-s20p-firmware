@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 from urllib.parse import quote
 
 import source_lock
@@ -45,42 +46,61 @@ def api(path):
     return json.loads(subprocess.check_output(["gh", "api", "--cache", "10m", path], timeout=60))
 
 
-def comparison(repo, base, head, fetch=api):
+def comparison(repo, base, head, fetch=api, allow_rewrite=False):
     if base == head:
         return {"base_commit": base, "compare_status": "identical", "merge_base": base}
     value = fetch(f"repos/{repo}/compare/{base}...{head}")
     result = {"base_commit": base, "compare_status": value.get("status"),
               "merge_base": value.get("merge_base_commit", {}).get("sha")}
-    validate_comparison(result, head)
+    validate_comparison(result, head, allow_rewrite=allow_rewrite)
     return result
 
 
-def validate_comparison(value, head):
+def validate_comparison(value, head, allow_rewrite=False):
     if (not isinstance(value, dict) or
             set(value) != {"base_commit", "compare_status", "merge_base"} or
             not COMMIT.fullmatch(str(value.get("base_commit"))) or
-            value.get("merge_base") != value["base_commit"] or
-            value.get("compare_status") != ("identical" if value["base_commit"] == head else "ahead")):
+            not COMMIT.fullmatch(str(value.get("merge_base")))):
         raise ValueError("plugin comparison does not prove a forward source update")
+    base, merge_base = value["base_commit"], value["merge_base"]
+    if (merge_base == base and
+            value.get("compare_status") == ("identical" if base == head else "ahead")):
+        return
+    # A third-party feed may rebase published history. That rewrite is recorded,
+    # not accepted as a rewind, and only once the reviewed pin comparison has
+    # already proven the new head still advances past that pin. "behind" and an
+    # unrelated merge base stay fatal because commits could have been dropped.
+    if (allow_rewrite and value.get("compare_status") == "diverged" and
+            base != head and merge_base != base and merge_base != head):
+        return
+    raise ValueError("plugin comparison does not prove a forward source update")
 
 
 def resolve(lock, previous_heads=None, fetch=api):
     previous_heads = previous_heads or {}
     def one(row):
         repo = repository(row["url"])
-        ref = row["ref"]
-        if ref == "HEAD":
-            ref = fetch(f"repos/{repo}")["default_branch"]
-        value = fetch(f"repos/{repo}/git/ref/heads/{quote(ref, safe='')}")
-        head = value.get("object", {}).get("sha")
-        if (not COMMIT.fullmatch(str(head)) or value.get("object", {}).get("type") != "commit"
-                or value.get("ref") != "refs/heads/" + ref):
-            raise ValueError("plugin branch did not resolve to one exact commit: " + repo)
-        prior = previous_heads.get(repo)
-        return {"repository": repo, "ref": row["ref"], "resolved_ref": ref,
-                "base_commit": row["commit"], "head_commit": head,
-                "comparison": comparison(repo, row["commit"], head, fetch),
-                "previous_comparison": comparison(repo, prior, head, fetch) if prior else None}
+        requested_ref = row["ref"]
+        try:
+            ref = requested_ref
+            if ref == "HEAD":
+                ref = fetch(f"repos/{repo}")["default_branch"]
+            value = fetch(f"repos/{repo}/git/ref/heads/{quote(ref, safe='')}")
+            head = value.get("object", {}).get("sha")
+            if (not COMMIT.fullmatch(str(head)) or value.get("object", {}).get("type") != "commit"
+                    or value.get("ref") != "refs/heads/" + ref):
+                raise ValueError("plugin branch did not resolve to one exact commit")
+            prior = previous_heads.get(repo)
+            previous = comparison(repo, prior, head, fetch, allow_rewrite=True) if prior else None
+            if previous is not None and previous["compare_status"] == "diverged":
+                print("plugin history rewritten upstream, rebuilding from the reviewed pin: " +
+                      repo + " " + prior + " -> " + head, file=sys.stderr)
+            return {"repository": repo, "ref": row["ref"], "resolved_ref": ref,
+                    "base_commit": row["commit"], "head_commit": head,
+                    "comparison": comparison(repo, row["commit"], head, fetch),
+                    "previous_comparison": previous}
+        except ValueError as error:
+            raise ValueError(repo + " " + str(requested_ref) + ": " + str(error)) from error
     with ThreadPoolExecutor(max_workers=6) as pool:
         result = list(pool.map(one, selected(lock)))
     return validate(result, lock)
@@ -106,11 +126,14 @@ def validate(rows, lock=None):
                 (row["ref"] != "HEAD" and row["resolved_ref"] != row["ref"])):
             raise ValueError("plugin source differs from the approved repository/ref/base")
         seen.add(repo)
-        validate_comparison(row["comparison"], row["head_commit"])
-        if row["comparison"]["base_commit"] != row["base_commit"]:
-            raise ValueError("plugin comparison base differs from the reviewed source pin")
-        if row["previous_comparison"] is not None:
-            validate_comparison(row["previous_comparison"], row["head_commit"])
+        try:
+            validate_comparison(row["comparison"], row["head_commit"])
+            if row["comparison"]["base_commit"] != row["base_commit"]:
+                raise ValueError("plugin comparison base differs from the reviewed source pin")
+            if row["previous_comparison"] is not None:
+                validate_comparison(row["previous_comparison"], row["head_commit"], allow_rewrite=True)
+        except ValueError as error:
+            raise ValueError(repo + " " + str(row["ref"]) + ": " + str(error)) from error
     if [row["repository"] for row in rows] != sorted(expected):
         raise ValueError("daily plugin sources must use canonical ordering")
     return rows

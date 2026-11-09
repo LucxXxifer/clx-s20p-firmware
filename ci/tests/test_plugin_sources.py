@@ -71,6 +71,26 @@ class PluginSourceTests(unittest.TestCase):
         rows[0]["previous_comparison"] = dict(rows[0]["comparison"])
         self.assertEqual(plugins.identity(rows), original)
 
+    def test_previous_upstream_rewrite_is_recorded_instead_of_blocking_every_run(self):
+        rows = plugins.resolve(self.lock, fetch=self.fetch)
+        rows[0]["head_commit"] = "a" * 40
+        rows[0]["comparison"]["compare_status"] = "ahead"
+        rows[0]["previous_comparison"] = {"base_commit": "b" * 40,
+                                          "merge_base": "c" * 40, "compare_status": "diverged"}
+        plugins.validate(rows, self.lock)
+
+    def test_previous_rewrite_tolerance_stays_opt_in(self):
+        value = {"base_commit": "b" * 40, "compare_status": "diverged", "merge_base": "c" * 40}
+        with self.assertRaisesRegex(ValueError, "forward source update"):
+            plugins.validate_comparison(value, "a" * 40)
+        plugins.validate_comparison(value, "a" * 40, allow_rewrite=True)
+
+    def test_reviewed_pin_comparison_never_accepts_a_rewrite(self):
+        value = {"base_commit": "b" * 40, "compare_status": "diverged", "merge_base": "c" * 40}
+        with self.assertRaisesRegex(ValueError, "forward source update"):
+            plugins.comparison("owner/repo", "b" * 40, "a" * 40, fetch=lambda path: {
+                "status": "diverged", "merge_base_commit": {"sha": "c" * 40}})
+
     def test_different_repository_or_branch_cannot_replace_an_approved_source(self):
         rows = plugins.resolve(self.lock, fetch=self.fetch)
         for key, value in (("repository", "attacker/istore"), ("ref", "other"),

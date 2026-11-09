@@ -1,5 +1,14 @@
 # CLX-S20P 主線韌體每日編譯
 
+> **目前狀態：每日排程暫停中（2026-11-10 起），等待上游修正 QuickStart 預編譯後端。**
+>
+> - **原因**：上游 `quickstart-binary-0.13.1.tar.gz`（`f84ce3bf…`，2026-11-03 發布）內含的後端 ELF 仍以 **Go 1.25.0** 建置，低於 CVE-2026-111943（GO-2026-6809）在 **1.26.10／1.27.3** 的修正線。`go_security` 門禁在 run `42616271150` 正確攔下：`Go security gate: unpatched or unreviewed Go version: go1.25.0`。這是真陽性判定，不是 CI 缺陷。
+> - **已提出上游問題**：[istoreos/quickstart#16](https://github.com/istoreos/quickstart/issues/16)，請求以 Go ≥1.26.10（或 ≥1.27.3）重建並重新發布 prebuilt。
+> - **暫停方式**：以 `gh workflow disable s20p-daily.yml` 停用 workflow，未刪除檔案、未修改 cron、未放寬任何校驗；`ci/security/go-x509.json` 的 0.13.0 精確例外維持原樣，**不得**為此擴張到不同 bytes 的未修補版本。
+> - **暫停時狀態**：`main` 停在 `0e857b9`，最後一次 run 為 `42616271150`（failure，僅 gate step 失敗，映像本體已產出）。
+> - **恢復步驟**：上游發布修補版 prebuilt 後 → 更新 `quickstart` recipe 的 `PKG_VERSION`／`PKG_HASH` → `gh workflow enable s20p-daily.yml` → `gh workflow run s20p-daily.yml --ref main` 驗證，通過後排程自動恢復每日執行。
+> - 停用期間手動觸發同樣不可用（workflow 為 inactive）；需要臨時建置請先 `gh workflow enable`。
+
 目前正式下載入口為[CLX-S20P 主線韌體 2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、映像內容與同批封存保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
 
 三個已發布版本的 `.bin` 下載檔名統一為 `clx-s20p-<upstream8>-<YYYYMMDD>-sysupgrade.bin`，日期採 Asia/Shanghai 發布日；最新檔名為 `clx-s20p-9f397975-20261031-sysupgrade.bin`。此調整只變更下載名稱及配套清單／說明，映像 SHA256 與原始 run 證據不變，不需重新編譯。
@@ -37,7 +46,7 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 
 ## 觸發方式
 
-- `.github/workflows/s20p-daily.yml`：每日 **04:20 Asia/Shanghai（20:20 UTC）**，並支援 Actions → Run workflow；定時 workflow 僅在 repository 的 default branch 上運行，所以 rolling `main` 必須設為 default branch 並啟用此 workflow，排程才會生效。
+- `.github/workflows/s20p-daily.yml`：每日 **04:20 Asia/Shanghai（20:20 UTC）**，並支援 Actions → Run workflow；定時 workflow 僅在 repository 的 default branch 上運行，所以 rolling `main` 必須設為 default branch 並啟用此 workflow，排程才會生效。**（2026-11-10 起暫停，見頂部狀態區塊；cron 與 workflow 檔案內容未變，僅以 `gh workflow disable` 停用。）**
 - 每次執行解析系統完整 head SHA、插件來源及安全元件，產生組合 fingerprint。同 wrapper＋系統 SHA＋元件 fingerprint 已嘗試過時跳過編譯；系統未更新而插件有更新也會建置。失敗後不盲目重編相同輸入，手動 `force=true` 可在修正原因後重試。無法取得或驗證前次 state 時會重新建置，不會錯誤略過候選。
 - 若有可信的前次 state 且 head 改變，另以 GitHub compare 驗證其仍為前次 head 的後代；回退或分歧即拒絕，`force` 不能繞過。缺少可信歷史時只依固定起點驗證，不宣稱已證明歷史上未回退。
 - 需要重試時使用 Actions → **Run workflow → force=true** 建立新 run；不使用 **Re-run jobs**。後者重用舊 run identity，會被明確拒絕。即使某次執行被拒絕或中斷，仍會向前查找完整的可信 state，不會遺忘較早已驗證的 head。

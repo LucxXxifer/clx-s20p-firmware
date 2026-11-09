@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # target、kernel 与 base system 源码修正。
 
+get_ci_dir() {
+    # Actions 构建通过 S20P_CI_DIR 指定；本地手动构建回退到仓库内 ci/。
+    printf '%s\n' "${S20P_CI_DIR:-$BASE_PATH/../ci}"
+}
+
 set_official_openwrt_apk_repo() {
     local version_makefile="$BUILD_DIR/include/version.mk"
 
@@ -227,6 +232,27 @@ apply_custom_feed_patches() {
         (cd "$BUILD_DIR/feeds/packages/net/smartdns" && patch -p1 -N -r - -s < "$BASE_PATH/patches/smartdns-codeload.patch") \
             && echo "Applied smartdns codeload patch" \
             || echo "WARNING: smartdns-codeload.patch failed to apply cleanly - rebase needed" >&2
+    fi
+
+    # AxonHub tracks VIKINGYFY/packages main, so its go.mod floor can move past
+    # the tree's default golang1.26 (GOTOOLCHAIN=local then aborts the build with
+    # "go.mod requires go >= 1.27.3 (running go 1.26.10)"). Point only the host
+    # toolchain selector at the versioned recipe that satisfies the pinned
+    # go.mod; archives, pins and GOTOOLCHAIN stay as reviewed.
+    local axonhub_mk="$BUILD_DIR/feeds/custom_feed/axonhub/Makefile"
+    if [ -f "$axonhub_mk" ]; then
+        local go_requirement_args=(
+            --feed "$BUILD_DIR/feeds/custom_feed"
+            --lang "$BUILD_DIR/feeds/packages/lang/golang"
+            --package axonhub
+        )
+        if [ -n "${S20P_CAPTURE_DIR:-}" ]; then
+            go_requirement_args+=(--evidence "$S20P_CAPTURE_DIR/provenance/go-requirement.json")
+        fi
+        if ! python3 "$(get_ci_dir)/go_requirement.py" select "${go_requirement_args[@]}"; then
+            echo "错误：无法为 axonhub 选定满足其 go.mod 要求的 Go 主机工具链。" >&2
+            return 1
+        fi
     fi
 }
 

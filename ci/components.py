@@ -29,12 +29,21 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
 
 
+DOWNLOAD_ORIGINS = ("https://raw.githubusercontent.com/", "https://go.dev/dl/",
+                    "https://codeload.github.com/AdguardTeam/AdGuardHome/",
+                    "https://github.com/AdguardTeam/AdGuardHome/releases/download/",
+                    "https://deb.debian.org/debian/pool/main/c/ca-certificates/",
+                    "https://sources.openwrt.org/")
+# Debian occasionally supersedes the exact upload the reviewed recipe pins (a
+# "+nmu1" revision replaces the plain filename). OpenWrt's official source
+# mirror keeps the pinned bytes, and the recipe PKG_HASH still decides what is
+# accepted, so the archive is fetched by name with an ordered fallback.
+CA_ARCHIVE_ORIGINS = ("https://deb.debian.org/debian/pool/main/c/ca-certificates/",
+                      "https://sources.openwrt.org/")
+
+
 def download(url, limit=32 * 1024 * 1024):
-    allowed = ("https://raw.githubusercontent.com/", "https://go.dev/dl/",
-               "https://codeload.github.com/AdguardTeam/AdGuardHome/",
-               "https://github.com/AdguardTeam/AdGuardHome/releases/download/",
-               "https://deb.debian.org/debian/pool/main/c/ca-certificates/")
-    if not url.startswith(allowed):
+    if not url.startswith(DOWNLOAD_ORIGINS):
         raise ValueError("unapproved component download origin")
     data = subprocess.check_output(["curl", "--fail", "--location", "--silent", "--show-error",
                                     "--retry", "2", "--retry-all-errors", "--connect-timeout", "15",
@@ -42,6 +51,18 @@ def download(url, limit=32 * 1024 * 1024):
     if len(data) > limit:
         raise ValueError("component input exceeds size limit")
     return data
+
+
+def fetch_ca_archive(date):
+    """Fetch the reviewed CA upload, tolerating a Debian filename supersession."""
+    name = "ca-certificates_" + str(date) + ".tar.xz"
+    failures = []
+    for origin in CA_ARCHIVE_ORIGINS:
+        try:
+            return download(origin + name)
+        except (ValueError, OSError, subprocess.SubprocessError) as error:
+            failures.append(origin + ": " + str(error))
+    raise ValueError("reviewed CA source archive is unavailable: " + "; ".join(failures))
 
 
 def api(path):
@@ -340,7 +361,7 @@ def prepare(root, inputs, output, fixed_manifest=None):
             raise ValueError("unreviewed fixed CA download filename")
         stage_download(root, f"ca-certificates_{ca_date}.tar.xz", ca_archive, field(ca_recipe, "PKG_HASH"))
     else:
-        ca_archive = download(f"https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{ca_date}.tar.xz")
+        ca_archive = fetch_ca_archive(ca_date)
     ca_report = ca_security.reproduce(ca, ca_archive)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({"schema_version": 1, "status": "pass",

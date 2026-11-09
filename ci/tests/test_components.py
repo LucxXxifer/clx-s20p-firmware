@@ -18,6 +18,26 @@ from component_fixtures import inputs, files
 
 
 class ComponentTests(unittest.TestCase):
+    def test_ca_archive_falls_back_when_debian_supersedes_the_pinned_upload(self):
+        calls = []
+        def download(url, limit=None):
+            calls.append(url)
+            if url.startswith('https://deb.debian.org/'):
+                raise ValueError('curl: (22) 404')
+            return b'reviewed bytes'
+        with patch.object(components, 'download', download):
+            self.assertEqual(components.fetch_ca_archive('20260816'), b'reviewed bytes')
+        self.assertEqual(calls, [
+            'https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_20260816.tar.xz',
+            'https://sources.openwrt.org/ca-certificates_20260816.tar.xz'])
+
+    def test_ca_archive_still_fails_when_every_origin_is_missing(self):
+        def download(url, limit=None):
+            raise ValueError('curl: (22) 404')
+        with patch.object(components, 'download', download), \
+                self.assertRaisesRegex(ValueError, 'unavailable'):
+            components.fetch_ca_archive('20260816')
+
     def test_quickstart_dependency_policy_is_exact_and_idempotent(self):
         recipe = ('PKG_VERSION:=0.13.0\n\tDEPENDS:= +bash +smartmontools-helper '
                   '+smartd +mdadm +smartmontools-drivedb\n'

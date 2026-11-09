@@ -89,7 +89,7 @@ def reproduce(package, archive=None):
     if components.field(recipe, 'PKG_SOURCE_URL') != '@DEBIAN/pool/main/c/ca-certificates':
         raise ValueError('unapproved CA source archive origin')
     if archive is None:
-        archive = components.download(f'https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{date}.tar.xz')
+        archive = components.fetch_ca_archive(date)
     if components.digest(archive) != expected:
         raise ValueError('CA source archive SHA256 mismatch')
     import io

@@ -220,7 +220,8 @@ class UpstreamResolutionTests(unittest.TestCase):
                 wrapper = root / "wrapper"
                 (wrapper / "ci").mkdir(parents=True)
                 for name in ("build.sh", "upstream_sync.py", "sources.lock.json", "source_lock.py",
-                             "mobile-usb-packages.txt", "preservation.py", "provenance.py"):
+                             "mobile-usb-packages.txt", "preservation.py", "provenance.py",
+                             "verify-build-revision.sh"):
                     shutil.copyfile(CI / name, wrapper / "ci" / name)
                 shutil.copytree(self.baseline, wrapper / "ci/baseline")
                 (wrapper / "ci/components.py").write_text(
@@ -243,7 +244,11 @@ class UpstreamResolutionTests(unittest.TestCase):
                 if not tamper_after_build:
                     subprocess.run(["python3", str(tamper)], check=True)
                 (wrapper / "wrt_core").mkdir()
-                (wrapper / "wrt_core/pre_clone_action.sh").write_text("touch clone-started\n")
+                (wrapper / "wrt_core/pre_clone_action.sh").write_text(
+                    "mkdir -p action_build/scripts\n"
+                    "echo '#!/bin/sh' > action_build/scripts/getver.sh\n"
+                    "echo 'echo r0-03eb306' >> action_build/scripts/getver.sh\n"
+                    "touch clone-started\n")
                 (wrapper / "build.sh").write_text(
                     ("python3 tamper.py\n" if tamper_after_build else "") +
                     "mkdir -p output/reports\n" +

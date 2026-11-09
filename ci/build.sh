@@ -74,11 +74,22 @@ if [[ -n $S20P_FIXED_INPUTS ]]; then
         --capture "$S20P_CAPTURE_DIR/provenance/fixed"
     S20P_APPLICATION_POLICY=$(python3 ci/fixed_inputs.py policy "$S20P_FIXED_INPUTS")
 fi
+# The upstream tree owns these names: scripts/getver.sh assigns UPSTREAM_BASE,
+# UPSTREAM_REV and REBOOT, include/version.mk assigns REVISION. Our AUTOBUILD
+# path checks the tree out detached, so getver.sh finds no tracking branch and
+# leaves UPSTREAM_BASE unassigned; an inherited copy then points at a commit the
+# depth-one tree does not contain, getver.sh drops the commit hash, and apk
+# rejects the resulting base-files version as "1~r0" hours into the build.
+# ci/verify-build-revision.sh is the tripwire; this is the cure.
+unset UPSTREAM_BASE UPSTREAM_REV BASE_REV REBOOT GET_REV REVISION
 # The parent wrapper's pre-clone and build share these exported lock variables.
 set +e
 (
     set -euo pipefail
     bash ./wrt_core/pre_clone_action.sh S20P-WIFI-YES
+    # Fail in seconds, not after hours of compilation, if the tree cannot report
+    # a packaging-valid revision for base-files.
+    bash ci/verify-build-revision.sh "$repo/action_build"
     bash ./build.sh S20P-WIFI-YES ''
 ) 2>&1 | tee "$S20P_BUILD_LOG"
 pipeline_status=("${PIPESTATUS[@]}")

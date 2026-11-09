@@ -29,7 +29,12 @@ concurrency:
 env:
   UPSTREAM_REPOSITORY: chasey-dev/immortalwrt-mt798x-rebase
   UPSTREAM_REF: 25.12
-  UPSTREAM_BASE: 9f397975c7b47ce6986a6e39529d2f72fd5c729d
+  # Prefixed on purpose. scripts/getver.sh inside the upstream tree uses
+  # UPSTREAM_BASE as its own internal variable and only assigns it when the
+  # checkout has a tracking branch; an exported UPSTREAM_BASE therefore
+  # survives into the revision probe, points at a commit the depth-one tree
+  # does not contain, and collapses REVISION to "r0-" without the commit hash.
+  S20P_UPSTREAM_BASE: 9f397975c7b47ce6986a6e39529d2f72fd5c729d
 
 jobs:
   build:
@@ -67,7 +72,7 @@ jobs:
           else
             head=$(gh api "repos/${UPSTREAM_REPOSITORY}/git/ref/heads/${UPSTREAM_REF}" --jq '.object.sha')
           fi
-          compare=$(gh api "repos/${UPSTREAM_REPOSITORY}/compare/${UPSTREAM_BASE}...${head}")
+          compare=$(gh api "repos/${UPSTREAM_REPOSITORY}/compare/${S20P_UPSTREAM_BASE}...${head}")
           status=$(jq -er '.status' <<<"$compare")
           merge_base=$(jq -er '.merge_base_commit.sha' <<<"$compare")
           [[ $head =~ ^[0-9a-f]{40}$ && $merge_base =~ ^[0-9a-f]{40}$ ]]
@@ -175,7 +180,7 @@ jobs:
         run: |
           python3 -m unittest discover -s ci/tests -v
           bash ci/tests/test_network.sh
-          bash -n ci/build.sh ci/capture.sh ci/setup-runner.sh build.sh
+          bash -n ci/build.sh ci/capture.sh ci/setup-runner.sh ci/verify-build-revision.sh build.sh
 
       - name: Run dashboard Lua and frontend regression checks
         run: |

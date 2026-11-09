@@ -21,6 +21,20 @@ class DailyWorkflowTests(unittest.TestCase):
     def setUpClass(cls):
         cls.text = WORKFLOW.read_text()
 
+    def test_workflow_env_does_not_shadow_upstream_build_variables(self):
+        # Every workflow-level env var is exported into the build step, where the
+        # upstream tree reads its own variables of the same name. UPSTREAM_BASE
+        # once collided with scripts/getver.sh, which dropped the commit hash from
+        # REVISION and made apk reject the base-files version after a full build.
+        block = self.text.split('\nenv:\n', 1)[1].split('\njobs:', 1)[0]
+        names = set(re.findall(r'(?m)^  ([A-Z][A-Z0-9_]*):', block))
+        shadowed = {'UPSTREAM_BASE', 'UPSTREAM_REV', 'BASE_REV', 'REBOOT', 'GET_REV',
+                    'REVISION', 'TOPDIR', 'SOURCE_DATE_EPOCH', 'BASE_FILES_VERSION',
+                    'KERNEL_VERSION', 'LIBC_VERSION'}
+        self.assertEqual(sorted(names & shadowed), [])
+        self.assertIn('S20P_UPSTREAM_BASE', names)
+        self.assertIn('/compare/${S20P_UPSTREAM_BASE}...${head}', self.text)
+
     def test_release_changelog_is_appended_and_failure_blocks_six_asset_publication(self):
         shell = textwrap.dedent(self.text.split('- name: Publish verified CLX-S20P mainline prerelease', 1)[1]
                                 .split('run: |\n', 1)[1])
@@ -152,7 +166,7 @@ class DailyWorkflowTests(unittest.TestCase):
                    'GITHUB_RUN_ID': '9', 'GITHUB_RUN_ATTEMPT': '1',
                    'GITHUB_OUTPUT': str(root / 'outputs'), 'FORCE': 'true',
                    'UPSTREAM_REPOSITORY': 'chasey-dev/immortalwrt-mt798x-rebase',
-                   'UPSTREAM_REF': '25.12', 'UPSTREAM_BASE': base}
+                   'UPSTREAM_REF': '25.12', 'S20P_UPSTREAM_BASE': base}
             result = subprocess.run(['bash', '-c', shell], cwd=WORKFLOW.parents[2],
                                     env=env, text=True, capture_output=True)
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -193,7 +207,7 @@ class DailyWorkflowTests(unittest.TestCase):
                                          'GITHUB_REPOSITORY': 'test/firmware', 'GITHUB_SHA': 'c' * 40,
                                          'GITHUB_RUN_ID': '42', 'GITHUB_OUTPUT': str(root / 'outputs'),
                                          'UPSTREAM_REPOSITORY': 'chasey-dev/immortalwrt-mt798x-rebase',
-                                         'UPSTREAM_REF': '25.12', 'UPSTREAM_BASE': manifest['upstream_commit']})
+                                         'UPSTREAM_REF': '25.12', 'S20P_UPSTREAM_BASE': manifest['upstream_commit']})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('fixed=true', (root / 'outputs').read_text())
             self.assertIn('should_build=true', (root / 'outputs').read_text())

@@ -625,7 +625,7 @@ class BuildPolicyTests(unittest.TestCase):
         mock_fakeroot(self, self.repo)
         (self.repo / "ci/baseline").mkdir(parents=True)
         (self.repo / "wrt_core").mkdir()
-        for name in ("build.sh", "capture.sh"):
+        for name in ("build.sh", "capture.sh", "verify-build-revision.sh"):
             shutil.copy2(REPO / "ci" / name, self.repo / "ci" / name)
         shutil.copy2(REPO / "ci/public-test-keys.json", self.repo / "ci/public-test-keys.json")
         for name in ("source_lock.py",):
@@ -648,7 +648,8 @@ path.write_text(json.dumps({'fixture': 'resolved without network'}))
 set -eu
 [[ $S20P_AUTOBUILD == 1 && $S20P_CAPTURE_DIR == "$PWD/output" ]]
 [[ $S20P_SOURCE_LOCK == "$PWD/ci/sources.lock.json" ]]
-mkdir action_build
+mkdir -p action_build/scripts
+printf '#!/bin/sh\\necho r0-03eb306\\n' > action_build/scripts/getver.sh
 ''')
         (self.repo / "build.sh").write_text('''#!/usr/bin/env bash
 set -eu

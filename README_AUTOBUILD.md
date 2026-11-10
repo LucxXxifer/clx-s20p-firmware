@@ -102,6 +102,21 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 
 批准清單的作用域以「已審查基準」綁定，而不是以當次解析到的上游 head 綁定。`ci/upstream_sync.py` 製備 run 級基線時，除了把 `policy.json` 的 `upstream_commit` 改寫為解析後的 head，也會寫入 `reviewed_upstream_commit=<審查基準>`；`ci/preservation.py` 只在這兩者之一等於審查基準時才載入整份批准清單，`verify_prepared` 會拒絕被改寫的 `reviewed_upstream_commit`。缺少此欄位時清單會被整體忽略，於是每個上游前進日都會退化成全量 `review_required`；批准仍須逐項精確 ID 加理由，未放寬任何校驗。
 
+### 上游版本／資料輪轉的歸因（不需每日重批）
+
+rolling 每日追上游 head，而 `ci/baseline` 固定不動，因此 `axonhub`、`miniupnpd` 這類以日期為 `PKG_VERSION` 的套件，以及 `v2ray-geosite`／`geosite.dat` 這類每日多次更新的資料包，每天都會產生新的差異 ID，逐項人工批准永遠追不上（差異 ID 含 actual 值，換版本即換 ID）。
+
+`ci/upstream_rotation.py` 在 `make` 之前，從 `provenance/prepared-source-files.json` 已登記的 recipe 讀出每個套件**宣告**的值：`PKG_VERSION`+`PKG_RELEASE`、`Package/<name>` 區塊內的 `VERSION` 覆寫、以及 recipe 內所有下載 `HASH`。每個項目都綁定該 recipe 檔案本身的 SHA256（該 manifest 已經進入 `build_fingerprint`／`prepared_tree_hash`，並隨 `source-lock.json` 保存），索引寫入 `provenance/recipe-index.json` 並隨證據 artifact 上傳。
+
+映像門禁只在下列情況把差異記為 `expected` 並附上 recipe 路徑與宣告值：
+
+- `package_version`：安裝版本**完全等於** recipe 宣告的版本（僅限非 `kmod-*`、非 `kernel`）；
+- `file_sha256`：該檔案 owned package 的 recipe 宣告了完全相同的下載 `HASH`（等同證明位元組是上游下載檔，即使是 critical 路徑）；
+- `package_dependencies`／`added_file`：屬於「版本剛好等於 recipe 宣告值」的套件，且該 recipe 目錄下沒有本地 `patches/`（有補丁則不歸因，仍需人工複核）。
+
+不在歸因範圍、一律仍需逐項審查：新增／移除套件、`/etc/apk/world` 根集合、檔案 mode/owner、上游**原地改檔但未升版**（例如只改 lua 不 bump `PKG_VERSION`）、以及任何本地補丁過的 recipe。索引缺漏、schema 不符或無法解析時門禁直接失敗（exit 1），不會靜默退回「全部批准」。下載 `PKG_HASH`、簽章、Go/x509 門檻與 source pin 比對全部照舊，未新增任何跳過或 `continue-on-error`。
+
+
 完整 signed feed 保存在候選 bundle 的 `bin/`，不是另一套核心的官方套件源。預設未額外部署 GitHub Pages 或修改公開上游套件源。安裝可選 USB kmod 時，先核對候選 SHA256 與路由器的 kernel package 完整版本，解開同批 bundle，再使用其中的 signed `packages.adb` 及 APK；跨 feed 的共同依賴也必須來自該 bundle。首次建立遠端／本地套件源時會另外驗證裝置的原生 APK 安裝流程，不能因有 APK 檔就略過簽章或宣稱已實物安裝。
 
 ## 本地驗證

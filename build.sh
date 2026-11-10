@@ -668,6 +668,13 @@ if [[ ${S20P_AUTOBUILD:-0} == 1 ]]; then
         --lock "$S20P_SOURCE_LOCK" --wrapper "$REPO_ROOT" \
         "${upstream_evidence_args[@]}" \
         --output "$S20P_CAPTURE_DIR/provenance/source-lock.json"
+    # Record what the prepared recipes declare *before* make runs. The image gate
+    # uses it to attribute a version/data rotation to the reviewed upstream recipe
+    # instead of demanding a new per-day approval for the same upstream bump.
+    python3 "$REPO_ROOT/ci/upstream_rotation.py" index \
+        --prepared "$S20P_CAPTURE_DIR/provenance/prepared-source-files.json" \
+        --tree "$PWD" \
+        --output "$S20P_CAPTURE_DIR/provenance/recipe-index.json"
 fi
 
 if [[ $Build_Mod == "debug" ]]; then

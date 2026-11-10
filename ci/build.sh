@@ -156,6 +156,9 @@ gate_command+=(
 if [[ -n $S20P_UPSTREAM_EVIDENCE ]]; then
     gate_command+=(--upstream-evidence "$S20P_UPSTREAM_EVIDENCE")
 fi
+if [[ -f output/provenance/recipe-index.json ]]; then
+    gate_command+=(--recipe-index output/provenance/recipe-index.json)
+fi
 "${gate_command[@]}"
 gate_status=$?
 set -e

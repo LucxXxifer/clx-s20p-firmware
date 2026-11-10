@@ -655,6 +655,11 @@ class Gate:
         self.baseline = Path(baseline)
         self.errors, self.differences, self.checks = [], [], {}
         self._source_evidence = None
+        self.rotation = None
+        self.rotated_packages = {}
+        self.checks["upstream_rotation"] = {
+            "index": None, "attributed": [],
+            "scope": "no recipe index supplied; every difference still needs review"}
         self.b_optional_package_policy = None
         if not application_selection and application_policy != "legacy":
             raise ValueError("application policy requires application selection")
@@ -727,6 +732,7 @@ class Gate:
             record["disposition"] = "approved"
             record["approval_reason"] = self.approvals[identifier]
         self.differences.append(record)
+        return record
 
     def config(self, path, optional_packages=None, package_info=None, source_lock=None,
                optional_package_review=B_OPTIONAL_PACKAGE_REVIEW, upstream_evidence=None):
@@ -1096,7 +1102,59 @@ class Gate:
                     der = base64.b64decode(re.sub(rb"\s+", b"", block), validate=True)
                     exact_der_certificate(der, label)
 
-    def packages(self, root, inventory, optional_package_policy=None):
+    def upstream_rotation(self, path, provenance_ok):
+        """Load the pre-make recipe index that attributes upstream rotation.
+
+        The index is extra evidence, never a replacement for one: it only lets a
+        difference whose installed value is exactly what the prepared recipe
+        declares be recorded as ``expected`` instead of ``review_required``.
+        A supplied index that cannot be parsed fails the gate instead of quietly
+        falling back to review, so a broken index can never hide a difference.
+        """
+        self.checks["upstream_rotation"] = {
+            "index": str(path) if path else None, "attributed": [],
+            "scope": ("recipe-declared versions and download hashes bound to the prepared-source "
+                      "manifest; sizes, modes, ownership, added packages and locally patched "
+                      "recipes still require review")}
+        if not path:
+            return
+        import upstream_rotation
+        if not provenance_ok:
+            raise ValueError("recipe index requires validated source-lock evidence")
+        index = upstream_rotation.load(path)
+        self.rotation = index
+        self.checks["upstream_rotation"].update({
+            "index_sha256": digest(Path(path).read_bytes()),
+            "manifest_sha256": index["manifest_sha256"],
+            "recipe_count": index["recipe_count"],
+            "skipped_recipes": index["skipped_recipes"],
+            "declared_packages": len(index["packages"]),
+            "conflicts": index["conflicts"]})
+
+    def attribute(self, category, subject, expected, actual, evidence, reason):
+        """Record a difference that the verified recipe itself explains."""
+        record = self.difference(category, subject, expected, actual, "expected", reason)
+        record["upstream_rotation"] = evidence
+        self.checks["upstream_rotation"]["attributed"].append(
+            {"category": category, "subject": subject, "recipe": evidence["recipe"],
+             "declared_version": evidence["declared_version"]})
+        return record
+
+    def rotation_for(self, package, version):
+        """Attribution evidence for an installed version the recipe declares."""
+        if not self.rotation:
+            return None
+        import upstream_rotation
+        return upstream_rotation.attest_version(self.rotation, package, version)
+
+    def rotation_payload(self, owner):
+        """Payload attribution, refused when the recipe carries local patches."""
+        if not self.rotation or not owner:
+            return None
+        record = self.rotated_packages.get(owner)
+        return record if record and not record["local_patches"] else None
+
+    def packages(self, root, inventory, optional_package_policy=None, provenance_ok=False):
         installed = safe_path(root, "/lib/apk/db/installed")
         actual = parse_packages(installed)
         manifest = parse_packages(inventory)
@@ -1173,12 +1231,26 @@ class Gate:
                                 "requested increment dependency closure" if name in reachable else "outside increment closure")
                 continue
             if package["version"] != original["version"]:
-                self.difference("package_version", name, original["version"], package["version"],
-                                "expected" if name == "kernel" and kernel != self.policy["original_kernel"] else "review_required",
-                                "same-build generated ABI" if name == "kernel" else "source/version delta")
+                rotation = (self.rotation_for(name, package["version"])
+                            if provenance_ok and not name.startswith("kmod-") else None)
+                if rotation is not None:
+                    # The installed version is exactly the version the reviewed
+                    # upstream recipe declares; nothing was overridden locally.
+                    self.rotated_packages[name] = rotation
+                    self.attribute("package_version", name, original["version"], package["version"],
+                                   rotation, "installed version equals the verified upstream recipe")
+                else:
+                    self.difference("package_version", name, original["version"], package["version"],
+                                    "expected" if name == "kernel" and kernel != self.policy["original_kernel"] else "review_required",
+                                    "same-build generated ABI" if name == "kernel" else "source/version delta")
             old_deps = original.get("depends", "").replace("kernel=" + self.policy["original_kernel"], "kernel=" + kernel)
             if sorted(old_deps.split()) != sorted(package.get("depends", "").split()):
-                self.difference("package_dependencies", name, old_deps, package.get("depends", ""))
+                rotation = self.rotation_payload(name)
+                if rotation is not None:
+                    self.attribute("package_dependencies", name, old_deps, package.get("depends", ""),
+                                   rotation, "dependency set of a package whose version equals its verified upstream recipe")
+                else:
+                    self.difference("package_dependencies", name, old_deps, package.get("depends", ""))
         self.checks["packages"] = {"actual_count": len(actual), "kernel": kernel,
                                    "original_count": len(self.original),
                                    "reviewed_optional_absent": sorted(omitted),
@@ -1313,6 +1385,12 @@ class Gate:
         actual = walk_files(root)
         self.daily_components(root, provenance_ok, packages)
         verified_paths = self._daily_verified_paths
+        # Owning package per rootfs path, from the same installed APK database
+        # that the package gate already read.
+        owners = {}
+        for owner, row in packages.items():
+            for path in row.get("files", []):
+                owners.setdefault(path, owner)
         if self.application_selection and self.application_selection.get("policy_id") == "minimal-20261031":
             try:
                 if not provenance_ok or not self._source_evidence:
@@ -1375,8 +1453,21 @@ class Gate:
             is_elf = current["type"] == "file" and read_prefix(path, 4) == b"\x7fELF"
             generated = name.startswith("/lib/apk/") or bool(re.match(r"/lib/modules/[^/]+/modules\.", name))
             disposition, reason = "review_required", policy
+            evidence = None
+            # Bytes that are themselves a download the reviewed recipe declares
+            # need no second opinion about their content, even for a critical
+            # path: the declared download hash is the review.
+            declared = None
+            if self.rotation:
+                import upstream_rotation
+                declared = upstream_rotation.attest_hash(self.rotation, owners.get(name),
+                                                         current.get("sha256"))
+            payload = self.rotation_payload(owners.get(name))
             if name in verified_paths:
                 disposition, reason = "expected", "source-bound CA reproduction or exact reviewed dashboard payload"
+            elif declared is not None:
+                disposition, reason = "expected", "installed bytes equal a download hash the verified upstream recipe declares"
+                evidence = declared
             elif (name == "/etc/apk/world" and provenance_ok and self.application_selection and
                     application_world_matches(self.application_selection, path.read_text(),
                                               packages.get("kernel", {}).get("version", ""))):
@@ -1388,6 +1479,10 @@ class Gate:
                 disposition, reason = "expected", "fresh same-build key; native signed feeds and exact image key binding verified"
             elif policy.startswith("exact-"):
                 pass
+            elif payload is not None:
+                disposition, reason = "expected", ("payload of a package whose installed version equals its "
+                                                   "verified upstream recipe")
+                evidence = payload
             elif generated and provenance_ok:
                 disposition, reason = "expected", "generated metadata; actual package DB and kernel dependencies checked"
             elif (recompiled or is_elf) and provenance_ok:
@@ -1398,7 +1493,13 @@ class Gate:
                 # World lists explicit roots, not all transitive packages.
                 self.checks["apk_world"] = {"roots": sorted(world)}
                 reason = "world roots changed; package closure checked but root selection needs explicit review"
-            self.difference("file_sha256", name, expected.get("sha256"), current.get("sha256"), disposition, reason)
+            record = self.difference("file_sha256", name, expected.get("sha256"), current.get("sha256"),
+                                     disposition, reason)
+            if evidence is not None:
+                record["upstream_rotation"] = evidence
+                self.checks["upstream_rotation"]["attributed"].append(
+                    {"category": "file_sha256", "subject": name, "recipe": evidence["recipe"],
+                     "declared_version": evidence["declared_version"]})
         additions = sorted(set(actual) - set(baseline))
         added_package_files = {name for package, row in packages.items()
                                if package not in self.original and package in reachable
@@ -1407,6 +1508,11 @@ class Gate:
             current = actual[name]
             generated = name.startswith("/lib/apk/") or current["type"] == "directory"
             verified = name in verified_paths or (signing_key_ok and provenance_ok and name in added_package_files)
+            payload = self.rotation_payload(owners.get(name))
+            if payload is not None and not generated and not verified:
+                self.attribute("added_file", name, None, current, payload,
+                               "new path shipped by a package whose version equals its verified upstream recipe")
+                continue
             self.difference("added_file", name, None, current,
                             "expected" if generated or verified else "review_required",
                             "verified payload or signed required-package dependency closure" if verified else
@@ -1531,6 +1637,8 @@ def main(argv=None):
             command.add_argument("--signed-feeds", type=Path)
             command.add_argument("--upstream-evidence", type=Path,
                                  help="GitHub compare evidence used for a moving 25.12 source head")
+            command.add_argument("--recipe-index", type=Path,
+                                 help="pre-make recipe declarations; attributes upstream rotation only")
     args = parser.parse_args(argv)
     gate = None
     try:
@@ -1543,9 +1651,11 @@ def main(argv=None):
         else:
             root = args.rootfs.resolve()
             provenance_ok = gate.source_lock(args.source_lock)
+            gate.upstream_rotation(args.recipe_index, provenance_ok)
             gate.b_optional_package_policy = load_b_optional_package_policy(
                 args.baseline_dir, args.source_lock, upstream_evidence_path=args.upstream_evidence)
-            actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy)
+            actual, reachable = gate.packages(root, args.packages, gate.b_optional_package_policy,
+                                              provenance_ok)
             gate.kernel_config(args.kernel_config)
             gate.dtb(args.dtb)
             signing_key_ok = gate.signing_key(root, actual, args.public_key, args.signed_feeds)

@@ -149,12 +149,38 @@ class PreservationFixtures(unittest.TestCase):
             record["target"] = os.readlink(path)
         return record
 
-    def sync_packages(self):
+    def sync_packages(self, owners=None):
         self.write_json(self.package_path, self.packages)
         installed = self.rootfs / "lib/apk/db/installed"
         installed.parent.mkdir(parents=True, exist_ok=True)
-        installed.write_text("\n\n".join(
-            "P:{name}\nV:{version}\nD:{depends}".format(**p) for p in self.packages) + "\n")
+        blocks = []
+        for package in self.packages:
+            block = "P:{name}\nV:{version}\nD:{depends}".format(**package)
+            for path in (owners or {}).get(package["name"], []):
+                directory, _, name = path.rstrip("/").rpartition("/")
+                block += "\nF:" + directory.lstrip("/") + "\nR:" + name
+            blocks.append(block)
+        installed.write_text("\n\n".join(blocks) + "\n")
+
+    def write_recipe_index(self, packages, conflicts=None):
+        """A minimal index in the shape upstream_rotation.load() accepts."""
+        path = self.base / "recipe-index.json"
+        entries = {}
+        for name, value in packages.items():
+            version = value["version"] if isinstance(value, dict) else value
+            entries[name] = {"version": version,
+                             "recipe": "custom_feed/%s/Makefile" % name,
+                             "recipe_sha256": hashlib.sha256(name.encode()).hexdigest(),
+                             "hashes": (value.get("hashes", []) if isinstance(value, dict) else []),
+                             "local_patches": (value.get("local_patches", False)
+                                               if isinstance(value, dict) else False)}
+        self.write_json(path, {"schema_version": 1, "manifest_sha256": "9" * 64,
+                               "recipe_count": len(entries), "skipped_recipes": 0,
+                               "packages": entries, "conflicts": conflicts or []})
+        return path
+
+    def ownership(self, mapping):
+        self.sync_packages(mapping)
 
     def signing_evidence(self):
         key = b"-----BEGIN PUBLIC KEY-----\nfixture-new-build\n-----END PUBLIC KEY-----\n"
@@ -553,6 +579,63 @@ class PreservationFixtures(unittest.TestCase):
         code, result = self.invoke()
         self.assertEqual(code, 2, result)
         self.assertIn("package_version", json.dumps(result))
+
+    def test_recipe_declared_version_is_attributed_instead_of_reviewed(self):
+        self.packages[2]["version"] = "2-r1"
+        self.sync_packages()
+        index = self.write_recipe_index({"libc": "2-r1"})
+        code, result = self.invoke(extra=["--recipe-index", str(index)])
+        self.assertEqual(code, 0, result)
+        record = next(row for row in result["differences"]
+                      if row["category"] == "package_version" and row["subject"] == "libc")
+        self.assertEqual(record["disposition"], "expected")
+        self.assertEqual(record["upstream_rotation"]["declared_version"], "2-r1")
+        attributed = result["checks"]["upstream_rotation"]["attributed"]
+        self.assertEqual([row["subject"] for row in attributed], ["libc"])
+        self.assertEqual(result["checks"]["upstream_rotation"]["declared_packages"], 1)
+
+    def test_recipe_version_mismatch_still_requires_review(self):
+        self.packages[2]["version"] = "2-r1"
+        self.sync_packages()
+        index = self.write_recipe_index({"libc": "3-r1"})
+        code, result = self.invoke(extra=["--recipe-index", str(index)])
+        self.assertEqual(code, 2, result)
+        record = next(row for row in result["differences"]
+                      if row["category"] == "package_version" and row["subject"] == "libc")
+        self.assertEqual(record["disposition"], "review_required")
+
+    def test_unusable_recipe_index_fails_closed(self):
+        self.packages[2]["version"] = "2-r1"
+        self.sync_packages()
+        path = self.base / "broken-index.json"
+        self.write_json(path, {"schema_version": 99, "packages": {}})
+        code, result = self.invoke(extra=["--recipe-index", str(path)])
+        self.assertEqual(code, 1, result)
+        self.assertIn("invalid_or_missing_evidence", json.dumps(result["errors"]))
+
+    def test_declared_download_hash_covers_a_critical_file(self):
+        content = b"enabled=3\n"
+        (self.rootfs / "etc/config/honk").write_bytes(content)
+        digest = hashlib.sha256(content).hexdigest()
+        index = self.write_recipe_index({"luci-app-honk": {"version": "1-r1", "hashes": [digest]}})
+        self.ownership({"luci-app-honk": ["/etc/config/honk"]})
+        code, result = self.invoke(extra=["--recipe-index", str(index)])
+        self.assertEqual(code, 0, result)
+        record = next(row for row in result["differences"] if row["subject"] == "/etc/config/honk")
+        self.assertEqual(record["disposition"], "expected")
+        self.assertIn("download hash", record["reason"])
+
+    def test_locally_patched_recipe_payload_still_requires_review(self):
+        self.packages[2]["version"] = "2-r1"
+        index = self.write_recipe_index({"libc": {"version": "2-r1", "local_patches": True}})
+        self.ownership({"libc": ["/etc/config/honk"]})
+        (self.rootfs / "etc/config/honk").write_bytes(b"enabled=9\n")
+        code, result = self.invoke(extra=["--recipe-index", str(index)])
+        self.assertEqual(code, 2, result)
+        rows = {row["subject"]: row["disposition"] for row in result["differences"]
+                if row["category"] in ("package_version", "file_sha256")}
+        self.assertEqual(rows["libc"], "expected")
+        self.assertEqual(rows["/etc/config/honk"], "review_required")
 
     def test_build_manifest_cannot_hide_different_installed_database(self):
         self.packages[2]["version"] = "2-r1"

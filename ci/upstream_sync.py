@@ -246,6 +246,10 @@ def prepare_baseline(source, destination, commit):
         return destination
     runtime_policy_path = destination / "policy.json"
     policy["upstream_commit"] = commit
+    # Keep the reviewed base identity next to the resolved head so the
+    # preservation gate can tell a verified forward update apart from a
+    # different baseline. Dropping it would silently discard every approval.
+    policy["reviewed_upstream_commit"] = BASE_COMMIT
     runtime_policy_path.write_text(json.dumps(policy, indent=2) + "\n")
     manifest_path = destination / "baseline-sha256.json"
     manifest = json.loads(manifest_path.read_text())
@@ -345,7 +349,11 @@ def verify_prepared(committed_lock_path, baseline_path, runtime_lock_path,
     runtime_policy = strict_json((runtime_root / "policy.json").read_bytes())
     original_policy.pop("upstream_commit", None)
     runtime_policy_without_sha = dict(runtime_policy)
-    if runtime_policy_without_sha.pop("upstream_commit", None) != resolution.commit or runtime_policy_without_sha != original_policy:
+    reviewed_base = runtime_policy_without_sha.pop("reviewed_upstream_commit", None)
+    expected_reviewed_base = None if resolution.commit == BASE_COMMIT else BASE_COMMIT
+    if (runtime_policy_without_sha.pop("upstream_commit", None) != resolution.commit or
+            reviewed_base != expected_reviewed_base or
+            runtime_policy_without_sha != original_policy):
         raise UpstreamSyncError("runtime baseline policy differs beyond the resolved upstream SHA")
     for relative in original_names - {"policy.json", "baseline-sha256.json"}:
         if sha256_file(baseline_root / relative) != sha256_file(runtime_root / relative):

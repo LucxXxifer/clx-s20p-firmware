@@ -2378,6 +2378,314 @@
       "id": "cb558528ac5cc1eb670542e5d9f46a996d40fc427581f498c860aae72e94520b",
       "reason": "Exact GHSA-v5f9-62c7-cw29 mounts-only root crontab write grant removal; all cron and other ACL grants preserved. New profile also independently validates prepared and image ACL hashes; ci/security/minimal-20261031/.",
       "application_policy": "minimal-20261031"
+    },
+    {
+      "id": "072e2c2be4bc1f314ff016e92c7757c03c36eefa4ea9f84d1853b1ea11d28c2b",
+      "reason": "Review of run 42732552451 (rolling 39): axonhub advanced 20261016-r1 -> 20261109-r1 in the pinned feed; the built image installs exactly 20261109-r1 (inspection/installed-packages.json) while ci/baseline still records 20261016-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 072e2c2be4bc)."
+    },
+    {
+      "id": "f0e8143f8ff7f23276a7473a98f943cf1c390daace8ef78718295f180cf46482",
+      "reason": "Review of run 42732552451 (rolling 39): base-files advanced 1~03eb306 -> 1~eb69798 in the pinned feed; the built image installs exactly 1~eb69798 (inspection/installed-packages.json) while ci/baseline still records 1~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item f0e8143f8ff7)."
+    },
+    {
+      "id": "34ac0ce49bbd85550553f08c8892829b6ee17f8e2db6087f7fb5b5a4dcb8bc18",
+      "reason": "Review of run 42732552451 (rolling 39): hnat-detect advanced 1-r1 -> 1-r3 in the pinned feed; the built image installs exactly 1-r3 (inspection/installed-packages.json) while ci/baseline still records 1-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 34ac0ce49bbd)."
+    },
+    {
+      "id": "08e075b6109ea7ca1f606011e57ea5c4b82353eb15670a80e6ef8f449db5ad2a",
+      "reason": "Review of run 42732552451: the dependency set of hnat-detect changed together with its version advance (1-r1 -> 1-r3); the added requirements follow the advanced recipe in the pinned feed. Evidence: ci/reviewed-differences/42732552451-world.json (item 08e075b6109e)."
+    },
+    {
+      "id": "c97abf7c65a7b7d21d8656b95ee963ec9f110fe495c8e20b5e5e202fe24edb7e",
+      "reason": "Review of run 42732552451 (rolling 39): luci advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item c97abf7c65a7)."
+    },
+    {
+      "id": "8f890882a22041b1f01f1195c0378a64b5e1b4f50d8948d4afc9330746e1e00c",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-autoreboot advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 8f890882a220)."
+    },
+    {
+      "id": "9d003523b9741f3d60b02b043f6f4c86676f07a30ace02f8441f80e8c72f68c9",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-eqos-mtk advanced 26.289.36031~03eb306 -> 26.313.45829~eb69798 in the pinned feed; the built image installs exactly 26.313.45829~eb69798 (inspection/installed-packages.json) while ci/baseline still records 26.289.36031~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 9d003523b974)."
+    },
+    {
+      "id": "78bf9aa1f6c53ccedeee77c386c1ec3ad04d991b57ef42321064c76df63bf835",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-firewall advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 78bf9aa1f6c5)."
+    },
+    {
+      "id": "b217718a79aab8231cfbc91c4579749ee8c4fc27e32c113e18b62418131e4209",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-package-manager advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item b217718a79aa)."
+    },
+    {
+      "id": "c5442ff8d1b4104507c0f9bb63c81fd7467d4a65819cae605b3791a46670e89d",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-samba4 advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item c5442ff8d1b4)."
+    },
+    {
+      "id": "9d8187cceda60ac1c959387b99945138e0dd9f05506526313a3eeeb28b69bd6a",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-ttyd advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 9d8187cceda6)."
+    },
+    {
+      "id": "ac298dc90512e9db6438ebe9ce04e703349cca1d437d46c56f400af2274cc075",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-turboacc-mtk advanced 26.289.36031~03eb306 -> 26.313.45829~eb69798 in the pinned feed; the built image installs exactly 26.313.45829~eb69798 (inspection/installed-packages.json) while ci/baseline still records 26.289.36031~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item ac298dc90512)."
+    },
+    {
+      "id": "590b4363ec565dccb579ef2aa0d9a6fcf7884ab88f2ad0d1f7a5cabd3082261a",
+      "reason": "Review of run 42732552451 (rolling 39): luci-app-vlmcsd advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 590b4363ec56)."
+    },
+    {
+      "id": "de62f4b960637553e331fd88bf12262c0153c50075f8303ed6a24e56728416f6",
+      "reason": "Review of run 42732552451 (rolling 39): luci-base advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item de62f4b96063)."
+    },
+    {
+      "id": "55e9ec61855ebf6c64bcf0cc9cedf20bd8196fee84f980ec92ec04c18eafc5cb",
+      "reason": "Review of run 42732552451 (rolling 39): luci-compat advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 55e9ec61855e)."
+    },
+    {
+      "id": "9c42a334fabffef4ec1de96d543ec6fe854d12c727c13a10d23aebcc59684b8d",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-autoreboot-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 9c42a334fabf)."
+    },
+    {
+      "id": "590f62260a3853f78741db53247fcbc0a6ae0842b26ce88c372e2b68596a78c6",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-base-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 590f62260a38)."
+    },
+    {
+      "id": "c19bf7c55cec607fe3beaac041919513715f9b65ed5bc3a0a6198bcfc31c111e",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-cloudflared-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item c19bf7c55cec)."
+    },
+    {
+      "id": "052c35f2aee4f6b6a59d14c0fe6f78a27ec7d2f968f88be4f19b2db190dc4d42",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-dockerman-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 052c35f2aee4)."
+    },
+    {
+      "id": "0ddef14a56cb6564d630f688f2e808694ed0d13919fce866fa502b9716bfb216",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-eqos-mtk-zh-cn advanced 26.289.36031~03eb306 -> 26.313.45829~eb69798 in the pinned feed; the built image installs exactly 26.313.45829~eb69798 (inspection/installed-packages.json) while ci/baseline still records 26.289.36031~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 0ddef14a56cb)."
+    },
+    {
+      "id": "92f2c296481773028469beb3565369a598286d0207a6eb7c1dacd867b3b590d5",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-firewall-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 92f2c2964817)."
+    },
+    {
+      "id": "c1d540eac465b89682395f6b543d01475796903861ff8970f040f4b860cda04f",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-mtwifi-cfg-zh-cn advanced 26.289.36031~03eb306 -> 26.313.45829~eb69798 in the pinned feed; the built image installs exactly 26.313.45829~eb69798 (inspection/installed-packages.json) while ci/baseline still records 26.289.36031~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item c1d540eac465)."
+    },
+    {
+      "id": "2cfa5905fe4065285dd164b24d5c22a00f469be4cf9983954998de967356bc0a",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-package-manager-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 2cfa5905fe40)."
+    },
+    {
+      "id": "d9d65de24f83e4d57543a3ecb8f9edb7ea23e0d11d7521e2e948305b233599b7",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-samba4-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item d9d65de24f83)."
+    },
+    {
+      "id": "de1026ee0238c84466600881c1e13d3f8fd0de148ea3030a1a9d90910ca5da3f",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-ttyd-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item de1026ee0238)."
+    },
+    {
+      "id": "6fde95c40524a352e78a8fe3217e918795f051b83d57a0206109d6fa2b7b5582",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-turboacc-mtk-zh-cn advanced 26.289.36031~03eb306 -> 26.313.45829~eb69798 in the pinned feed; the built image installs exactly 26.313.45829~eb69798 (inspection/installed-packages.json) while ci/baseline still records 26.289.36031~03eb306. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 6fde95c40524)."
+    },
+    {
+      "id": "9debd157b8ad4114e7454dec170019f0ded3e1584b2153d3f6ac93191e1141bf",
+      "reason": "Review of run 42732552451 (rolling 39): luci-i18n-vlmcsd-zh-cn advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 9debd157b8ad)."
+    },
+    {
+      "id": "563a318b5289eb4991354dc044c28c2a50a061de8743d8ca83f64f80a5ccd0b0",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lib-base advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 563a318b5289)."
+    },
+    {
+      "id": "8bc9d22d129b9494050024cd11c9da995713f9e1529fd8aa78210335cbde9b3f",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lib-ip advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 8bc9d22d129b)."
+    },
+    {
+      "id": "cd143cb018ad1b676a5bf56c58e105d7625f2c066f7045820a6a1d8674c797cc",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lib-jsonc advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item cd143cb018ad)."
+    },
+    {
+      "id": "b935450d60fefb7c00845980a285ee2e9a2a50a9eba3a102236c3079659e37b9",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lib-nixio advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item b935450d60fe)."
+    },
+    {
+      "id": "dfb8a1ff107907d58d00a3ade046184a363f2431585cf84adf14cba80596e486",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lib-uqr advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item dfb8a1ff1079)."
+    },
+    {
+      "id": "5382f399485e9cf5be4016872132e28893325f18b3626eb8f54ac15ca7e4c127",
+      "reason": "Review of run 42732552451 (rolling 39): luci-light advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 5382f399485e)."
+    },
+    {
+      "id": "925586140a34455dab820423eed99920ba8f3af40c1b5d6bc992e8dfe90cba53",
+      "reason": "Review of run 42732552451 (rolling 39): luci-lua-runtime advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 925586140a34)."
+    },
+    {
+      "id": "abb703fd9d517b5800bac45b3eff8da03ded86f125579d0178c426aca73c9a85",
+      "reason": "Review of run 42732552451 (rolling 39): luci-mod-admin-full advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item abb703fd9d51)."
+    },
+    {
+      "id": "adf73ea78daad82675395f3ecda174a399b96caa0e0ed75999e2f3e1eb983bf9",
+      "reason": "Review of run 42732552451 (rolling 39): luci-mod-network advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item adf73ea78daa)."
+    },
+    {
+      "id": "f963c05858d8accdb7f61ed29a59c2ecc18db670f1125b4be0c2103f9643d548",
+      "reason": "Review of run 42732552451 (rolling 39): luci-mod-status advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item f963c05858d8)."
+    },
+    {
+      "id": "f106410b8042df2f9ee74666075a828967338bf6590292229cc1dc6839ff68fe",
+      "reason": "Review of run 42732552451 (rolling 39): luci-mod-system advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item f106410b8042)."
+    },
+    {
+      "id": "0ffd80e723dec9e022bca550c03434679bd28db74d907109a306c33a325aa3c7",
+      "reason": "Review of run 42732552451 (rolling 39): luci-proto-ipv6 advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 0ffd80e723de)."
+    },
+    {
+      "id": "586c6ca11785a417e7545062c4a8c54f7a340d7311283b2fd9abb8c2025eff7f",
+      "reason": "Review of run 42732552451 (rolling 39): luci-proto-ppp advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 586c6ca11785)."
+    },
+    {
+      "id": "c1053781a5c7c1f12c3e287d8941da0e2c7b861769b4eff308b794cebb02d913",
+      "reason": "Review of run 42732552451 (rolling 39): luci-proto-relay advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item c1053781a5c7)."
+    },
+    {
+      "id": "9b2460357cf98ea9cb21c5eff3d9738b553221ff459ba3c357dd4ac74365e476",
+      "reason": "Review of run 42732552451 (rolling 39): luci-proto-wireguard advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 9b2460357cf9)."
+    },
+    {
+      "id": "ea109609fbc48aa9a63d43b4f8e93f649ac446364638ec409d6465cbfe84cee0",
+      "reason": "Review of run 42732552451 (rolling 39): luci-theme-aurora advanced 1.4.0-r20260920 -> 1.4.3-r20261104 in the pinned feed; the built image installs exactly 1.4.3-r20261104 (inspection/installed-packages.json) while ci/baseline still records 1.4.0-r20260920. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item ea109609fbc4)."
+    },
+    {
+      "id": "17df050b775ee0820e3242423a229f16b98a259a95c325407912295ab1f21555",
+      "reason": "Review of run 42732552451 (rolling 39): luci-theme-bootstrap advanced 26.289.10016~36e3f0d -> 26.309.25225~c38e566 in the pinned feed; the built image installs exactly 26.309.25225~c38e566 (inspection/installed-packages.json) while ci/baseline still records 26.289.10016~36e3f0d. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 17df050b775e)."
+    },
+    {
+      "id": "ebf469f6cba2e08116f910a295bfa3e7b861c1ce5e32146a757a2e3e8fb182bb",
+      "reason": "Review of run 42732552451 (rolling 39): miniupnpd-nftables advanced 2.3.9-r1 -> 20261105-r1 in the pinned feed; the built image installs exactly 20261105-r1 (inspection/installed-packages.json) while ci/baseline still records 2.3.9-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item ebf469f6cba2)."
+    },
+    {
+      "id": "0521c616285e9d24dbfe19a25f8a4248ed3730bc730c15c49b781eb4def63783",
+      "reason": "Review of run 42732552451 (rolling 39): openssh-sftp-server advanced 10.6_p1-r1 -> 10.6_p1-r2 in the pinned feed; the built image installs exactly 10.6_p1-r2 (inspection/installed-packages.json) while ci/baseline still records 10.6_p1-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 0521c616285e)."
+    },
+    {
+      "id": "589aa5fe8ea49e915ad623a9e1140c37da316159dabc9063b724e5ef3a12f806",
+      "reason": "Review of run 42732552451 (rolling 39): v2ray-geoip advanced 202610050438-r1 -> 202611080027-r1 in the pinned feed; the built image installs exactly 202611080027-r1 (inspection/installed-packages.json) while ci/baseline still records 202610050438-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 589aa5fe8ea4)."
+    },
+    {
+      "id": "d5719d2195aefc32fdfaa2bcd051c93a6f69331a2dd02e999df7ce8244a939c4",
+      "reason": "Review of run 42732552451 (rolling 39): v2ray-geosite advanced 20261015074526-r1 -> 20261108011013-r1 in the pinned feed; the built image installs exactly 20261108011013-r1 (inspection/installed-packages.json) while ci/baseline still records 20261015074526-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item d5719d2195ae)."
+    },
+    {
+      "id": "a616257bf7724acabf3955d307934fbbcbedd4d8c47241c97881ac3daea86bae",
+      "reason": "Review of run 42732552451 (rolling 39): zoneinfo-asia advanced 2026d-r1 -> 2026f-r1 in the pinned feed; the built image installs exactly 2026f-r1 (inspection/installed-packages.json) while ci/baseline still records 2026d-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item a616257bf772)."
+    },
+    {
+      "id": "32a0a94b9029b45c0e8dcb4565bea3eddca3418b2e67f97377ae809573fa490f",
+      "reason": "Review of run 42732552451 (rolling 39): zoneinfo-core advanced 2026d-r1 -> 2026f-r1 in the pinned feed; the built image installs exactly 2026f-r1 (inspection/installed-packages.json) while ci/baseline still records 2026d-r1. Upstream version advance only, no local recipe override. Evidence: ci/reviewed-differences/42732552451-world.json (item 32a0a94b9029)."
+    },
+    {
+      "id": "484adc654a7907bd779115e8148effdb38431672ade557885b24cd3e52987642",
+      "reason": "Review of run 42732552451: /etc/apk/world is generated by apk from the selected root set. Its only changed version pin is base-files=1~eb69798 (baseline pinned 1~03eb306), which matches the approved base-files advance; the kernel and libc pins are byte-identical, so no root package was added or removed. Evidence: ci/reviewed-differences/42732552451-world.json (item 484adc654a79)."
+    },
+    {
+      "id": "84c39a089b2a5cc2cb8cb62a5f225dfc1dd9e482362eab2d36fd9e6467b4afd8",
+      "reason": "Review of run 42732552451: /etc/banner is provided by base-files (1~03eb306 -> 1~eb69798); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 84c39a089b2a)."
+    },
+    {
+      "id": "7cdfc2b0ae8bf359a2e033b7e9d9f45b3a4e9fcf81dedbdb77efc4dbf1c73d03",
+      "reason": "Review of run 42732552451: /etc/board.d/01_leds is provided by base-files (1~03eb306 -> 1~eb69798); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 7cdfc2b0ae8b)."
+    },
+    {
+      "id": "e2f8ec0cbaf660cd54646e19273cd6638a29f8dc3ca06d4e6bc0e2ac5edb24a1",
+      "reason": "Review of run 42732552451: /etc/hotplug.d/iface/99-hnat-detect is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item e2f8ec0cbaf6)."
+    },
+    {
+      "id": "b0ae2bbebb380c2aa31c50f56ef87739bec2d0d9ed4ee1db4f09c214bd3191d4",
+      "reason": "Review of run 42732552451: /etc/openwrt_release is provided by base-files (1~03eb306 -> 1~eb69798); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item b0ae2bbebb38)."
+    },
+    {
+      "id": "22d4cc726a2cd2ffb719aede959e715720e32060a8e75208b05e15e587b6df91",
+      "reason": "Review of run 42732552451: /etc/openwrt_version is provided by base-files (1~03eb306 -> 1~eb69798); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 22d4cc726a2c)."
+    },
+    {
+      "id": "2db8d6118ba190c540c5e96eafb5837a9a5b9e9c8b15c7c14ff18ad308f67800",
+      "reason": "Review of run 42732552451: /lib/apk/packages/hnat-detect.list is generated by apk from the installed package. It lists exactly the 8 files of hnat-detect 1-r3, including /etc/uci-defaults/99-hnat-detect and /usr/share/hnat-detect/firewall.sh approved as added files in this same review, consistent with the 1-r1 -> 1-r3 advance. Evidence: ci/reviewed-differences/42732552451-world.json (item 2db8d6118ba1)."
+    },
+    {
+      "id": "abbc758d465c554f0cca2e4475d4562cb800c94747eea079258de5d1fcb7220c",
+      "reason": "Review of run 42732552451: /usr/lib/lua/luci/version.lua is provided by luci-lua-runtime (26.289.10016~36e3f0d -> 26.309.25225~c38e566); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item abbc758d465c)."
+    },
+    {
+      "id": "08984977e3fac7ef7f143fc463a40e2a1f4f9051b2c46070e0180528dad0aad2",
+      "reason": "Review of run 42732552451: /usr/lib/os-release is provided by base-files (1~03eb306 -> 1~eb69798); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 08984977e3fa)."
+    },
+    {
+      "id": "77b688e20d74b18f2376623b9862331fc0d75e52b3d6fde097799c9e3f429b1e",
+      "reason": "Review of run 42732552451: /usr/share/ucode/hnat/detect.uc is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 77b688e20d74)."
+    },
+    {
+      "id": "b2a74690ec4c9f0e44b4b52699d0c61b8d5f237ad02e946bc08710248fe3c5bb",
+      "reason": "Review of run 42732552451: /usr/share/ucode/hnat/utils/common.uc is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item b2a74690ec4c)."
+    },
+    {
+      "id": "523c465823a30430039951cb9e6ed0a4c94a7b0587b45afee03aef76fb2ea929",
+      "reason": "Review of run 42732552451: /usr/share/ucode/hnat/utils/debugfs.uc is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 523c465823a3)."
+    },
+    {
+      "id": "8e8814d314fe23a6928577460c332f9c17907a3d4268fc1a5c33fe8b2fdcad8a",
+      "reason": "Review of run 42732552451: /usr/share/ucode/hnat/utils/fw4_parser.uc is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 8e8814d314fe)."
+    },
+    {
+      "id": "905204ee3753c78d77b180c0b8261000c75a2f2a6774c22c0bce19656d26dc5f",
+      "reason": "Review of run 42732552451: /usr/share/ucode/hnat/utils/sysnet.uc is provided by hnat-detect (1-r1 -> 1-r3); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 905204ee3753)."
+    },
+    {
+      "id": "00db99710d3adb47ecc5f6d09f5a2640be7a0f4041e5594f3dc4aef55716df65",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/template/header.ut is provided by luci-base (26.289.10016~36e3f0d -> 26.309.25225~c38e566); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 00db99710d3a)."
+    },
+    {
+      "id": "88c2843f8c5c293223f32316daa5d370467893eebda21fd17f3b985ea9795b4e",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/template/themes/aurora/footer.ut is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 88c2843f8c5c)."
+    },
+    {
+      "id": "9b0e29dbd6b76f091eeb1a5edd0f24f15cb24f5ec05272ce2878ab674e0bebf6",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/template/themes/aurora/header.ut is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 9b0e29dbd6b7)."
+    },
+    {
+      "id": "5d010cb991f77b1129399522003017a799aa2ff74e0518b7980bb2350d5c0d75",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/template/themes/aurora/sysauth.ut is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 5d010cb991f7)."
+    },
+    {
+      "id": "ada4f00a710dd8c17b14a029896e6a3432f0df401f40b503a49df603f096f0bf",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/template/themes/bootstrap/header.ut is provided by luci-theme-bootstrap (26.289.10016~36e3f0d -> 26.309.25225~c38e566); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item ada4f00a710d)."
+    },
+    {
+      "id": "d1b51d4fee23b5018ea1bb4191784484b889e41ffa39ede6224a810e2ac5cdce",
+      "reason": "Review of run 42732552451: /usr/share/ucode/luci/version.uc is provided by luci-base (26.289.10016~36e3f0d -> 26.309.25225~c38e566); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item d1b51d4fee23)."
+    },
+    {
+      "id": "c482d8931dba19ff6e14dd2bf8843cf24c04316bce7d452557ea3c37aeb9dd0e",
+      "reason": "Review of run 42732552451: /usr/share/v2ray/geoip.dat is provided by v2ray-geoip (202610050438-r1 -> 202611080027-r1); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item c482d8931dba)."
+    },
+    {
+      "id": "16ace03a61d2d096d3f588e81c3f584d8668d8281a721da1e8bc77523b6f5800",
+      "reason": "Review of run 42732552451: /usr/share/v2ray/geosite.dat is provided by v2ray-geosite (20261015074526-r1 -> 20261108011013-r1); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 16ace03a61d2)."
+    },
+    {
+      "id": "7d72c25ae97493d4720f50f688600b3301e0d238dab0184609dcce457a3b437c",
+      "reason": "Review of run 42732552451: /www/luci-static/aurora/login.css is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item 7d72c25ae974)."
+    },
+    {
+      "id": "dc3f9cfce58093d829d4b38784c12011d770117c694efbce03311e8e8261083e",
+      "reason": "Review of run 42732552451: /www/luci-static/aurora/main.css is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item dc3f9cfce580)."
+    },
+    {
+      "id": "fa9414e8a0071a52396b33b840acc12c7b556b7b59d5892a25cf5322772adba4",
+      "reason": "Review of run 42732552451: /www/luci-static/resources/router-aurora.js is provided by luci-theme-aurora (1.4.0-r20260920 -> 1.4.3-r20261104); the image bytes reproduce the reported sha256 and ci/baseline/full-rootfs-manifest.json holds the expected hash. The content change follows the package version advance and no file was edited locally. Evidence: ci/reviewed-differences/42732552451-world.json (item fa9414e8a007)."
+    },
+    {
+      "id": "a1bd09f47621157306004b9963bc6b28b85a726de9bcc1c190c29933df132061",
+      "reason": "Review of run 42732552451: /etc/uci-defaults/99-hnat-detect is newly installed by hnat-detect (1-r1 -> 1-r3); it exists in the image with sha256 d4bd807001b5aac8..., is absent from ci/baseline/full-rootfs-manifest.json, and is listed in the package's own apk db file list, so the payload comes from the advanced package rather than a local addition. Evidence: ci/reviewed-differences/42732552451-world.json (item a1bd09f47621)."
+    },
+    {
+      "id": "f5da86fe8d06666214ce9d944751c6112cfce6c6c3d89708751b2120a930241a",
+      "reason": "Review of run 42732552451: /usr/share/hnat-detect/firewall.sh is newly installed by hnat-detect (1-r1 -> 1-r3); it exists in the image with sha256 1409d2077b9c4e5f..., is absent from ci/baseline/full-rootfs-manifest.json, and is listed in the package's own apk db file list, so the payload comes from the advanced package rather than a local addition. Evidence: ci/reviewed-differences/42732552451-world.json (item f5da86fe8d06)."
     }
   ],
   "schema_version": 1

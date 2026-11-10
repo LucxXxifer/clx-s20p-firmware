@@ -149,6 +149,7 @@ class UpstreamResolutionTests(unittest.TestCase):
             runtime_policy = json.loads((destination / "policy.json").read_text())
             original_policy.pop("upstream_commit")
             runtime_policy.pop("upstream_commit")
+            self.assertEqual(runtime_policy.pop("reviewed_upstream_commit"), self.base_commit)
             self.assertEqual(runtime_policy, original_policy)
             integrity = json.loads((destination / "baseline-sha256.json").read_text())
             self.assertEqual(
@@ -159,6 +160,31 @@ class UpstreamResolutionTests(unittest.TestCase):
                 integrity["artifact-sha256.json"],
                 hashlib.sha256((destination / "artifact-sha256.json").read_bytes()).hexdigest(),
             )
+
+    def test_reviewed_base_survives_prepare_and_cannot_be_rewritten(self):
+        resolved = upstream_sync.resolve_head(
+            self.base_commit, self.next_commit, "ahead", self.base_commit, force=False
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock = root / "committed-lock.json"
+            lock.write_text(json.dumps(self.lock))
+            output = root / "prepared"
+            runtime_lock, baseline, evidence = upstream_sync.prepare(
+                lock, self.baseline, output, resolved
+            )
+            policy = json.loads((baseline / "policy.json").read_text())
+            self.assertEqual(policy["upstream_commit"], self.next_commit)
+            self.assertEqual(policy["reviewed_upstream_commit"], self.base_commit)
+            upstream_sync.verify_prepared(lock, self.baseline, runtime_lock, baseline, evidence)
+
+            policy["reviewed_upstream_commit"] = "c" * 40
+            (baseline / "policy.json").write_text(json.dumps(policy, indent=2) + "\n")
+            manifest = json.loads((baseline / "baseline-sha256.json").read_text())
+            manifest["policy.json"] = hashlib.sha256((baseline / "policy.json").read_bytes()).hexdigest()
+            (baseline / "baseline-sha256.json").write_text(json.dumps(manifest, indent=2) + "\n")
+            with self.assertRaisesRegex(upstream_sync.UpstreamSyncError, "differs beyond the resolved upstream"):
+                upstream_sync.verify_prepared(lock, self.baseline, runtime_lock, baseline, evidence)
 
     def test_prepare_and_verify_bind_lock_evidence_and_baseline_to_one_exact_head(self):
         resolved = upstream_sync.resolve_head(

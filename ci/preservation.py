@@ -668,8 +668,17 @@ class Gate:
             review = read_json(approval)
             if not isinstance(review, dict) or not isinstance(review.get("approved"), list):
                 raise ValueError("Approval manifest must contain an approved list")
+            # A rolling build runs against a runtime baseline whose
+            # upstream_commit is the freshly resolved head, while every approval
+            # in the manifest is authored against the reviewed base. Without the
+            # recorded reviewed base the whole manifest is dropped on every
+            # forward update, so no approval can ever apply. The field is written
+            # only by upstream_sync.prepare_baseline from its committed constant
+            # and re-verified by verify_prepared, so this does not widen scope:
+            # approvals still need an exact difference ID plus the reviewed base.
             approval_scope_matches = (
                 self.policy.get("upstream_commit") == B_SOURCE_COMMIT or
+                self.policy.get("reviewed_upstream_commit") == B_SOURCE_COMMIT or
                 review.get("upstream_commit") == self.policy.get("upstream_commit")
             )
             for item in (review["approved"] if approval_scope_matches else []):

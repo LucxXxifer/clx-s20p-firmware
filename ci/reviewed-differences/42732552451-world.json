@@ -1,0 +1,1237 @@
+{
+ "schema_version": 1,
+ "purpose": "Per-item review evidence for the 120 preservation differences that run 42732552451 (rolling 39) reported as review_required. Approval is granted per exact difference ID; there is no wildcard or category-wide approval.",
+ "source_run": {
+  "id": 42732552451,
+  "run_number": 39,
+  "workflow": "s20p-daily.yml",
+  "event": "workflow_dispatch",
+  "head_sha": "314f4c12632926df0e87790fbb30a6d54e831bcc",
+  "display_title": "CLX-S20P 主線韌體 25.12 · rolling · 39",
+  "evidence_artifact": {
+   "id": 13733924111,
+   "name": "s20p-evidence-42732552451-1",
+   "size_bytes": 526062832
+  },
+  "gate_report": "reports/preservation-image.json",
+  "gate_status": "review_required",
+  "pending_review_count": 120
+ },
+ "verification_method": [
+  "Difference IDs were read verbatim from reports/preservation-image.json in the run artifact and re-checked as an exact set: 120 of 120, no substitutions.",
+  "Each file_sha256 / added_file item was attributed to its owning package through the image apk database (/lib/apk/packages/*.list), and image bytes were re-hashed from inspection/rootfs.squashfs to reproduce the reported actual sha256.",
+  "Owning package versions were compared with ci/baseline/original-package-manifest.json (expected) and inspection/installed-packages.json (image).",
+  "Files whose owning package version did not move were compared byte-for-byte with the pinned upstream source at the locked feed commit 4956879a.",
+  "Generated apk metadata was explained from its generating inputs: world version pins and the package file list."
+ ],
+ "counts": {
+  "package_version": 59,
+  "package_dependencies": 4,
+  "file_sha256": 49,
+  "added_file": 8
+ },
+ "items": [
+  {
+   "id": "072e2c2be4bc1f314ff016e92c7757c03c36eefa4ea9f84d1853b1ea11d28c2b",
+   "category": "package_version",
+   "subject": "axonhub",
+   "expected_version": "20261016-r1",
+   "actual_version": "20261109-r1",
+   "baseline_version": "20261016-r1",
+   "image_version": "20261109-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "f0e8143f8ff7f23276a7473a98f943cf1c390daace8ef78718295f180cf46482",
+   "category": "package_version",
+   "subject": "base-files",
+   "expected_version": "1~03eb306",
+   "actual_version": "1~eb69798",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "f02901413a6e11a8ad62d3ffcbe283b8ab837b2018f9093efa9300ed12e14077",
+   "category": "package_version",
+   "subject": "ca-bundle",
+   "expected_version": "20260816-r1",
+   "actual_version": "20260816-r2",
+   "baseline_version": "20260816-r1",
+   "image_version": "20260816-r2",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "0c18d9ec9983fba0d2e86ba85d47ea07ead05683eb3ec61008a20d6f6693b805",
+   "category": "package_version",
+   "subject": "ca-certificates",
+   "expected_version": "20260816-r1",
+   "actual_version": "20260816-r2",
+   "baseline_version": "20260816-r1",
+   "image_version": "20260816-r2",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "f5004236451d63e7602e9d0c1ebd140bb8b0d058ba51ecb4acdc9a7e1515af06",
+   "category": "package_version",
+   "subject": "cloudflared",
+   "expected_version": "2026.8.3-r1",
+   "actual_version": "2026.10.6-r1",
+   "baseline_version": "2026.8.3-r1",
+   "image_version": "2026.10.6-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "392d731698afaaf1f903b11317c7d66f874b1a46b7f8aa1ef8340a25848bbe5c",
+   "category": "package_version",
+   "subject": "curl",
+   "expected_version": "8.22.0-r1",
+   "actual_version": "8.23.0-r1",
+   "baseline_version": "8.22.0-r1",
+   "image_version": "8.23.0-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "34ac0ce49bbd85550553f08c8892829b6ee17f8e2db6087f7fb5b5a4dcb8bc18",
+   "category": "package_version",
+   "subject": "hnat-detect",
+   "expected_version": "1-r1",
+   "actual_version": "1-r3",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "08e075b6109ea7ca1f606011e57ea5c4b82353eb15670a80e6ef8f449db5ad2a",
+   "category": "package_dependencies",
+   "subject": "hnat-detect",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "expected_dependencies": "kmod-dummy libc ucode ucode-mod-fs ucode-mod-log ucode-mod-uci",
+   "actual_dependencies": "firewall4 ip kmod-dummy libc ucode ucode-mod-fs ucode-mod-log ucode-mod-ubus ucode-mod-uci",
+   "verification": "subject package version advanced; dependency set reflects the advanced recipe"
+  },
+  {
+   "id": "3950a936dcd23a1de4f47c7e342f212e50379203ce416097f220fa563420beb0",
+   "category": "package_version",
+   "subject": "hostapd-common",
+   "expected_version": "2025.08.26~ca266cc2-r5",
+   "actual_version": "2025.08.26~ca266cc2-r6",
+   "baseline_version": "2025.08.26~ca266cc2-r5",
+   "image_version": "2025.08.26~ca266cc2-r6",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "4e3061ff9bcdd47295d247e2b28e4e4c2b75d4419cfcaa88249c2afc126be17b",
+   "category": "package_version",
+   "subject": "htop",
+   "expected_version": "3.5.1-r1",
+   "actual_version": "3.5.3-r1",
+   "baseline_version": "3.5.1-r1",
+   "image_version": "3.5.3-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "bda8410a4dc81230c7ac54639138844c8944c6423fced0534503b46c85ab5250",
+   "category": "package_version",
+   "subject": "libcurl4",
+   "expected_version": "8.22.0-r1",
+   "actual_version": "8.23.0-r1",
+   "baseline_version": "8.22.0-r1",
+   "image_version": "8.23.0-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "c97abf7c65a7b7d21d8656b95ee963ec9f110fe495c8e20b5e5e202fe24edb7e",
+   "category": "package_version",
+   "subject": "luci",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "8f890882a22041b1f01f1195c0378a64b5e1b4f50d8948d4afc9330746e1e00c",
+   "category": "package_version",
+   "subject": "luci-app-autoreboot",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "9d003523b9741f3d60b02b043f6f4c86676f07a30ace02f8441f80e8c72f68c9",
+   "category": "package_version",
+   "subject": "luci-app-eqos-mtk",
+   "expected_version": "26.289.36031~03eb306",
+   "actual_version": "26.313.45829~eb69798",
+   "baseline_version": "26.289.36031~03eb306",
+   "image_version": "26.313.45829~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "78bf9aa1f6c53ccedeee77c386c1ec3ad04d991b57ef42321064c76df63bf835",
+   "category": "package_version",
+   "subject": "luci-app-firewall",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "b217718a79aab8231cfbc91c4579749ee8c4fc27e32c113e18b62418131e4209",
+   "category": "package_version",
+   "subject": "luci-app-package-manager",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "c5442ff8d1b4104507c0f9bb63c81fd7467d4a65819cae605b3791a46670e89d",
+   "category": "package_version",
+   "subject": "luci-app-samba4",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "9d8187cceda60ac1c959387b99945138e0dd9f05506526313a3eeeb28b69bd6a",
+   "category": "package_version",
+   "subject": "luci-app-ttyd",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "ac298dc90512e9db6438ebe9ce04e703349cca1d437d46c56f400af2274cc075",
+   "category": "package_version",
+   "subject": "luci-app-turboacc-mtk",
+   "expected_version": "26.289.36031~03eb306",
+   "actual_version": "26.313.45829~eb69798",
+   "baseline_version": "26.289.36031~03eb306",
+   "image_version": "26.313.45829~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "a0da163cf4c5b62f907d79fb2342aa5a160ed9519cb43d72c85b0af66fd9beda",
+   "category": "package_version",
+   "subject": "luci-app-upnp",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "20261027-r7",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "4ed2ce4b27b420c60bcc9582d45876801229791f5c268deec4043dd43b7a9324",
+   "category": "package_dependencies",
+   "subject": "luci-app-upnp",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "expected_dependencies": "libc luci-base miniupnpd rpcd-mod-ucode",
+   "actual_dependencies": "libc luci-base miniupnpd>=20261027-r7 rpcd-mod-ucode",
+   "verification": "subject package version advanced; dependency set reflects the advanced recipe"
+  },
+  {
+   "id": "590b4363ec565dccb579ef2aa0d9a6fcf7884ab88f2ad0d1f7a5cabd3082261a",
+   "category": "package_version",
+   "subject": "luci-app-vlmcsd",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "de62f4b960637553e331fd88bf12262c0153c50075f8303ed6a24e56728416f6",
+   "category": "package_version",
+   "subject": "luci-base",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "55e9ec61855ebf6c64bcf0cc9cedf20bd8196fee84f980ec92ec04c18eafc5cb",
+   "category": "package_version",
+   "subject": "luci-compat",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "9c42a334fabffef4ec1de96d543ec6fe854d12c727c13a10d23aebcc59684b8d",
+   "category": "package_version",
+   "subject": "luci-i18n-autoreboot-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "590f62260a3853f78741db53247fcbc0a6ae0842b26ce88c372e2b68596a78c6",
+   "category": "package_version",
+   "subject": "luci-i18n-base-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "c19bf7c55cec607fe3beaac041919513715f9b65ed5bc3a0a6198bcfc31c111e",
+   "category": "package_version",
+   "subject": "luci-i18n-cloudflared-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "052c35f2aee4f6b6a59d14c0fe6f78a27ec7d2f968f88be4f19b2db190dc4d42",
+   "category": "package_version",
+   "subject": "luci-i18n-dockerman-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "0ddef14a56cb6564d630f688f2e808694ed0d13919fce866fa502b9716bfb216",
+   "category": "package_version",
+   "subject": "luci-i18n-eqos-mtk-zh-cn",
+   "expected_version": "26.289.36031~03eb306",
+   "actual_version": "26.313.45829~eb69798",
+   "baseline_version": "26.289.36031~03eb306",
+   "image_version": "26.313.45829~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "92f2c296481773028469beb3565369a598286d0207a6eb7c1dacd867b3b590d5",
+   "category": "package_version",
+   "subject": "luci-i18n-firewall-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "c1d540eac465b89682395f6b543d01475796903861ff8970f040f4b860cda04f",
+   "category": "package_version",
+   "subject": "luci-i18n-mtwifi-cfg-zh-cn",
+   "expected_version": "26.289.36031~03eb306",
+   "actual_version": "26.313.45829~eb69798",
+   "baseline_version": "26.289.36031~03eb306",
+   "image_version": "26.313.45829~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "2cfa5905fe4065285dd164b24d5c22a00f469be4cf9983954998de967356bc0a",
+   "category": "package_version",
+   "subject": "luci-i18n-package-manager-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "d9d65de24f83e4d57543a3ecb8f9edb7ea23e0d11d7521e2e948305b233599b7",
+   "category": "package_version",
+   "subject": "luci-i18n-samba4-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "de1026ee0238c84466600881c1e13d3f8fd0de148ea3030a1a9d90910ca5da3f",
+   "category": "package_version",
+   "subject": "luci-i18n-ttyd-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "6fde95c40524a352e78a8fe3217e918795f051b83d57a0206109d6fa2b7b5582",
+   "category": "package_version",
+   "subject": "luci-i18n-turboacc-mtk-zh-cn",
+   "expected_version": "26.289.36031~03eb306",
+   "actual_version": "26.313.45829~eb69798",
+   "baseline_version": "26.289.36031~03eb306",
+   "image_version": "26.313.45829~eb69798",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "203e78c24d0f31d904d055ecf8ca25db0ace64c8a52fa280e3a8de497c513d6c",
+   "category": "package_version",
+   "subject": "luci-i18n-upnp-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "20261027-r7",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "9debd157b8ad4114e7454dec170019f0ded3e1584b2153d3f6ac93191e1141bf",
+   "category": "package_version",
+   "subject": "luci-i18n-vlmcsd-zh-cn",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "563a318b5289eb4991354dc044c28c2a50a061de8743d8ca83f64f80a5ccd0b0",
+   "category": "package_version",
+   "subject": "luci-lib-base",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "8bc9d22d129b9494050024cd11c9da995713f9e1529fd8aa78210335cbde9b3f",
+   "category": "package_version",
+   "subject": "luci-lib-ip",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "cd143cb018ad1b676a5bf56c58e105d7625f2c066f7045820a6a1d8674c797cc",
+   "category": "package_version",
+   "subject": "luci-lib-jsonc",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "b935450d60fefb7c00845980a285ee2e9a2a50a9eba3a102236c3079659e37b9",
+   "category": "package_version",
+   "subject": "luci-lib-nixio",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "dfb8a1ff107907d58d00a3ade046184a363f2431585cf84adf14cba80596e486",
+   "category": "package_version",
+   "subject": "luci-lib-uqr",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "5382f399485e9cf5be4016872132e28893325f18b3626eb8f54ac15ca7e4c127",
+   "category": "package_version",
+   "subject": "luci-light",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "925586140a34455dab820423eed99920ba8f3af40c1b5d6bc992e8dfe90cba53",
+   "category": "package_version",
+   "subject": "luci-lua-runtime",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "abb703fd9d517b5800bac45b3eff8da03ded86f125579d0178c426aca73c9a85",
+   "category": "package_version",
+   "subject": "luci-mod-admin-full",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "adf73ea78daad82675395f3ecda174a399b96caa0e0ed75999e2f3e1eb983bf9",
+   "category": "package_version",
+   "subject": "luci-mod-network",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "f963c05858d8accdb7f61ed29a59c2ecc18db670f1125b4be0c2103f9643d548",
+   "category": "package_version",
+   "subject": "luci-mod-status",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "f106410b8042df2f9ee74666075a828967338bf6590292229cc1dc6839ff68fe",
+   "category": "package_version",
+   "subject": "luci-mod-system",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "0ffd80e723dec9e022bca550c03434679bd28db74d907109a306c33a325aa3c7",
+   "category": "package_version",
+   "subject": "luci-proto-ipv6",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "586c6ca11785a417e7545062c4a8c54f7a340d7311283b2fd9abb8c2025eff7f",
+   "category": "package_version",
+   "subject": "luci-proto-ppp",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "c1053781a5c7c1f12c3e287d8941da0e2c7b861769b4eff308b794cebb02d913",
+   "category": "package_version",
+   "subject": "luci-proto-relay",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "9b2460357cf98ea9cb21c5eff3d9738b553221ff459ba3c357dd4ac74365e476",
+   "category": "package_version",
+   "subject": "luci-proto-wireguard",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "ea109609fbc48aa9a63d43b4f8e93f649ac446364638ec409d6465cbfe84cee0",
+   "category": "package_version",
+   "subject": "luci-theme-aurora",
+   "expected_version": "1.4.0-r20260920",
+   "actual_version": "1.4.3-r20261104",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "17df050b775ee0820e3242423a229f16b98a259a95c325407912295ab1f21555",
+   "category": "package_version",
+   "subject": "luci-theme-bootstrap",
+   "expected_version": "26.289.10016~36e3f0d",
+   "actual_version": "26.309.25225~c38e566",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "ebf469f6cba2e08116f910a295bfa3e7b861c1ce5e32146a757a2e3e8fb182bb",
+   "category": "package_version",
+   "subject": "miniupnpd-nftables",
+   "expected_version": "2.3.9-r1",
+   "actual_version": "20261105-r1",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "3e98b5cc12330bfc43885fb05babf3660e14097c2d434a8e502b69311bccf706",
+   "category": "package_dependencies",
+   "subject": "miniupnpd-nftables",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "expected_dependencies": "libc libcap-ng libmnl0 libnftnl11 libuuid1",
+   "actual_dependencies": "firewall4 libc libcap-ng libmnl0 libnftnl11 libuuid1",
+   "verification": "subject package version advanced; dependency set reflects the advanced recipe"
+  },
+  {
+   "id": "0521c616285e9d24dbfe19a25f8a4248ed3730bc730c15c49b781eb4def63783",
+   "category": "package_version",
+   "subject": "openssh-sftp-server",
+   "expected_version": "10.6_p1-r1",
+   "actual_version": "10.6_p1-r2",
+   "baseline_version": "10.6_p1-r1",
+   "image_version": "10.6_p1-r2",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "589aa5fe8ea49e915ad623a9e1140c37da316159dabc9063b724e5ef3a12f806",
+   "category": "package_version",
+   "subject": "v2ray-geoip",
+   "expected_version": "202610050438-r1",
+   "actual_version": "202611080027-r1",
+   "baseline_version": "202610050438-r1",
+   "image_version": "202611080027-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "d5719d2195aefc32fdfaa2bcd051c93a6f69331a2dd02e999df7ce8244a939c4",
+   "category": "package_version",
+   "subject": "v2ray-geosite",
+   "expected_version": "20261015074526-r1",
+   "actual_version": "20261108011013-r1",
+   "baseline_version": "20261015074526-r1",
+   "image_version": "20261108011013-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "b3a0f2cbc4d4d5b69dbb7df601ba2ce17bfdb9836e2f0ed4a354bd5b4f2ad607",
+   "category": "package_version",
+   "subject": "wpad-openssl",
+   "expected_version": "2025.08.26~ca266cc2-r5",
+   "actual_version": "2025.08.26~ca266cc2-r6",
+   "baseline_version": "2025.08.26~ca266cc2-r5",
+   "image_version": "2025.08.26~ca266cc2-r6",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "2822387a3fbbec8e7e3e0be331e04ebfdb17b5955fae5fc5219427b20c4eb1fd",
+   "category": "package_dependencies",
+   "subject": "wpad-openssl",
+   "owner_package": "wpad-openssl",
+   "baseline_version": "2025.08.26~ca266cc2-r5",
+   "image_version": "2025.08.26~ca266cc2-r6",
+   "expected_dependencies": "hostapd-common=2025.08.26~ca266cc2-r5 libblobmsg-json20260213 libc libnl-tiny1 libopenssl-legacy libopenssl3 libubus20251202 libucode20230711 libudebug ucode ucode-mod-fs ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uloop",
+   "actual_dependencies": "hostapd-common=2025.08.26~ca266cc2-r6 libblobmsg-json20260213 libc libnl-tiny1 libopenssl-legacy libopenssl3 libubus20251202 libucode20230711 libudebug ucode ucode-mod-fs ucode-mod-nl80211 ucode-mod-rtnl ucode-mod-ubus ucode-mod-uloop",
+   "verification": "subject package version advanced; dependency set reflects the advanced recipe"
+  },
+  {
+   "id": "a616257bf7724acabf3955d307934fbbcbedd4d8c47241c97881ac3daea86bae",
+   "category": "package_version",
+   "subject": "zoneinfo-asia",
+   "expected_version": "2026d-r1",
+   "actual_version": "2026f-r1",
+   "baseline_version": "2026d-r1",
+   "image_version": "2026f-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "32a0a94b9029b45c0e8dcb4565bea3eddca3418b2e67f97377ae809573fa490f",
+   "category": "package_version",
+   "subject": "zoneinfo-core",
+   "expected_version": "2026d-r1",
+   "actual_version": "2026f-r1",
+   "baseline_version": "2026d-r1",
+   "image_version": "2026f-r1",
+   "verification": "image installed version == actual AND baseline manifest version == expected"
+  },
+  {
+   "id": "484adc654a7907bd779115e8148effdb38431672ade557885b24cd3e52987642",
+   "category": "file_sha256",
+   "subject": "/etc/apk/world",
+   "verification": "generated apk world; only moved version pin is base-files=1~03eb306 -> 1~eb69798, matching the approved base-files advance; kernel and libc pins unchanged"
+  },
+  {
+   "id": "84c39a089b2a5cc2cb8cb62a5f225dfc1dd9e482362eab2d36fd9e6467b4afd8",
+   "category": "file_sha256",
+   "subject": "/etc/banner",
+   "owner_package": "base-files",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "image_sha256": "e7071d6631a5d3b148e713412e443dca527df44743d0065a84e74ecde53fff9a",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "7cdfc2b0ae8bf359a2e033b7e9d9f45b3a4e9fcf81dedbdb77efc4dbf1c73d03",
+   "category": "file_sha256",
+   "subject": "/etc/board.d/01_leds",
+   "owner_package": "base-files",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "image_sha256": "80902ecf4be2b9abf4822bd1d2398593e861c0b06c41f09dc159573d41168a67",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "b0774f84d7d9bccf6638e9826d7382fd53f9d074f76c5d6d007a9dd7dd3dcece",
+   "category": "file_sha256",
+   "subject": "/etc/config/upnpd",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "16ba56c3892bbc98322a064affb65a36b432cbdf3b207b34c01e584f298812e4",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "e7b539fa886d9cec7d5d7db501cc9bfebeb64aa260c5b275275b3cca832e3d5f",
+   "category": "file_sha256",
+   "subject": "/etc/hotplug.d/iface/50-miniupnpd",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "2c6607071401aa35664b6d03ec82055eeba4552a1fa8cf65ea4aa9ba27c2ded0",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "e2f8ec0cbaf660cd54646e19273cd6638a29f8dc3ca06d4e6bc0e2ac5edb24a1",
+   "category": "file_sha256",
+   "subject": "/etc/hotplug.d/iface/99-hnat-detect",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "087590e4eade6ed9229d76d9092799e17ab5d6ecc1a24dec1e796b992831824f",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "031c3016c1a203e20e338a18ce63844cbe6cfcb597664db01820290ee1807d07",
+   "category": "file_sha256",
+   "subject": "/etc/init.d/miniupnpd",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "6fab4a41e516ba8eef48ec1be066ef2daf13548219308bde459289d6308c5805",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "b0ae2bbebb380c2aa31c50f56ef87739bec2d0d9ed4ee1db4f09c214bd3191d4",
+   "category": "file_sha256",
+   "subject": "/etc/openwrt_release",
+   "owner_package": "base-files",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "image_sha256": "bec1bd9d2942787260dd66592875f26c680249c2cdaaedc046a0ae6d293f664f",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "22d4cc726a2cd2ffb719aede959e715720e32060a8e75208b05e15e587b6df91",
+   "category": "file_sha256",
+   "subject": "/etc/openwrt_version",
+   "owner_package": "base-files",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "image_sha256": "0f725ab928d395dff753eb379c9e3f63d5baecdc0cd00eb82be22dcc00cea79e",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "2db8d6118ba190c540c5e96eafb5837a9a5b9e9c8b15c7c14ff18ad308f67800",
+   "category": "file_sha256",
+   "subject": "/lib/apk/packages/hnat-detect.list",
+   "verification": "generated apk file list for hnat-detect; equals the 8 files shipped by hnat-detect 1-r3 including the two newly approved files"
+  },
+  {
+   "id": "b6827130a2a7cc264b52d4f245fc343b69c635a241384eee88d97b542787d125",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/controller/quickstart.lua",
+   "owner_package": "luci-app-quickstart",
+   "baseline_version": "0.12.10-r1",
+   "image_version": "0.12.10-r1",
+   "image_sha256": "5c131dea16e3eaf03c9a327965e1d86c38b360ae743b541d8b9dfae5e47d3795",
+   "upstream_path": "luci-app-quickstart/luasrc/controller/quickstart.lua",
+   "upstream_ref": "kenzok8/small-package@4956879a",
+   "upstream_sha256": "5c131dea16e3eaf03c9a327965e1d86c38b360ae743b541d8b9dfae5e47d3795",
+   "verification": "image bytes equal the pinned upstream source file at the locked feed commit while the package version is unchanged"
+  },
+  {
+   "id": "fe06902144bc0b5f3eefdc63bf87f14fd3561d4b4edd82f8262b053e50a16e6b",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/i18n/base.zh-cn.lmo",
+   "owner_package": "luci-i18n-base-zh-cn",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "d6e1b2a7e081aa142439425d996f3a84608a359f1d7152137ebe7ac5d3133437",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "b89d6d8fa543a0a57bdca86210b2c5668a3f0c461fe198b6ae3820df6179ff22",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/i18n/package-manager.zh-cn.lmo",
+   "owner_package": "luci-i18n-package-manager-zh-cn",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "cc6d8d8d3b8cae68192a34a192ae01a72980776e233dd291bd818ccb2b78f3b5",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "6908b6cdff7f3a4dccd6e266b3eacd80ac218892901021315e5e3ecdd3ed939a",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/i18n/ttyd.zh-cn.lmo",
+   "owner_package": "luci-i18n-ttyd-zh-cn",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "4326b0cbf9f928e3813bf0f42c4ca30ed97c2e7510aaf1796f3a325e1cca4872",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "8c13c234de95d1d55d19ce3be15f43327506a38c19103547a7cb3718ae163ec4",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/i18n/upnp.zh-cn.lmo",
+   "owner_package": "luci-i18n-upnp-zh-cn",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "f28b4d46bf679f553251bad4883e77fdd233456cc318657ef1f241d31e650289",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "76787325dd3a4bb041a62af09dd95b0f7afe607fd308310615d62c1a8e46999f",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/sys/zoneinfo/tzdata.lua",
+   "owner_package": "luci-lua-runtime",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "ff08773b0469501c56832cab21a1170cb1055c98486b72c6c7c4b108de6f98f2",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "abbc758d465c554f0cca2e4475d4562cb800c94747eea079258de5d1fcb7220c",
+   "category": "file_sha256",
+   "subject": "/usr/lib/lua/luci/version.lua",
+   "owner_package": "luci-lua-runtime",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "4a13d7c2bd33239b147d6d296d131822f23fea237e4914eb9cedf5bb394e9cea",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "08984977e3fac7ef7f143fc463a40e2a1f4f9051b2c46070e0180528dad0aad2",
+   "category": "file_sha256",
+   "subject": "/usr/lib/os-release",
+   "owner_package": "base-files",
+   "baseline_version": "1~03eb306",
+   "image_version": "1~eb69798",
+   "image_sha256": "9a1eaf859fea5f920fc9884a3021ab5f2defda0ddc78159c810386f656b75abe",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "992bf575acdd28f3720d74ad6a1ecfa191802f4a76f095bc9dca0c9e3d45a519",
+   "category": "file_sha256",
+   "subject": "/usr/libexec/quickstart/auto_setup.sh",
+   "owner_package": "luci-app-quickstart",
+   "baseline_version": "0.12.10-r1",
+   "image_version": "0.12.10-r1",
+   "image_sha256": "ee3cc6f2b3a91ff3032c4119881dd558f951c4eb3b3d6418e572635536968164",
+   "upstream_path": "luci-app-quickstart/root/usr/libexec/quickstart/auto_setup.sh",
+   "upstream_ref": "kenzok8/small-package@4956879a",
+   "upstream_sha256": "ee3cc6f2b3a91ff3032c4119881dd558f951c4eb3b3d6418e572635536968164",
+   "verification": "image bytes equal the pinned upstream source file at the locked feed commit while the package version is unchanged"
+  },
+  {
+   "id": "352bee276905b9bf18a186f774a3099b7ddfcd9ece7fc1f7c8fc890092d11905",
+   "category": "file_sha256",
+   "subject": "/usr/share/rpcd/acl.d/luci-app-upnp.json",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "edf8037c961ddc8774e5b74d8e72e965daa36ab5d57f573712a4485986294b57",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "d6014ba90a2e535f572573a13bc45ce0e8e8e8aa7b725476d87cede8c624190a",
+   "category": "file_sha256",
+   "subject": "/usr/share/rpcd/ucode/luci.upnp",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "bf29f22a6ab26e0bd48f9090b90e092c0fc4bf27dbf4d8ce97495554ba04448c",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "77b688e20d74b18f2376623b9862331fc0d75e52b3d6fde097799c9e3f429b1e",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/hnat/detect.uc",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "d7a9612cfc3a17b6ced2753d94df68e5b7a5b8d77d07fc77ac06a57d1dbdf0e8",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "b2a74690ec4c9f0e44b4b52699d0c61b8d5f237ad02e946bc08710248fe3c5bb",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/hnat/utils/common.uc",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "881fd7d4f3eff0646a35ac2315a84f63b98c64d9afb4cde98a1147eb35a56adb",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "523c465823a30430039951cb9e6ed0a4c94a7b0587b45afee03aef76fb2ea929",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/hnat/utils/debugfs.uc",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "981fc37112341d4d06172b0ee834b20a4b3b58331a6dc12af88b8739f1aa16d9",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "8e8814d314fe23a6928577460c332f9c17907a3d4268fc1a5c33fe8b2fdcad8a",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/hnat/utils/fw4_parser.uc",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "c4f0081cb627d93524b0a24d01dae24b13aea9fc219a1e1f604fe2eca266255a",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "905204ee3753c78d77b180c0b8261000c75a2f2a6774c22c0bce19656d26dc5f",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/hnat/utils/sysnet.uc",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "826ac1b268e92f96dd4edd1ad6354cc64e72d4e1aee307e77f4f3c65aab5366c",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "00db99710d3adb47ecc5f6d09f5a2640be7a0f4041e5594f3dc4aef55716df65",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/template/header.ut",
+   "owner_package": "luci-base",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "3166ad5eef1d20235742637d44ed5e88acd29f57b5ee1742e333bbc074dc66c6",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "88c2843f8c5c293223f32316daa5d370467893eebda21fd17f3b985ea9795b4e",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/template/themes/aurora/footer.ut",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "abba031b6f463f66eced70329efa0f6bbfbc3bb2c4fc5727d68be8651d5f6d67",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "9b0e29dbd6b76f091eeb1a5edd0f24f15cb24f5ec05272ce2878ab674e0bebf6",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/template/themes/aurora/header.ut",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "0dd79ee895b3e866137d19b47f37dd1d283775da880761a8026970996ad5b2c8",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "5d010cb991f77b1129399522003017a799aa2ff74e0518b7980bb2350d5c0d75",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/template/themes/aurora/sysauth.ut",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "08d34b4cadbc5098bed03e5aadcd42815008caf5a48c2f1a7affd8b1425b5df8",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "ada4f00a710dd8c17b14a029896e6a3432f0df401f40b503a49df603f096f0bf",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/template/themes/bootstrap/header.ut",
+   "owner_package": "luci-theme-bootstrap",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "b74dbf7c5c3b3e64822ef7f33fa1d70453c866ba15f3b105a6dfe95a9abe0be4",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "d1b51d4fee23b5018ea1bb4191784484b889e41ffa39ede6224a810e2ac5cdce",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/version.uc",
+   "owner_package": "luci-base",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "f16721866e5ff2d93da6c1b5e40de2b9d2b2d5380a3edfef8958088b4a2db40c",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "f93db2d1a8bb586e41b46cdb7fc875fd2251a9fb9770cb1b4644e8ad2775ef41",
+   "category": "file_sha256",
+   "subject": "/usr/share/ucode/luci/zoneinfo.uc",
+   "owner_package": "luci-base",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "54162a073660ea65706aa920a10cfbd3ee4d345e1e4ab3bed8a8d56c9cab3863",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "c482d8931dba19ff6e14dd2bf8843cf24c04316bce7d452557ea3c37aeb9dd0e",
+   "category": "file_sha256",
+   "subject": "/usr/share/v2ray/geoip.dat",
+   "owner_package": "v2ray-geoip",
+   "baseline_version": "202610050438-r1",
+   "image_version": "202611080027-r1",
+   "image_sha256": "1e847113643114291a31fa467842eafd2185957eddc5d4105ded75a3c68dc21a",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "16ace03a61d2d096d3f588e81c3f584d8668d8281a721da1e8bc77523b6f5800",
+   "category": "file_sha256",
+   "subject": "/usr/share/v2ray/geosite.dat",
+   "owner_package": "v2ray-geosite",
+   "baseline_version": "20261015074526-r1",
+   "image_version": "20261108011013-r1",
+   "image_sha256": "dc4192dd1b644a38276ed06136d26e729fa674d25785adb38c87e040e92376b2",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "a52b837b3dca7db924aefb71692d703aaa2ae3b70327a6a4ed893ac3a45efa23",
+   "category": "file_sha256",
+   "subject": "/usr/share/zoneinfo/zone.tab",
+   "owner_package": "zoneinfo-core",
+   "baseline_version": "2026d-r1",
+   "image_version": "2026f-r1",
+   "image_sha256": "e2e8e31c4e10f44576c79345e76060591dbb3eef6ce14e006afc8a373caa9593",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "7d72c25ae97493d4720f50f688600b3301e0d238dab0184609dcce457a3b437c",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/aurora/login.css",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "11fb975dd4bd7d05093d7e4203badbc68f042b3dbc80d815956dd0e7a7725132",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "dc3f9cfce58093d829d4b38784c12011d770117c694efbce03311e8e8261083e",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/aurora/main.css",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "d081a3a60adde155e887613ef95f8b94348c2b0d200df23c1d2fe8d5e069cbba",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "fa9414e8a0071a52396b33b840acc12c7b556b7b59d5892a25cf5322772adba4",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/router-aurora.js",
+   "owner_package": "luci-theme-aurora",
+   "baseline_version": "1.4.0-r20260920",
+   "image_version": "1.4.3-r20261104",
+   "image_sha256": "c18a6f9b3a2f9b551ac7d7ee55560fdaec16901bfca9da3c9ff0dfc42a35973b",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "596f12bc8493914e822ea0f19790a503f8e2ab46b74cd69b1c586c13f0467fe5",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/tools/views.js",
+   "owner_package": "luci-base",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "1c0278d138c62e3e7dd10fa6c5c143a595346461bee80309fe9614c87872d28d",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "775c6b72bbde0ced8ad9a67e367623fdd0da7317c11a66e2fabf4747044b56b2",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/network/wireless.js",
+   "owner_package": "luci-mod-network",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "1601bac37c0132f0f5f31b4a8748065d6f32121169113e76b54b20542f56758a",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "1456bbc187045277bfc992bf33a50aa0b4b3c7f981e469d298f8347bb5d8ad5a",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/package-manager.js",
+   "owner_package": "luci-app-package-manager",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "3cee9162e009e69c0c620aebc41a987a5173f3e9d95c6b1fc83f59f974f39f57",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "f089fbff4b29d57485e67055b220fede7acf03fe636478e7687f325b88fe3938",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/status/dmesg.js",
+   "owner_package": "luci-mod-status",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "7702905266b85bd2f9887885da8bacf43515abdf9feccbd76583f0aff7740b1e",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "286076b899d5e62f74e913056a5a3a28a25d2fb5a62dce830fb9abf84fd9a4b4",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/status/include/80_upnp.js",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "3b7ba679a6cd89967a05d1ae7c5b4d59b20121297b284cd4e56145786ebd50d0",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "dd30a65ab73110e3eb910fa39e06158d325f83a46779639632f0c888cbd840d5",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/status/iptables.js",
+   "owner_package": "luci-mod-status",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "ee1719cf9d1602312a565fbb2c8706074d81aa098ea1fddebc1b4b84bb1fa2dc",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "ef37d624eac03ebd88c29ea23f3b4eddbb25581905c1af7454098c5c434245e3",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/status/nftables.js",
+   "owner_package": "luci-mod-status",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "d1be9a0c33790498171e4ec6206729a8a8a978be1dd57849d1ad8cf8047f3c4f",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "c9a4c6935883cb877dda0c260523b74a158152f4d9a46277c2a1267accc1d2aa",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/status/processes.js",
+   "owner_package": "luci-mod-status",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "366a9756a540ca92971d61c754b98578baf08451b7076c046b21504377c2a2bc",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "d38787ce6f0d51becac9f8ce415025e0895c7c826a1404c92bc579d13a8c94ac",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/system/startup.js",
+   "owner_package": "luci-mod-system",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "26.309.25225~c38e566",
+   "image_sha256": "71f0c82df0b47d0571ba8ab9deb9f34ea1f28416287b3527dbb241d403c5378c",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "0d064979beac72c9b53d83310b99665c55c656a2de85290e3d1578f2cc685557",
+   "category": "file_sha256",
+   "subject": "/www/luci-static/resources/view/upnp/upnp.js",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "ee3dbf7cb81ab73d73a213cadbd46f211613215b2e2c9116477fd01a49d48228",
+   "verification": "owner package version advanced AND image bytes reproduce the reported sha256 AND baseline manifest holds the expected sha256"
+  },
+  {
+   "id": "a1bd09f47621157306004b9963bc6b28b85a726de9bcc1c190c29933df132061",
+   "category": "added_file",
+   "subject": "/etc/uci-defaults/99-hnat-detect",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "d4bd807001b5aac8a0980ef758764e8e7cbe00ed178be9fabdb9d474b3ff19ec",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "b2575c2d7d74874548ec724592f1385ad2c4157e19bfd0c46a8c3169182016bf",
+   "category": "added_file",
+   "subject": "/etc/uci-defaults/99-miniupnpd",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "efd95cfc1a4e0ebf89f11338577e0b41827385f4065edd9682af36ca5231b2e6",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "523ffb58de5b35278a15b488ae18540b15d38adf2092b87308bb5d85120b2ac9",
+   "category": "added_file",
+   "subject": "/etc/uci-defaults/99-miniupnpd-migration",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "b90a1e34c767ce0975810908726437fcc055b627c6bdc0f9c14eb3042d7c6ac1",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "f5da86fe8d06666214ce9d944751c6112cfce6c6c3d89708751b2120a930241a",
+   "category": "added_file",
+   "subject": "/usr/share/hnat-detect/firewall.sh",
+   "owner_package": "hnat-detect",
+   "baseline_version": "1-r1",
+   "image_version": "1-r3",
+   "image_sha256": "1409d2077b9c4e5fc42d4141ce15a023094b9cd820319ae1974a07db25dc2f0d",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "3fc5e62f70f03998b500d6f6b8ba8f058a1aad692733bfe3046d95023533db39",
+   "category": "added_file",
+   "subject": "/usr/share/miniupnpd/backend",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "fa8654827f789e1ba75eb5a6aa887b55134e8989319b5ee851f529b0af178bcd",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "e3711564e88fd9a3b10bb0ea2d39bec2aabbcd2e11fd6f5b293fe7e65e099bff",
+   "category": "added_file",
+   "subject": "/usr/share/miniupnpd/firewall.include",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "61936652b71110f0b39bddfb1f8664f69ca061f850ee243fd7e523458f3d0186",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "0b4ef9d845f970212e64103c9a0ceaddbeebd3a7465cd538d30763c944da9491",
+   "category": "added_file",
+   "subject": "/usr/share/miniupnpd/functions.sh",
+   "owner_package": "miniupnpd-nftables",
+   "baseline_version": "2.3.9-r1",
+   "image_version": "20261105-r1",
+   "image_sha256": "a6446b95dce8a05bd3705242b1e11ff8aa4a5352861a5d236176479cea95f142",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  },
+  {
+   "id": "59869afdcbbdd83f475617736d5b05a15a6534f76c13e66e992cc978d525dd07",
+   "category": "added_file",
+   "subject": "/www/luci-static/resources/upnp.js",
+   "owner_package": "luci-app-upnp",
+   "baseline_version": "26.289.10016~36e3f0d",
+   "image_version": "20261027-r7",
+   "image_sha256": "39dd6e8413674a333d01ab4ae6157c38044769a5b75cafaeabdae45882dd02ae",
+   "verification": "present in image with reported sha256, absent from baseline full-rootfs-manifest, owner package version advanced"
+  }
+ ]
+}

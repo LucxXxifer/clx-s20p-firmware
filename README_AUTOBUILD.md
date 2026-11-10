@@ -100,6 +100,8 @@ Honk、TingReader、Lucky、AdGuard Home 等未編入的專用來源不會觸發
 
 第一次完整建置預期可能是 `review_required`，因原版沒有完整歷史 feeds；此時 Actions 保存成品及 `reports/preservation-image.json`，不發候選版。逐項審查其差異後，才可在版控加入 `ci/approved-differences.json`，格式為 `{"approved":[{"id":"報告中的完整差異ID","reason":"具體審查理由"}]}`，再重跑。ID 包含實際差異內容的 hash；換版本、bytes 或不同差異不會沿用舊批准。不得批次無條件批准所有差異。
 
+批准清單的作用域以「已審查基準」綁定，而不是以當次解析到的上游 head 綁定。`ci/upstream_sync.py` 製備 run 級基線時，除了把 `policy.json` 的 `upstream_commit` 改寫為解析後的 head，也會寫入 `reviewed_upstream_commit=<審查基準>`；`ci/preservation.py` 只在這兩者之一等於審查基準時才載入整份批准清單，`verify_prepared` 會拒絕被改寫的 `reviewed_upstream_commit`。缺少此欄位時清單會被整體忽略，於是每個上游前進日都會退化成全量 `review_required`；批准仍須逐項精確 ID 加理由，未放寬任何校驗。
+
 完整 signed feed 保存在候選 bundle 的 `bin/`，不是另一套核心的官方套件源。預設未額外部署 GitHub Pages 或修改公開上游套件源。安裝可選 USB kmod 時，先核對候選 SHA256 與路由器的 kernel package 完整版本，解開同批 bundle，再使用其中的 signed `packages.adb` 及 APK；跨 feed 的共同依賴也必須來自該 bundle。首次建立遠端／本地套件源時會另外驗證裝置的原生 APK 安裝流程，不能因有 APK 檔就略過簽章或宣稱已實物安裝。
 
 ## 本地驗證

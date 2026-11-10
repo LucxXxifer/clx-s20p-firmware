@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import stat
 import struct
 import subprocess
@@ -650,6 +651,80 @@ class PreservationFixtures(unittest.TestCase):
         code, result = self.invoke()
         self.assertEqual(code, 1, result)
         self.assertIn("source_identity", json.dumps(result))
+
+
+class ApprovalScopeTests(unittest.TestCase):
+    """Approvals must survive a verified forward update and nothing wider."""
+
+    BASELINE = Path(__file__).resolve().parents[1] / "baseline"
+    REVIEWED_BASE = "9f397975c7b47ce6986a6e39529d2f72fd5c729d"
+
+    def runtime_baseline(self, root, *, upstream_commit, reviewed_base):
+        destination = root / "baseline"
+        shutil.copytree(self.BASELINE, destination)
+        policy = json.loads((destination / "policy.json").read_text())
+        policy["upstream_commit"] = upstream_commit
+        if reviewed_base is None:
+            policy.pop("reviewed_upstream_commit", None)
+        else:
+            policy["reviewed_upstream_commit"] = reviewed_base
+        (destination / "policy.json").write_text(json.dumps(policy, indent=2) + "\n")
+        manifest = json.loads((destination / "baseline-sha256.json").read_text())
+        manifest["policy.json"] = hashlib.sha256((destination / "policy.json").read_bytes()).hexdigest()
+        (destination / "baseline-sha256.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        return destination
+
+    def approval_manifest(self, root, identifier):
+        path = root / "approved.json"
+        path.write_text(json.dumps({"approved": [{"id": identifier, "reason": "reviewed forward update"}]}))
+        return path
+
+    def replay(self, baseline, approval):
+        preservation = importlib.import_module("preservation")
+        gate = preservation.Gate("image", baseline, approval, application_policy="legacy")
+        gate.difference("package_version", "curl", "8.22.0-r1", "8.23.0-r1", reason="source/version delta")
+        return gate.differences[0]
+
+    def identifier(self):
+        preservation = importlib.import_module("preservation")
+        return preservation.digest(preservation.canonical({
+            "category": "package_version",
+            "subject": "curl",
+            "expected": "8.22.0-r1",
+            "actual": "8.23.0-r1",
+            "reason": "source/version delta",
+        }))
+
+    def test_forward_update_from_the_reviewed_base_applies_approvals(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            baseline = self.runtime_baseline(
+                root, upstream_commit="a" * 40, reviewed_base=self.REVIEWED_BASE)
+            record = self.replay(baseline, self.approval_manifest(root, self.identifier()))
+            self.assertEqual(record["disposition"], "approved")
+
+    def test_different_reviewed_base_never_applies_approvals(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            baseline = self.runtime_baseline(root, upstream_commit="a" * 40, reviewed_base="c" * 40)
+            record = self.replay(baseline, self.approval_manifest(root, self.identifier()))
+            self.assertEqual(record["disposition"], "review_required")
+
+    def test_missing_reviewed_base_never_applies_approvals(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            baseline = self.runtime_baseline(root, upstream_commit="a" * 40, reviewed_base=None)
+            record = self.replay(baseline, self.approval_manifest(root, self.identifier()))
+            self.assertEqual(record["disposition"], "review_required")
+
+    def test_unmoved_head_still_applies_approvals(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            policy = json.loads((self.BASELINE / "policy.json").read_text())
+            baseline = self.runtime_baseline(
+                root, upstream_commit=policy["upstream_commit"], reviewed_base=None)
+            record = self.replay(baseline, self.approval_manifest(root, self.identifier()))
+            self.assertEqual(record["disposition"], "approved")
 
 
 if __name__ == "__main__":

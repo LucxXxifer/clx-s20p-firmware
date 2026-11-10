@@ -26,31 +26,21 @@
 賬號：root
 密碼：admin`
 
-## 2. 從 0 到 1：開箱即用的刷機 Skill
+## 2. 從 0 到 1：刷機、救磚與備份 Skill
 
 **[前往 Skill 安裝與下載頁](skills/README.md)** · [直接下載 .skill 安裝包](https://github.com/LucxXxifer/clx-s20p-firmware/raw/refs/heads/main/skills/clx-s20p-provisioning.skill) · [檢視原始碼](skills/clx-s20p-provisioning/SKILL.md)
 
 `clx-s20p-provisioning` 是供**任意具備所需本機工具與網路權限的 Agent 使用**的完整 Skill，附工具、操作指引與離線測試，不依賴 Codex SDK 或專用 MCP。流程為：
 
-**設備身分及 eMMC 健康 → 逐機原廠備份 → 元件／網口檢查 → 指定 FIP 寫入與讀回 → 手動進入 U-Boot → GPT／韌體刷寫及核對 → OpenWrt 備份、升級與逐項還原。**
+**故障分流／TTL／failsafe → 設備身分及 eMMC 健康 → 逐機原廠備份 → 元件／網口檢查 → 指定 FIP 寫入與讀回 → 手動進入 U-Boot → GPT／韌體刷寫及核對 → OpenWrt 備份、升級與逐項還原。**
 
 1. 下載 `.skill`，按 ZIP 格式解壓，取得 `clx-s20p-provisioning/`。
 2. 將完整資料夾放入 Agent 支援的 skills 目錄；若沒有原生 Skill 載入功能，放在可讀取的一般目錄亦可。不可只複製 `SKILL.md`。
 3. 請 Agent 讀取該目錄的 `SKILL.md`，說明設備、目標及授權範圍。[使用指南](skills/README.md)附一個跨 Agent 通用範例，涵蓋 Codex、Claude Code、Gemini CLI、Cursor、WorkBuddy、OpenCode、DeepSeek harness、Pi、OpenClaw、Hermes 等宿主的能力要求。
 
-執行端需 Python 3.10+、OpenSSH、`curl` 與 Unix `fcntl`，不需額外 Python 套件；網路指引以 macOS 為基礎，Linux／WSL 需核對主機環境，Windows 原生未支援。純聊天或無法連到設備的雲端 Agent 不能直接執行。安裝包不包含 FIP／GPT／韌體，請從各下載頁另行取得。每臺設備使用自己的 factory／boot 備份與實際 eMMC 幾何；Skill 已通過 42 項離線測試，各 Agent 的整套實機刷機及原廠還原仍需逐項驗收。詳細限制與更新方式見[使用指南](skills/README.md)。
+執行端需 Python 3.10+、OpenSSH、`curl` 與 Unix `fcntl`，不需額外 Python 套件；網路指引以 macOS 為基礎，Linux／WSL 需核對主機環境，Windows 原生未支援。純聊天或無法連到設備的雲端 Agent 不能直接執行。安裝包不包含 FIP／GPT／韌體，請從各下載頁另行取得。每臺設備使用自己的 factory／boot 備份與實際 eMMC 幾何；Skill 已通過 54 項離線測試，各 Agent 的整套實機刷機及原廠還原仍需逐項驗收。詳細限制與更新方式見[使用指南](skills/README.md)。
 
-`方式 A：telnet 直接進（原廠默認開啟，無需任何配置）`
-
-`telnet 192.168.8.1`
-
-`賬號 root，密碼 tty996icu`
-
-`方式 B：开 SSH（可選）`
-
-`uci set dropbear.@dropbear[0].enable='1'`
-
-`uci commit dropbear/etc/init.d/dropbear restart`
+無 Wi-Fi／管理頁或反覆重啟時，先按 [TTL／failsafe 救磚流程](skills/clx-s20p-provisioning/references/rescue.md)保存開機證據；p6 無法掛載可先搶救小型 boot／factory／GPT，完整備份與刷寫條件仍須另外完成。原廠密碼在本機互動輸入，來源與驗證範圍見 [實證說明](skills/clx-s20p-provisioning/references/sources-and-evidence.md)。
 
 ## 3. U-Boot GPT 修正正式版
 

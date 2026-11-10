@@ -6,6 +6,8 @@ Access and SSH requirements below apply to any agent execution host with the req
 
 Use only the user's identified physical unit and target IP. Stock commonly uses `192.168.8.1`, third-party U-Boot `192.168.1.1`; these are defaults, not identity. Read hostname/model/compatible/CID through the available console before changes, and compare after transport/boot transitions. Do not scan unrelated hosts or infer the case SN from a MAC/CID.
 
+Missing Wi-Fi/Web does not rule out Telnet/SSH, and loss of Ethernet does not prove a reboot. Repeated kernel starts/panics need [UART/failsafe rescue](rescue.md); a stable OS with a link problem needs [component/port checks](component-checks.md). Stock failsafe can report `(none)` and map a physical jack differently; use the explicit verified failsafe identity path rather than renaming it.
+
 ## Telnet to SSH
 
 Reuse working SSH first. If stock only offers Telnet, use the actual available Telnet client or a reviewed compatible transport, identify the board, then:
@@ -42,5 +44,7 @@ route -n get 192.168.1.1
 Record the selected service's existing IPv4/router/DNS settings with `networksetup -getinfo` and `-getdnsservers` using its exact service name. Configure that wired service with an unused address on the target subnet (for example `192.168.1.2/24` for U-Boot), **no router/default gateway and no DNS**, while retaining Wi-Fi's existing Internet connection. For stock use its verified subnet instead. Use the current macOS UI or locally verified `networksetup` syntax; do not guess how a CLI version encodes an empty router.
 
 Recheck `route -n get <device-IP>` for the wired interface and `route -n get default` for Wi-Fi. Confirm both device reachability and Internet after the change. Bind U-Boot HTTP calls to the discovered wired interface and bypass proxies; check HTTP target identity before commands. Do not restart all networking or remove Wi-Fi's route to reach the device. Subnet overlap requires explicit route planning before proceeding.
+
+If manual IPv4 reverts to DHCP or deleted DNS returns, stop concurrent UI/CLI edits and timestamp `networksetup -getinfo`, `-getdnsservers`, `ifconfig` carrier/address and both routes over the same interval. Confirm the UI and CLI refer to the same service, then inspect active configuration profiles, network-management apps and task automations for another writer. Do not blame DHCP or disable/remove profiles without evidence. A DNS entry may be inherited; distinguish configured DNS from the effective resolver state (`scutil --dns`). A link-down `ifconfig` state needs cable/port/peer evidence; an IP setting cannot repair physical carrier. Preserve the user's Wi-Fi and unrelated settings.
 
 Record changes and leave the connection appropriate for the user's next action. If the user will enter U-Boot/upload firmware manually, leave the direct Ethernet configuration available and document how to restore the prior wired settings; do not tear down the needed link automatically.

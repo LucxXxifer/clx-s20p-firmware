@@ -10,6 +10,8 @@ Preserve this unit's original boot/system/identity and current p6 files. This is
 - Read GPT/sysfs/mounts, confirm actual starts/sizes/labels and `/dev/mmcblk0p6` mounted at `/permanent_config`. The supported stock layout is p1 `u-boot-env`, p2 `factory`, p3 `fip`, p4 `kernel`, p5 `rootfs`, p6 `permanent_config`; ranges are derived dynamically. Unfamiliar layouts require review.
 - Original stock primary GPT can have CRC-valid `alternate_lba=1` and a lower last-usable LBA. Preserve and report it; do not apply strict postflash GPT rules or repair it during capture.
 
+If p6 or settings cannot be read, use [bounded small-region rescue](rescue.md#save-small-regions-before-attempting-repair). `rescue-small` bypasses only file-level mount/settings prerequisites; it retains target/layout/range checks and never sets `all_required_artifacts_verified`. A successful small rescue cannot satisfy FIP preflight. Use `--stock-failsafe-evidence` only with the independently verified same-boot evidence described in the rescue reference.
+
 ## Required scope
 
 | Artifact | Scope |

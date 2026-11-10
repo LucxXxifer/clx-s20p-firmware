@@ -116,6 +116,8 @@ def preflight(args, ssh):
                   protected_before=protected, protected_specs={k: backup["plan"][k] for k in protected},
                   fip_spec=fip_spec, seven_physical_ports_tested=review.get("seven_physical_ports_tested") is True,
                   restore_tested=False, rebooted=False, uboot_boot_verified=False)
+    if observation.get("rescue_identity"):
+        result["rescue_identity"] = observation["rescue_identity"]
     return result, payload, before
 
 

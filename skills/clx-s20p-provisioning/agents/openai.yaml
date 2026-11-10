@@ -1,4 +1,4 @@
 interface:
-  display_name: "CLX-S20P 刷機與備份還原"
-  short_description: "S20P 首次刷機、eMMC 健康、插件備份辨識及跨分支升級還原引導"
-  default_prompt: "使用 $clx-s20p-provisioning，先辨識這臺 S20P 的現有系統與目標，核對 eMMC 健康、備份範圍及分支相容性，再依我授權的範圍執行首次刷機、備份或逐項還原，並生成操作指南。"
+  display_name: "CLX-S20P 刷機、救磚與備份還原"
+  short_description: "S20P TTL 救磚、重啟診斷、eMMC 健康與刷機備份還原引導"
+  default_prompt: "使用 $clx-s20p-provisioning，辨識這臺 S20P 的系統、故障與目標，按實機證據選擇 UART/failsafe 救援、健康檢查、備份或刷機還原，核對身分與回讀結果，並記錄尚未驗證的項目。"

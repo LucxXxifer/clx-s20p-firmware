@@ -1,6 +1,6 @@
-# CLX-S20P 刷機、升級與備份還原 Skill
+# CLX-S20P 刷機、救磚與備份還原 Skill
 
-`clx-s20p-provisioning` 供**任意具備所需本機工具與網路權限的 Agent 使用**，協助 CLX-S20P 首次刷機，以及 OpenWrt 插件備份、升級規劃與逐項還原。它與本倉庫固件集中管理，也可用於其他 S20P 分支；每次都按來源／目標的型號、布局、套件與設定 schema 判斷，不以分支名稱保證相容。
+`clx-s20p-provisioning` 供**任意具備所需本機工具與網路權限的 Agent 使用**，協助 CLX-S20P 首次刷機、TTL／failsafe 救磚，以及 OpenWrt 插件備份、升級規劃與逐項還原。它與本倉庫固件集中管理，也可用於其他 S20P 分支；每次都按來源／目標的型號、布局、套件與設定 schema 判斷，不以分支名稱保證相容。
 
 Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、`references/` 與 `scripts/` 結構，只要能讀取完整 Skill、執行本機命令並存取目標區域網路，便可使用下方同一個通用範例，自行測試。
 
@@ -9,6 +9,8 @@ Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、
 | 階段 | Skill 的工作 |
 | --- | --- |
 | 識別及連線 | 核對機身 SN、板型、eMMC CID／容量；透過 Telnet 開啟 SSH，已有 SSH 時沿用 |
+| 救磚與串口 | 只收 UART 開機紀錄，區分供電／實體連線／panic；按實機時機進入 failsafe，保留真實主機名並核對同機同次開機身分 |
+| 小型搶救 | p6 無法掛載時先保存 boot／factory／GPT；不將不完整備份當作可以刷寫的完整備份 |
 | eMMC 健康 | 在長時間備份及刷寫前讀取 `life_time`、`pre_eol_info` 與儲存錯誤；異常時停止刷寫，仍可搶救備份 |
 | 逐機原廠備份 | 保存 boot0／boot1、p1–p5、原始 GPT／保留區及 p6 檔案／設定；manifest 綁定本機 CID，支援必要項目的續傳與校驗 |
 | 元件及網口檢查 | 讀取記憶體、溫度、核心錯誤與介面計數；七個實體網口的速度／流量測試需要接線與對端設備 |
@@ -39,19 +41,7 @@ Skill 採 [Agent Skills](https://agentskills.io/specification) 的 `SKILL.md`、
 
 核心不需為各家 Agent 分別重寫；通常只需調整 Skill 載入位置、工具對應與主機網路／備份路徑。若要支援 Windows 原生，才需另行修改及驗證鎖定、SSH 與網路操作，不能只更換安裝目錄。
 
-方式 A：telnet 直接進（原廠默認開啟，無需任何配置）
-
-telnet 192.168.8.1
-
-賬號 root，密碼 tty996icu
-
-方式 B：开 SSH（可選）
-
-uci set dropbear.@dropbear[0].enable='1'
-
-uci commit dropbear/etc/init.d/dropbear restart
-
-
+原廠登入資料由使用者在本機終端互動輸入。SSH 啟用與主機金鑰核對見 [連線說明](clx-s20p-provisioning/references/access-network.md)。
 
 ## 一個跨 Agent 通用範例
 
@@ -71,7 +61,7 @@ references/ 與 scripts/ 均相對於該 Skill 目錄，請使用你現有的檔
 
 範例中的路徑與 `A1B2` 都是佔位值，執行前必須替換。原廠 IP 通常是 `192.168.8.1`，第三方 U-Boot 通常是 `192.168.1.1`，仍需核對當前設備。密碼由使用者互動輸入，不填入 Skill 或公開紀錄。
 
-首次刷機、只查壽命、續傳備份、升級規劃或已授權的逐項還原，都可沿用此範例，修改目標與授權範圍；備份不會自行授權刷寫。需要有線直連設備同時保留 Wi-Fi 上網時，Agent 會先核對實際主機的介面與路由，再處理指定的有線連線。
+首次刷機、TTL／failsafe 救磚、只查壽命、續傳備份、升級規劃或已授權的逐項還原，都可沿用此範例，修改目標與授權範圍；備份不會自行授權刷寫。需要有線直連設備同時保留 Wi-Fi 上網時，Agent 會先核對實際主機的介面與路由，再處理指定的有線連線。
 
 ## 備份、升級與還原說明
 
@@ -87,9 +77,9 @@ FIP、GPT 及固件需另外取得，skill 安裝包不附帶映像。兩種標�
 
 ## 驗證範圍與限制
 
-此版通過 42 項離線測試，涵蓋 synthetic GPT／FIP／備份資料與模擬 SSH／console 行為，並通過 Skill 結構、Python 3.10 語法與安裝包內容核對。測試不連接設備、不執行刷寫，也不代表各家 Agent 或各作業系統均已完成實機驗收。
+此版通過 54 項離線測試，涵蓋 synthetic GPT／FIP／備份資料、模擬 SSH／console、failsafe 身分、不完整搶救備份，以及本機 pseudoterminal 的 UART 只收驗證；另核對 Skill 結構、Python 3.10 語法與安裝包內容。測試不連接設備、不執行刷寫，也不代表各家 Agent 或各作業系統均已完成實機驗收。
 
-實際使用經驗已納入備份、網路切換及已知副 GPT 修復指引；新版工具尚未完成整套實機刷機及原廠還原測試。檔案與雜湊驗證不等於已驗證可以還原；p6 檔案備份也不包含完整檔案系統中繼資料、已刪除／空白空間。還原需按該機原始分區、檔案系統及 UUID／掛載條件規劃。
+[救磚流程](clx-s20p-provisioning/references/rescue.md)、[元件檢查](clx-s20p-provisioning/references/component-checks.md)與[來源及實證邊界](clx-s20p-provisioning/references/sources-and-evidence.md)結合指定的 Godsun 網文／網盤與實機經驗。實際使用經驗已納入備份、網路切換及已知副 GPT 修復指引；新版工具尚未完成整套實機刷機及原廠還原測試。檔案與雜湊驗證不等於已驗證可以還原；p6 檔案備份也不包含完整檔案系統中繼資料、已刪除／空白空間。還原需按該機原始分區、檔案系統及 UUID／掛載條件規劃。
 
 OpenWrt 應用備份／還原為 agent 按實機證據執行的指引，沒有宣稱所有分支已實測或提供通用一鍵還原器。備份完整性、相容性審核、插件還原、聯網／備援與重啟持久性各自記錄；未測項目維持 `not-run`。Tailscale 等裝置身分只在同一臺機器還原，其他 S20P 僅選取可攜設定。
 

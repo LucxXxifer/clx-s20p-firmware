@@ -134,6 +134,14 @@ def ssh_base(host: str, user: str) -> list[str]:
     ]
 
 
+def named_s20p_identity(metadata: dict[str, str]) -> bool:
+    identity = (metadata.get("MODEL", "") + " " + metadata.get("COMPATIBLE", "")).lower()
+    compatible = metadata.get("COMPATIBLE", "").lower().split()
+    return bool(re.search(r"(?<![a-z0-9])s20p(?![a-z0-9])", identity)) and any(
+        token == "mediatek,mt7986a" or token.startswith("mediatek,mt7986a-") for token in compatible
+    )
+
+
 def run_preflight(host: str, user: str) -> tuple[dict[str, str], str]:
     command = ssh_base(host, user) + [PREFLIGHT_COMMAND]
     result = subprocess.run(command, capture_output=True, text=True)
@@ -145,8 +153,7 @@ def run_preflight(host: str, user: str) -> tuple[dict[str, str], str]:
     metadata = parse_metadata(result.stdout)
     if metadata.get("UID") != "0":
         raise RuntimeError("SSH must reach the device as root to read all eMMC areas.")
-    identity = (metadata.get("MODEL", "") + " " + metadata.get("COMPATIBLE", "")).lower()
-    known_s20p_identity = "s20p" in identity
+    known_s20p_identity = named_s20p_identity(metadata)
     verified_rfb_fingerprint = (
         metadata.get("HOSTNAME", "").strip().lower() == "s20p"
         and "mediatek,mt7986a-emmc-rfb" in metadata.get("COMPATIBLE", "").lower().split()

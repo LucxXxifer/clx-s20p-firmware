@@ -6,6 +6,8 @@ This step writes the verified p3 `fip` partition while stock SSH is still availa
 
 1. Select the exact FIP, verified SHA-256 and source release asset evidence (saved GitHub release JSON with `html_url`, matching asset `name`, `size`, `digest`). Review source revision, board/eMMC variant and build compatibility separately; digest matching proves bytes, not compatibility. `0.4 Uboot` also contains BL2; never select it as FIP. See [local asset snapshot](local-assets-2026-10.md).
 2. Use the new necessary-capture manifest with all required artifacts verified and a matching CID. A legacy capture can be resumed/imported with `s20p_recovery.py`; preserve its failed history. Review boot/system/factory restoration and p6 reconstruction/UUID dependencies. Capture success is not a tested factory restore.
+
+   Stock `(none)` failsafe requires the explicit [same-boot identity evidence](rescue.md#failsafe-identity-and-ssh) on every new probe. A `rescue-small` manifest is intentionally incomplete and cannot authorize FIP. Stabilize access and complete the normal backup first; never edit manifest flags to pass.
 3. Re-read health and inspect required diagnostics. Do not assert seven ports passed without exercising them. If full physical acceptance is required, unresolved ports block the write; if the user explicitly allows provisioning with limited acceptance, preserve the untested status.
 4. Review the chosen U-Boot's GPT behavior and [repair/readback procedure](gpt-repair.md) for the live geometry, even if GPT upload will be later/manual. The known `384fdd8` defect has a validated conditional repair; it does not require reflashing FIP merely to repair the header.
 

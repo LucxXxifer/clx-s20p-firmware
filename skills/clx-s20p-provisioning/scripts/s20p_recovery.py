@@ -11,11 +11,14 @@ import tarfile
 
 from s20p_common import (CHUNK, DEFAULT_DESTINATION, add_connection_arguments, assert_same_unit,
                          check_live_cid, connection, ensure_backup_volume, hash_file, now,
-                         probe, region_command, require, safe_within, sha, stamp, write_json)
+                         probe, region_command, require, safe_within, save_new, sha, stamp, write_json)
 from s20p_gpt import header, inspect_primary
 
 LABELS = ["u-boot-env", "factory", "fip", "kernel", "rootfs", "permanent_config"]
 LIMITS = [16, 16, 16, 128, 2048]  # MiB; unfamiliar oversized boot/system layouts need review.
+SMALL_ARTIFACTS = frozenset(("boot0", "boot1", "factory", "env", "fip", "head_reserved", "gpt_primary",
+                             "gpt_physical_tail", "gpt_after_last_usable", "gpt_indicated_alternate",
+                             "gpt_indicated_entries"))
 LEGACY_NAMES = {
     "boot0": "boot0_bl2.bin", "boot1": "boot1.bin", "factory": "mmcblk0p2_factory.bin",
     "env": "mmcblk0p1_u-boot-env.bin", "fip": "mmcblk0p3_fip.bin",
@@ -33,7 +36,7 @@ def raw_spec(device, start, sectors):
     return dict(kind="raw", source=dict(device=device, start=start, sectors=sectors), expected_bytes=sectors * 512)
 
 
-def build_plan(observation, first34, alternate_sector=None, overlay=False):
+def build_plan(observation, first34, alternate_sector=None, overlay=False, *, small_only=False):
     unit, metadata = observation["unit"], observation["metadata"]
     gpt, _ = inspect_primary(first34, unit["sectors"])
     parts = gpt["partitions"]
@@ -49,7 +52,7 @@ def build_plan(observation, first34, alternate_sector=None, overlay=False):
             require(p["sectors"] * 512 <= LIMITS[p["index"] - 1] * CHUNK, "Partition exceeds reviewed backup limit")
     require(34 <= parts[0]["start"] <= 32768, "Unfamiliar reserved boot head size")
     p6_mounts = [x for x in observation["mounts"] if x["target"] == "/permanent_config"]
-    require(len(p6_mounts) == 1 and p6_mounts[0]["source"] == "/dev/mmcblk0p6",
+    require(small_only or (len(p6_mounts) == 1 and p6_mounts[0]["source"] == "/dev/mmcblk0p6"),
             "File-level p6 capture requires its verified /permanent_config mount")
     plan = {
         "boot0": raw_spec("mmcblk0boot0", 0, unit["boot0_sectors"]),
@@ -71,12 +74,13 @@ def build_plan(observation, first34, alternate_sector=None, overlay=False):
             require(alternate["entries_lba"] + 32 <= unit["sectors"], "Indicated GPT entries exceed device")
             plan["gpt_indicated_entries"] = raw_spec("mmcblk0", alternate["entries_lba"], 32)
             gpt["indicated_header"] = alternate
-    for key, index in (("kernel", 4), ("rootfs", 5)):
-        plan[key] = raw_spec("mmcblk0p" + str(index), 0, parts[index - 1]["sectors"])
-    plan["permanent_config_files"] = dict(kind="archive", source_command="tar -C /permanent_config -czf - .")
-    plan["settings_files"] = dict(kind="archive", source_command="tar -C / -czf - etc/config etc/dropbear")
-    if overlay:
-        plan["overlay_files"] = dict(kind="archive", source_command="tar -C /overlay -czf - upper")
+    if not small_only:
+        for key, index in (("kernel", 4), ("rootfs", 5)):
+            plan[key] = raw_spec("mmcblk0p" + str(index), 0, parts[index - 1]["sectors"])
+        plan["permanent_config_files"] = dict(kind="archive", source_command="tar -C /permanent_config -czf - .")
+        plan["settings_files"] = dict(kind="archive", source_command="tar -C / -czf - etc/config etc/dropbear")
+        if overlay:
+            plan["overlay_files"] = dict(kind="archive", source_command="tar -C /overlay -czf - upper")
     for item in plan.values():
         if item["kind"] == "raw":
             source = item["source"]
@@ -85,6 +89,65 @@ def build_plan(observation, first34, alternate_sector=None, overlay=False):
                 parts[int(source["device"][-1]) - 1]["sectors"])
             require(source["start"] + source["sectors"] <= maximum, "Capture range exceeds source")
     return plan, gpt
+
+
+def rescue_small(args, ssh, observation):
+    """Preserve bounded boot/factory evidence even when p6 cannot be mounted.
+
+    This deliberately produces an incomplete recovery set, never a flash-ready manifest.
+    It still requires an identified unit and a parseable, matching stock layout.
+    """
+    root = args.destination_root.resolve()
+    ensure_backup_volume(root)
+    require(root.is_dir(), "Prepare an existing external backup root")
+    unit = observation["unit"]
+    first = ssh.read("dd if=/dev/mmcblk0 bs=512 count=34", expected_bytes=34 * 512)
+    gpt, _ = inspect_primary(first, unit["sectors"])
+    alternate = ssh.read("dd if=/dev/mmcblk0 bs=512 skip=" + str(gpt["primary"]["alternate"]) +
+                         " count=1", expected_bytes=512)
+    plan, gpt = build_plan(observation, first, alternate, small_only=True)
+    require(shutil.disk_usage(root).free >= sum(x["expected_bytes"] for x in plan.values()) + 64 * CHUNK,
+            "Insufficient space for bounded rescue capture")
+    unit_dir = root / ("clx-s20-" + unit["physical_serial_suffix"])
+    require(not unit_dir.is_symlink(), "Rescue unit directory cannot be a symlink")
+    unit_dir.mkdir(mode=0o700, exist_ok=True)
+    with (unit_dir / ".capture.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        identity = unit_dir / "unit.json"
+        require(not identity.is_symlink(), "Rescue identity cannot be a symlink")
+        if identity.exists():
+            assert_same_unit(json.loads(identity.read_text()), unit)
+        else:
+            require(not any(p.name != ".capture.lock" for p in unit_dir.iterdir()),
+                    "Existing unidentified directory requires review")
+            save_new(identity, (json.dumps(unit, indent=2) + "\n").encode())
+        directory = unit_dir / ("rescue-" + stamp())
+        directory.mkdir(mode=0o700)
+        target = directory / "manifest.json"
+        manifest = dict(schema_version=2, status="small_rescue_in_progress", unit=unit,
+                        capture_scope="small_boot_factory_gpt_only", observation=observation,
+                        original_gpt=gpt, original_primary_sha256=sha(first), plan=plan, artifacts={},
+                        all_required_artifacts_verified=False, selected_artifacts_verified=False,
+                        restore_tested=False, recovery_plan_reviewed=False, created_at_utc=now())
+        write_json(target, manifest)
+        try:
+            for key, spec in plan.items():
+                check_live_cid(ssh, unit)
+                require(ssh.read("cat /proc/sys/kernel/random/boot_id").decode().strip() == observation["boot_id"],
+                        "Device rebooted during rescue capture")
+                manifest["artifacts"][key] = capture_one(ssh, key, spec, directory, 16 * CHUNK, 16 * CHUNK)
+                write_json(target, manifest)
+            manifest["selected_artifacts_verified"] = all(x.get("verified") is True for x in manifest["artifacts"].values())
+            manifest["status"] = ("small_rescue_verified_not_flash_ready" if manifest["selected_artifacts_verified"]
+                                  else "small_rescue_incomplete")
+        except BaseException as error:
+            manifest.update(status="small_rescue_interrupted", failure=str(error))
+            raise
+        finally:
+            manifest["completed_at_utc"] = now()
+            write_json(target, manifest)
+        print(json.dumps(dict(status=manifest["status"], manifest=str(target), flash_ready=False), indent=2))
+        return 0 if manifest["selected_artifacts_verified"] else 1
 
 
 def artifact_path(item, manifest_path, unit_dir):
@@ -121,7 +184,14 @@ def load_previous(path, unit, unit_dir, plan, first_sha):
     if old.get("schema_version") == 2:
         assert_same_unit(old["unit"], unit)
         require(old["original_primary_sha256"] == first_sha, "GPT changed since original capture; do not mix factory states")
-        require(old["plan"] == plan, "Capture scope/layout changed; review rather than merge silently")
+        if old.get("capture_scope") == "small_boot_factory_gpt_only":
+            require(old.get("all_required_artifacts_verified") is False,
+                    "Small rescue must never claim a complete recovery backup")
+            small_plan = {key: spec for key, spec in plan.items() if key in SMALL_ARTIFACTS}
+            require(old["plan"] == small_plan and set(old["artifacts"]) <= set(small_plan),
+                    "Small rescue scope/layout changed; review rather than merge silently")
+        else:
+            require(old["plan"] == plan, "Capture scope/layout changed; review rather than merge silently")
         artifacts = old["artifacts"]
     else:
         # Legacy manifests retain their schema/history. Import only explicitly supplied evidence.
@@ -273,8 +343,11 @@ def backup(args, ssh, observation):
             if existing:
                 previous = existing[-1]
             else:
-                require(not any(p.name not in (".capture.lock", "unit.json") for p in unit_dir.iterdir()),
-                        "No resume manifest found; review existing unit directory")
+                rescues = sorted(unit_dir.glob("rescue-*/manifest.json"))
+                rescue_dirs = {p.parent for p in rescues if not p.is_symlink() and not p.parent.is_symlink()}
+                require(all(p.name in (".capture.lock", "unit.json") or p in rescue_dirs for p in unit_dir.iterdir()),
+                        "No reviewed resume manifest found; review existing unit directory")
+                previous = rescues[-1] if rescues else None
         reusable, history = ({}, None) if previous is None else load_previous(previous, unit, unit_dir, plan, sha(first))
         # Before mixing resumed artifacts, check immutable identity/boot regions against saved stock captures.
         for key in ("factory", "fip", "boot0", "boot1"):
@@ -328,6 +401,9 @@ def main():
     inspect_parser = sub.add_parser("probe", help="Identity, RAM, eMMC health and mount evidence only")
     add_connection_arguments(inspect_parser)
     inspect_parser.add_argument("--record-dir", required=True, type=Path)
+    rescue_parser = sub.add_parser("rescue-small", help="Read small boot/factory/GPT regions without p6; never flash-ready")
+    add_connection_arguments(rescue_parser)
+    rescue_parser.add_argument("--destination-root", default=DEFAULT_DESTINATION, type=Path)
     backup_parser = sub.add_parser("backup", help="Capture/resume necessary recovery artifacts; never clone raw p6")
     add_connection_arguments(backup_parser)
     backup_parser.add_argument("--destination-root", default=DEFAULT_DESTINATION, type=Path)
@@ -347,6 +423,8 @@ def main():
             write_json(path, result)
             print(json.dumps(dict(record=str(path), unit=result["unit"], health=result["health"]), indent=2))
             return 0
+        if args.mode == "rescue-small":
+            return rescue_small(args, ssh, probe(ssh, args.serial_suffix))
         require(args.archive_limit_mib > 0 and args.unpacked_limit_mib > 0, "Archive bounds must be positive")
         result = probe(ssh, args.serial_suffix)  # Health is observed before the first long backup.
         return backup(args, ssh, result)

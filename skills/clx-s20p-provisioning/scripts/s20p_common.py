@@ -1,5 +1,6 @@
 """Shared read-only SSH transport, unit identity, and local evidence helpers."""
 from datetime import datetime, timezone
+import base64
 import hashlib
 import json
 import os
@@ -11,7 +12,7 @@ import tempfile
 import threading
 
 from backup_restore_image import (DEFAULT_DESTINATION, PREFLIGHT_COMMAND, SSH_CONTROL_PATH,
-                                  ensure_backup_volume, hash_file, parse_metadata,
+                                  ensure_backup_volume, hash_file, named_s20p_identity, parse_metadata,
                                   validate_host, validate_serial_suffix, write_json)
 from s20p_health import interpret
 
@@ -49,10 +50,11 @@ def safe_within(path, directory):
 
 
 class SSH:
-    def __init__(self, host, control_path=SSH_CONTROL_PATH, known_hosts=None):
+    def __init__(self, host, control_path=SSH_CONTROL_PATH, known_hosts=None, stock_failsafe_evidence=None):
         self.host = validate_host(host)
         self.control_path = str(control_path)
         self.known_hosts = known_hosts
+        self.stock_failsafe_evidence = stock_failsafe_evidence
 
     def base(self):
         command = ["ssh", "-T", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes",
@@ -131,20 +133,61 @@ def add_connection_arguments(parser):
     parser.add_argument("--serial-suffix", required=True, type=validate_serial_suffix)
     parser.add_argument("--control-path", default=SSH_CONTROL_PATH)
     parser.add_argument("--known-hosts", type=Path)
+    parser.add_argument("--stock-failsafe-evidence", type=Path,
+                        help="Reviewed same-unit/same-boot evidence for stock runtime hostname (none); not a write override")
 
 
 def connection(args):
-    return SSH(args.host, args.control_path, args.known_hosts)
+    path = getattr(args, "stock_failsafe_evidence", None)
+    evidence = json.loads(path.read_text()) if path else None
+    return SSH(args.host, args.control_path, args.known_hosts, evidence)
 
 
-def unit_identity(metadata, suffix):
+def verify_stock_failsafe(ssh, metadata, suffix, evidence):
+    """Validate the narrow stock rescue exception without changing the real hostname."""
+    require(evidence.get("schema_version") == 1 and evidence.get("mode") == "stock_failsafe",
+            "Unsupported stock failsafe evidence")
+    require(evidence.get("host") == ssh.host and
+            evidence.get("physical_serial_suffix") == validate_serial_suffix(suffix) and
+            evidence.get("physical_identity_confirmed") is True, "Physical target evidence mismatch")
+    require(metadata.get("HOSTNAME") == "(none)" and
+            "mediatek,mt7986a-emmc-rfb" in metadata.get("COMPATIBLE", "").split(),
+            "Failsafe exception is only for the reviewed stock generic RFB with hostname (none)")
+    require(ssh.read("test -f /tmp/failsafe && printf PRESENT") == b"PRESENT", "Stock failsafe marker absent")
+    configured = ssh.read("uci -q get system.@system[0].hostname").decode().strip()
+    original = ssh.read("uci -c /rom/etc/config -q get system.@system[0].hostname").decode().strip()
+    require(configured == original == "S20P", "Stock ROM/configured model did not identify as S20P")
+    boot_id = ssh.read("cat /proc/sys/kernel/random/boot_id").decode().strip()
+    require(boot_id == evidence.get("boot_id"), "Different rescue boot; refresh reviewed evidence")
+    expected = evidence.get("ssh_host_key_sha256", "")
+    require(re.fullmatch(r"SHA256:[A-Za-z0-9+/]{43}", expected) and
+            expected == evidence.get("console_host_key_sha256"), "Console/SSH host-key comparison missing or mismatched")
+    known_hosts = getattr(ssh, "known_hosts", None)
+    require(known_hosts and Path(known_hosts).is_file(), "Failsafe requires an explicit verified known-hosts file")
+    found = subprocess.run(["ssh-keygen", "-F", ssh.host, "-f", str(known_hosts)],
+                           capture_output=True, text=True, timeout=10)
+    require(found.returncode == 0, "Verified target not present in known-hosts file")
+    fingerprints = set()
+    for line in found.stdout.splitlines():
+        fields = line.split()
+        if len(fields) >= 3 and not line.startswith(("#", "@")):
+            try:
+                public_key = base64.b64decode(fields[2], validate=True)
+            except ValueError:
+                continue
+            fingerprints.add("SHA256:" + base64.b64encode(hashlib.sha256(public_key).digest()).decode().rstrip("="))
+    require(expected in fingerprints, "Console key does not match the trusted target key")
+    return dict(verified=True, runtime_hostname=metadata["HOSTNAME"], configured_hostname=configured,
+                rom_hostname=original, boot_id=boot_id, ssh_host_key_sha256=expected)
+
+
+def unit_identity(metadata, suffix, *, stock_failsafe_verified=False):
     require(metadata.get("UID") == "0", "Root access is required")
     require(metadata.get("MMC_TYPE") == "MMC", "Expected the card owning mmcblk0 to be eMMC")
     require(metadata.get("MMC_LOGICAL_BLOCK_BYTES") == "512", "Only the reviewed 512-byte logical sector size is supported")
     compatible = metadata.get("COMPATIBLE", "").lower().split()
-    name = metadata.get("MODEL", "").lower() + " " + " ".join(compatible)
-    known = ("s20p" in name or "clx-s20" in name) and any("mediatek,mt7986a" in x for x in compatible)
-    rfb = metadata.get("HOSTNAME", "").upper() == "S20P" and "mediatek,mt7986a-emmc-rfb" in compatible
+    known = named_s20p_identity(metadata)
+    rfb = (metadata.get("HOSTNAME", "").upper() == "S20P" or stock_failsafe_verified) and "mediatek,mt7986a-emmc-rfb" in compatible
     require(known or rfb, "Board did not identify as S20P; capacity alone is insufficient")
     cid = metadata.get("MMC_CID", "").lower()
     require(re.fullmatch(r"[0-9a-f]{32}", cid), "Missing/invalid CID")
@@ -171,7 +214,14 @@ def probe(ssh, suffix):
     raw = ssh.read(PREFLIGHT_COMMAND).decode()
     require("CAPTURE_PREFLIGHT_BEGIN" in raw and "CAPTURE_PREFLIGHT_END" in raw, "Incomplete identity response")
     metadata = parse_metadata(raw)
-    unit = unit_identity(metadata, suffix)
+    evidence = getattr(ssh, "stock_failsafe_evidence", None)
+    rescue = verify_stock_failsafe(ssh, metadata, suffix, evidence) if evidence is not None else None
+    unit = unit_identity(metadata, suffix, stock_failsafe_verified=rescue is not None)
+    if rescue:
+        expected = evidence.get("unit", {})
+        require(all(expected.get(k) == unit[k] for k in
+                    ("cid", "sector_size", "sectors", "boot0_sectors", "boot1_sectors")),
+                "Rescue CID/geometry differs from independently reviewed evidence")
     filesystems = []
     block_section = re.search(r"^BLKID_BEGIN\n(.*?)^BLKID_END$", raw, re.M | re.S)
     if block_section:
@@ -200,8 +250,14 @@ def probe(ssh, suffix):
         mounts.append(dict(source=fields[0], target=fields[1], filesystem=fields[2]))
     boot_id = ssh.read("cat /proc/sys/kernel/random/boot_id").decode().strip()
     require(re.fullmatch(r"[0-9a-f-]{36}", boot_id), "Boot ID unavailable")
-    return dict(observed_at_utc=now(), host=ssh.host, unit=unit, metadata=metadata,
-                health=health, filesystems=filesystems, mounts=mounts, boot_id=boot_id)
+    result = dict(observed_at_utc=now(), host=ssh.host, unit=unit, metadata=metadata,
+                  health=health, filesystems=filesystems, mounts=mounts, boot_id=boot_id)
+    if rescue:
+        require(boot_id == rescue["boot_id"], "Device rebooted during rescue identity verification")
+        check_live_cid(ssh, unit)
+        require(ssh.read("test -f /tmp/failsafe && printf PRESENT") == b"PRESENT", "Device left stock failsafe")
+        result["rescue_identity"] = rescue
+    return result
 
 
 def region_command(source):

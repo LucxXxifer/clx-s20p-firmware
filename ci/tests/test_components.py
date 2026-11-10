@@ -17,7 +17,101 @@ import upstream_sync
 from component_fixtures import inputs, files
 
 
+def quickstart_upload(version='0.13.1', archive_hash='b' * 64, source=None,
+                      origin=components.QUICKSTART_PREBUILT_ORIGIN):
+    return (f"PKG_NAME:=quickstart\nPKG_VERSION:={version}\nPKG_RELEASE:=1\n"
+            f"PKG_SOURCE:={source or components.QUICKSTART_SOURCE_NAME}\n"
+            f"PKG_SOURCE_URL:={origin}\n"
+            f"PKG_HASH:={archive_hash}\n"
+            "define Package/$(PKG_NAME)\n"
+            "\tDEPENDS:= +bash +e2fsprogs +parted \\\n"
+            "\t\t+smartmontools +smartd +smartmontools-drivedb +mdadm +ip-full\n"
+            "endef\n").encode()
+
+
 class ComponentTests(unittest.TestCase):
+    def run_prepare(self, recipe):
+        import ca_security
+        value = inputs()
+        value['adguard'] = None
+        value['quickstart']['files'] = files(recipe)
+        value['fingerprint'] = components.fingerprint(value)
+        name = tempfile.TemporaryDirectory()
+        self.addCleanup(name.cleanup)
+        root = Path(name.name)
+        for path, rows in (('package/system/ca-certificates', value['ca']['files']),
+                           ('feeds/custom_feed/quickstart', value['quickstart']['files'])):
+            package = root / path
+            package.mkdir(parents=True)
+            components.write_package(package, rows)
+        selected = root / 'components.json'
+        selected.write_text(json.dumps(value))
+        output = root / 'evidence/preparation.json'
+        with patch('components.download', return_value=b'controlled archive'), \
+                patch.object(ca_security, 'reproduce', return_value={'version': '20260816-r2'}):
+            result = components.prepare(root, selected, output)
+        return root, output, result
+
+    def test_unreviewed_quickstart_bump_is_held_back_to_reviewed_bytes(self):
+        pin = components.reviewed_quickstart_archive((0, 13, 1))
+        root, output, result = self.run_prepare(quickstart_upload('0.13.1', 'f' * 64))
+        prepared = (root / 'feeds/custom_feed/quickstart/Makefile').read_text()
+        self.assertIn('PKG_VERSION:=' + pin['version'] + '\n', prepared)
+        self.assertIn('PKG_HASH:=' + pin['source_archive_sha256'] + '\n', prepared)
+        self.assertIn('PKG_SOURCE_URL:=' + components.QUICKSTART_PREBUILT_ORIGIN + '\n', prepared)
+        state = json.loads(output.read_text())['quickstart']
+        self.assertEqual(state['status'], 'reviewed-holdback')
+        self.assertEqual(state['version'], pin['version'])
+        self.assertEqual(state['upstream_version'], '0.13.1')
+        self.assertEqual(state['upstream_source_archive_sha256'], 'f' * 64)
+        self.assertEqual(state['security_exception_id'], pin['security_exception_id'])
+        self.assertEqual(result['quickstart'], state)
+
+    def test_reviewed_quickstart_archive_is_used_without_a_rewrite(self):
+        pin = components.reviewed_quickstart_archive((0, 13, 1))
+        recipe = quickstart_upload(pin['version'], pin['source_archive_sha256'])
+        root, output, _ = self.run_prepare(recipe)
+        prepared = (root / 'feeds/custom_feed/quickstart/Makefile').read_text()
+        self.assertIn('PKG_VERSION:=' + pin['version'] + '\n', prepared)
+        self.assertEqual(json.loads(output.read_text())['quickstart']['status'], 'upstream-reviewed')
+
+    def test_quickstart_lock_below_every_reviewed_archive_is_refused(self):
+        with self.assertRaisesRegex(ValueError, 'no reviewed QuickStart'):
+            self.run_prepare(quickstart_upload('0.12.2'))
+
+    def test_quickstart_pin_requires_the_exact_prebuilt_filename_and_origin(self):
+        for recipe in (quickstart_upload('0.13.1', source='$(PKG_NAME)-$(PKG_VERSION).tar.gz'),
+                       quickstart_upload('0.13.1', origin='https://example.com/prebuilt/')):
+            with self.subTest(recipe=recipe):
+                with self.assertRaises(ValueError):
+                    self.run_prepare(recipe)
+
+    def test_a_reviewed_patched_archive_needs_no_legacy_exception(self):
+        policy = json.loads(components.SECURITY_POLICY.read_text())
+        policy['reviewed_prebuilt_archives'].append({
+            'version': '0.14.0',
+            'source_archive_url': components.QUICKSTART_PREBUILT_ORIGIN + 'quickstart-binary-0.14.0.tar.gz',
+            'source_archive_sha256': 'a' * 64,
+            'security_exception_id': None,
+            'reason': 'patched upstream rebuild reviewed'})
+        with tempfile.TemporaryDirectory() as name:
+            path = Path(name) / 'go-x509.json'
+            path.write_text(json.dumps(policy))
+            with patch.object(components, 'SECURITY_POLICY', path):
+                rows = components.quickstart_reviewed_archives()
+                self.assertEqual([row['version'] for row in rows], ['0.13.0', '0.14.0'])
+                self.assertEqual(components.reviewed_quickstart_archive((0, 14, 0))['version'], '0.14.0')
+
+    def test_reviewed_quickstart_archive_without_an_exact_exception_is_rejected(self):
+        policy = json.loads(components.SECURITY_POLICY.read_text())
+        policy['reviewed_prebuilt_archives'][0]['source_archive_sha256'] = 'f' * 64
+        with tempfile.TemporaryDirectory() as name:
+            path = Path(name) / 'go-x509.json'
+            path.write_text(json.dumps(policy))
+            with patch.object(components, 'SECURITY_POLICY', path), \
+                    self.assertRaisesRegex(ValueError, 'exact security exception'):
+                components.quickstart_reviewed_archives()
+
     def test_ca_archive_falls_back_when_debian_supersedes_the_pinned_upload(self):
         calls = []
         def download(url, limit=None):

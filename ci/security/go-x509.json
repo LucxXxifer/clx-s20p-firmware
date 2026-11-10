@@ -15,6 +15,15 @@
       "reason": "Retain the existing dashboard prebuilt; it remains unpatched for GO-2026-6809. No reviewed rebuilt upstream binary is available."
     }
   ],
+  "reviewed_prebuilt_archives": [
+    {
+      "version": "0.13.0",
+      "source_archive_url": "https://github.com/linkease/istore-packages/releases/download/prebuilt/quickstart-binary-0.13.0.tar.gz",
+      "source_archive_sha256": "40eeaba1fbb4cfb732cb5c4759103d9307cb46b83f98b4514934d3e13e8c945b",
+      "security_exception_id": "quickstart-0.13.0-arm64-go1.25.0",
+      "reason": "Upstream quickstart-binary-0.13.1 (2026-11-03) still embeds go1.25.0 and leaves CVE-2026-111943 unpatched. The daemon is held at the reviewed 0.13.0 archive instead of accepting an unreviewed binary bump. Add a new entry only after reviewing the exact bytes of a patched prebuilt."
+    }
+  ],
   "feed_repository": "https://github.com/immortalwrt/packages",
   "feed_commit": "d200499b31751dc5c72905f37a747712f009f155",
   "upstream_repository": "https://github.com/openwrt/packages",

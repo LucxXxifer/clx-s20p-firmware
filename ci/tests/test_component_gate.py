@@ -34,9 +34,13 @@ class ComponentGateTests(unittest.TestCase):
         value['adguard'] = None
         value['fingerprint'] = components.fingerprint(value)
         ca = {'version': '20260816-r2'}
+        pin = components.quickstart_pin(value)
         packages = {name: {'version': ca['version']} for name in ('ca-bundle', 'ca-certificates')}
+        packages['quickstart'] = {'version': pin['version'] + '-r1'}
         report = {'schema_version': 1, 'status': 'pass', 'rootfs_sha256': 'a' * 64,
-                  'component_fingerprint': value['fingerprint'], 'ca': ca, 'adguard': {'included': False},
+                  'component_fingerprint': value['fingerprint'], 'ca': ca,
+                  'quickstart': {'version': pin['version'], 'status': 'reviewed'},
+                  'adguard': {'included': False},
                   'plugin_sources': component_gate.plugin_sources.identity(value['plugin_sources'])}
         with patch('component_gate.reproduce_preparation', return_value=(value, [], ca)):
             component_gate.verify_release(None, report, 'a' * 64, packages)
@@ -47,6 +51,40 @@ class ComponentGateTests(unittest.TestCase):
             packages['adguardhome'] = {'version': '0.107.79-r1'}
             with self.assertRaisesRegex(ValueError, 'excluded AdGuard'):
                 component_gate.verify_release(None, report, 'a' * 64, packages)
+
+    def test_image_quickstart_must_be_the_reviewed_archive(self):
+        value = inputs()
+        pin = components.quickstart_pin(value)
+        packages = {'quickstart': {'version': pin['version'] + '-r1'}}
+        self.assertEqual(component_gate.verify_quickstart_package(packages, value),
+                         {'version': pin['version'], 'status': 'reviewed'})
+        # The unreviewed upstream bump must not reach the image even if the
+        # resolver was pointed at newer bytes.
+        packages['quickstart']['version'] = '0.13.1-r1'
+        with self.assertRaisesRegex(ValueError, 'QuickStart image version'):
+            component_gate.verify_quickstart_package(packages, value)
+        with self.assertRaisesRegex(ValueError, 'QuickStart image version'):
+            component_gate.verify_quickstart_package({}, value)
+
+    def test_preparation_quickstart_pin_must_match_the_policy(self):
+        value = inputs()
+        pin = components.quickstart_pin(value)
+        state = {'status': 'reviewed-holdback', 'version': pin['version'],
+                 'source_archive_url': pin['source_archive_url'],
+                 'source_archive_sha256': pin['source_archive_sha256'],
+                 'security_exception_id': pin['security_exception_id'],
+                 'upstream_version': '0.13.1',
+                 'upstream_source_archive_sha256': 'f' * 64}
+        self.assertEqual(component_gate.verify_quickstart_evidence(value, state), pin)
+        for mutate in (lambda s: s.update(version='0.13.1'),
+                       lambda s: s.update(source_archive_sha256='f' * 64),
+                       lambda s: s.update(security_exception_id='other'),
+                       lambda s: s.update(status='upstream-reviewed'),
+                       lambda s: s.pop('upstream_version')):
+            forged = copy.deepcopy(state)
+            mutate(forged)
+            with self.assertRaises(ValueError):
+                component_gate.verify_quickstart_evidence(value, forged)
 
     def fixture(self, root):
         value = inputs()

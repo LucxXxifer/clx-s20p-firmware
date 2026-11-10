@@ -535,12 +535,18 @@ def checksum_lines(directory, exclude=()):
     return "\n".join(rows) + "\n"
 
 
+def quickstart_archive_version(exception):
+    match = re.search(r"quickstart-binary-(\d+\.\d+\.\d+)\.tar\.gz$", str(exception.get("source_archive_url", "")))
+    return match[1] if match else "unreviewed"
+
+
 def security_exception_notice(security):
     return "\n\n".join(
         "QuickStart remains unpatched for GO-2026-6809 (CVE-2026-111943). "
-        f"The retained official 0.13.0 prebuilt at `{row['path']}` embeds `{row['go_version']}` "
+        f"The retained official {quickstart_archive_version(row)} prebuilt at `{row['path']}` embeds `{row['go_version']}` "
         f"and has SHA256 `{row['sha256']}`. It is the sole exact-byte legacy exception; "
         "other image Go executables must pass the patched-version and linked-x509 checks. "
+        "The daily resolver holds QuickStart at this reviewed archive instead of adopting an unreviewed upstream bump. "
         "The CA trust-store update only protects TLS calls that use that store and does not patch this binary. "
         f"Official source archive: {row['source_archive_url']} (SHA256 `{row['source_archive_sha256']}`). "
         "This candidate is not fully patched for this advisory."

@@ -99,15 +99,48 @@ def bound_sources(directory):
     return value, prepared
 
 
+QUICKSTART_STATE = {"status", "version", "source_archive_url", "source_archive_sha256",
+                    "security_exception_id", "upstream_version", "upstream_source_archive_sha256"}
+
+
+def verify_quickstart_evidence(value, state):
+    """The prepared QuickStart pin must equal the reviewed archive policy."""
+    pin = components.quickstart_pin(value)
+    if (not isinstance(state, dict) or set(state) != QUICKSTART_STATE
+            or state.get("status") not in ("upstream-reviewed", "reviewed-holdback")
+            or state.get("version") != pin["version"]
+            or state.get("source_archive_url") != pin["source_archive_url"]
+            or state.get("source_archive_sha256") != pin["source_archive_sha256"]
+            or state.get("security_exception_id") != pin["security_exception_id"]
+            or state.get("upstream_version") is None
+            or not components.SHA.fullmatch(str(state.get("upstream_source_archive_sha256")))):
+        raise ValueError("QuickStart preparation pin differs from the reviewed archive policy")
+    if state["status"] == "upstream-reviewed" and (
+            state["upstream_version"] != pin["version"]
+            or state["upstream_source_archive_sha256"] != pin["source_archive_sha256"]):
+        raise ValueError("QuickStart preparation claims an unreviewed upstream archive")
+    return pin
+
+
+def verify_quickstart_package(packages, value):
+    """The installed daemon must be the reviewed archive, even after a holdback."""
+    pin = components.quickstart_pin(value)
+    version = (packages.get("quickstart") or {}).get("version")
+    if not re.fullmatch(re.escape(pin["version"]) + r"-r\d+", str(version)):
+        raise ValueError("QuickStart image version differs from the reviewed pin")
+    return {"version": pin["version"], "status": "reviewed"}
+
+
 def reproduce_preparation(directory):
     directory = Path(directory)
     value, prepared = bound_sources(directory)
     evidence = read(directory / "component-preparation.json")
     if (set(evidence) != {"schema_version", "status", "component_fingerprint", "ca", "ca_source_files",
-                         "ca_archive_base64", "adguard_version"} or evidence["schema_version"] != 1 or
+                         "ca_archive_base64", "quickstart", "adguard_version"} or evidence["schema_version"] != 1 or
             evidence["status"] != "pass" or evidence["component_fingerprint"] != value["fingerprint"] or
             evidence["adguard_version"] != (value["adguard"]["version"] if value["adguard"] else None)):
         raise ValueError("component preparation schema/identity mismatch")
+    verify_quickstart_evidence(value, evidence["quickstart"])
     with tempfile.TemporaryDirectory() as name:
         package = Path(name)
         # Reuse the input validator for path, SHA256 and Git-blob checks.
@@ -157,10 +190,11 @@ def verify_adguard(root, packages, selected):
 def inspect(root, provenance_dir, payload, packages):
     value, prepared, ca = reproduce_preparation(provenance_dir)
     ca_security.verify_image(root, ca, packages, prepared)
+    quickstart = verify_quickstart_package(packages, value)
     adguard = verify_adguard(root, packages, value["adguard"]["version"] if value["adguard"] else None)
     return {"schema_version": 1, "status": "pass", "rootfs_sha256": components.digest(regular(payload)),
-            "component_fingerprint": value["fingerprint"], "ca": ca, "adguard": adguard,
-            "plugin_sources": plugin_sources.identity(value["plugin_sources"])}
+            "component_fingerprint": value["fingerprint"], "ca": ca, "quickstart": quickstart,
+            "adguard": adguard, "plugin_sources": plugin_sources.identity(value["plugin_sources"])}
 
 
 def verify_release(directory, report, payload_sha256, packages):
@@ -168,6 +202,7 @@ def verify_release(directory, report, payload_sha256, packages):
     if (report.get("schema_version") != 1 or report.get("status") != "pass" or
             report.get("rootfs_sha256") != payload_sha256 or report.get("ca") != ca or
             report.get("component_fingerprint") != value["fingerprint"] or
+            report.get("quickstart") != verify_quickstart_package(packages, value) or
             report.get("plugin_sources") != plugin_sources.identity(value["plugin_sources"])):
         raise ValueError("component report differs from independent source reproduction")
     for name in ("ca-bundle", "ca-certificates"):

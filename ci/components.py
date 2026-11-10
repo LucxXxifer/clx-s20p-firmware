@@ -19,6 +19,9 @@ SHA = re.compile(r"[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 CA_REPOSITORY = "immortalwrt/immortalwrt"
 QUICKSTART_REPOSITORY = "kenzok8/small-package"
+QUICKSTART_PREBUILT_ORIGIN = "https://github.com/linkease/istore-packages/releases/download/prebuilt/"
+QUICKSTART_SOURCE_NAME = "$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz"
+SECURITY_POLICY = HERE / "security" / "go-x509.json"
 
 
 def digest(data):
@@ -88,6 +91,79 @@ def ca_version(data):
     if not re.fullmatch(r"\d{8}", date) or not release.isdigit():
         raise ValueError("unsupported CA recipe version")
     return int(date), int(release)
+
+
+def quickstart_reviewed_archives():
+    """Reviewed QuickStart prebuilt bytes; upstream bumps are not adopted implicitly.
+
+    The prebuilt daemon embeds its own Go toolchain, so a recipe version bump can
+    silently reintroduce an unpatched compiler. Only archives listed here, each
+    tied to an exact reviewed binary exception, may reach the image.
+    """
+    policy = json.loads(SECURITY_POLICY.read_text())
+    rows = policy.get("reviewed_prebuilt_archives")
+    exceptions = {row["id"]: row for row in policy.get("legacy_prebuilt_exceptions", [])}
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("reviewed QuickStart prebuilt archive list is required")
+    reviewed, seen = [], set()
+    for row in rows:
+        if (not isinstance(row, dict) or set(row) != {"version", "source_archive_url",
+                                                     "source_archive_sha256", "security_exception_id", "reason"}):
+            raise ValueError("invalid reviewed QuickStart prebuilt entry")
+        release = version(row["version"])
+        url = QUICKSTART_PREBUILT_ORIGIN + "quickstart-binary-" + row["version"] + ".tar.gz"
+        exception = exceptions.get(row["security_exception_id"])
+        if row["source_archive_url"] != url or not SHA.fullmatch(row["source_archive_sha256"]) \
+                or not isinstance(row["reason"], str) or not row["reason"].strip():
+            raise ValueError("reviewed QuickStart prebuilt entry lacks an exact security exception")
+        # A patched archive needs no exception: the image gate still verifies the
+        # bytes. An unpatched one may only be pinned through an exact exception.
+        if row["security_exception_id"] is not None and (
+                not isinstance(exception, dict) or exception.get("source_archive_url") != url
+                or exception.get("source_archive_sha256") != row["source_archive_sha256"]):
+            raise ValueError("reviewed QuickStart prebuilt entry lacks an exact security exception")
+        if release in seen:
+            raise ValueError("duplicate reviewed QuickStart prebuilt version")
+        seen.add(release)
+        reviewed.append(row)
+    return sorted(reviewed, key=lambda item: version(item["version"]))
+
+
+def reviewed_quickstart_archive(locked_version):
+    """Newest reviewed archive that is not newer than the locked upstream recipe."""
+    eligible = [row for row in quickstart_reviewed_archives()
+                if version(row["version"]) <= locked_version]
+    if not eligible:
+        raise ValueError("no reviewed QuickStart prebuilt covers the locked upstream version")
+    return eligible[-1]
+
+
+def quickstart_pin(value):
+    """Expected reviewed archive for a resolved component set."""
+    candidate = file_bytes(value["quickstart"]["files"], "Makefile").decode()
+    return reviewed_quickstart_archive(version(field(candidate, "PKG_VERSION")))
+
+
+def pin_quickstart_recipe(data, selected):
+    """Bind the prepared recipe to reviewed bytes instead of every upstream bump."""
+    if field(data, "PKG_SOURCE") != QUICKSTART_SOURCE_NAME:
+        raise ValueError("QuickStart prebuilt filename layout changed; review the pin")
+    if field(data, "PKG_SOURCE_URL") != QUICKSTART_PREBUILT_ORIGIN:
+        raise ValueError("QuickStart must use the official prebuilt origin")
+    locked_version = field(data, "PKG_VERSION")
+    locked_hash = field(data, "PKG_HASH")
+    status = "upstream-reviewed"
+    if (locked_version, locked_hash) != (selected["version"], selected["source_archive_sha256"]):
+        status = "reviewed-holdback"
+        for name, target in (("PKG_VERSION", selected["version"]),
+                             ("PKG_HASH", selected["source_archive_sha256"])):
+            data = replace_field(data, name, target)
+    return data, {"status": status, "version": selected["version"],
+                  "source_archive_url": selected["source_archive_url"],
+                  "source_archive_sha256": selected["source_archive_sha256"],
+                  "security_exception_id": selected["security_exception_id"],
+                  "upstream_version": locked_version,
+                  "upstream_source_archive_sha256": locked_hash}
 
 
 def package_files(repo, commit, path):
@@ -169,8 +245,10 @@ def validate(value):
             raise ValueError("component source archive SHA256 required")
         if key == "quickstart":
             version(field(recipe, "PKG_VERSION"))
-            if field(recipe, "PKG_SOURCE_URL") != "https://github.com/linkease/istore-packages/releases/download/prebuilt/":
+            if field(recipe, "PKG_SOURCE_URL") != QUICKSTART_PREBUILT_ORIGIN:
                 raise ValueError("QuickStart must use the official prebuilt origin")
+            if field(recipe, "PKG_SOURCE") != QUICKSTART_SOURCE_NAME:
+                raise ValueError("QuickStart prebuilt filename layout changed; review the pin")
     go = value["go"]
     if not isinstance(go, list) or len(go) != len(GO_FLOORS):
         raise ValueError("required Go release series missing")
@@ -317,10 +395,17 @@ def prepare(root, inputs, output, fixed_manifest=None):
     quick = root / "feeds/custom_feed/quickstart"
     before = (quick / "Makefile").read_text()
     candidate = file_bytes(value["quickstart"]["files"], "Makefile").decode()
-    if version(field(before, "PKG_VERSION")) <= version(field(candidate, "PKG_VERSION")):
+    locked_version = version(field(candidate, "PKG_VERSION"))
+    if version(field(before, "PKG_VERSION")) > locked_version:
+        raise ValueError("prepared QuickStart is newer than the locked upstream recipe")
+    # The prebuilt daemon carries its own Go toolchain, so an unreviewed upstream
+    # bump is held back to the newest reviewed archive rather than built as-is.
+    selected = reviewed_quickstart_archive(locked_version)
+    if version(field(before, "PKG_VERSION")) <= locked_version:
         write_package(quick, value["quickstart"]["files"])
     recipe_path = quick / "Makefile"
-    recipe_path.write_text(quickstart_recipe(recipe_path.read_text()))
+    pinned, quickstart_state = pin_quickstart_recipe(recipe_path.read_text(), selected)
+    recipe_path.write_text(quickstart_recipe(pinned))
     selected_adguard = value["adguard"]
     if selected_adguard is not None:
         adg = root / "feeds/custom_feed/adguardhome"
@@ -368,10 +453,12 @@ def prepare(root, inputs, output, fixed_manifest=None):
                                  "component_fingerprint": value["fingerprint"],
                                  "ca": ca_report, "ca_source_files": snapshot_package(ca),
                                  "ca_archive_base64": base64.b64encode(ca_archive).decode(),
+                                 "quickstart": quickstart_state,
                                  "adguard_version": selected_adguard["version"] if selected_adguard else None},
                                 indent=2, sort_keys=True) + "\n")
     return {"status": "pass", "fingerprint": value["fingerprint"],
-            "ca_version": ca_report["version"], "adguard_version": selected_adguard["version"] if selected_adguard else None}
+            "ca_version": ca_report["version"], "quickstart": quickstart_state,
+            "adguard_version": selected_adguard["version"] if selected_adguard else None}
 
 
 def main():

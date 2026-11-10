@@ -1,13 +1,13 @@
 # CLX-S20P 主線韌體每日編譯
 
-> **目前狀態：每日排程暫停中（2026-11-10 起），等待上游修正 QuickStart 預編譯後端。**
+> **目前狀態：改為「回釘已審版本」策略並恢復每日編譯（2026-11-10）。**
 >
-> - **原因**：上游 `quickstart-binary-0.13.1.tar.gz`（`f84ce3bf…`，2026-11-03 發布）內含的後端 ELF 仍以 **Go 1.25.0** 建置，低於 CVE-2026-111943（GO-2026-6809）在 **1.26.10／1.27.3** 的修正線。`go_security` 門禁在 run `42616271150` 正確攔下：`Go security gate: unpatched or unreviewed Go version: go1.25.0`。這是真陽性判定，不是 CI 缺陷。
-> - **已提出上游問題**：[istoreos/quickstart#16](https://github.com/istoreos/quickstart/issues/16)，請求以 Go ≥1.26.10（或 ≥1.27.3）重建並重新發布 prebuilt。
-> - **暫停方式**：以 `gh workflow disable s20p-daily.yml` 停用 workflow，未刪除檔案、未修改 cron、未放寬任何校驗；`ci/security/go-x509.json` 的 0.13.0 精確例外維持原樣，**不得**為此擴張到不同 bytes 的未修補版本。
-> - **暫停時狀態**：`main` 停在 `0e857b9`，最後一次 run 為 `42616271150`（failure，僅 gate step 失敗，映像本體已產出）。
-> - **恢復步驟**：上游發布修補版 prebuilt 後 → 更新 `quickstart` recipe 的 `PKG_VERSION`／`PKG_HASH` → `gh workflow enable s20p-daily.yml` → `gh workflow run s20p-daily.yml --ref main` 驗證，通過後排程自動恢復每日執行。
-> - 停用期間手動觸發同樣不可用（workflow 為 inactive）；需要臨時建置請先 `gh workflow enable`。
+> - **背景**：上游 `quickstart-binary-0.13.1.tar.gz`（`f84ce3bf…`，2026-11-03 發布）內含的後端 ELF 仍以 **Go 1.25.0** 建置，低於 CVE-2026-111943（GO-2026-6809）在 **1.26.10／1.27.3** 的修正線。`go_security` 門禁在 run `42616271150` 正確攔下：`Go security gate: unpatched or unreviewed Go version: go1.25.0`。這是真陽性判定，不是 CI 缺陷。
+> - **新策略（回釘 hold-back）**：每日 resolver 不再自動接受上游任何 QuickStart 二進位 bump。`ci/security/go-x509.json` 新增 `reviewed_prebuilt_archives`；`ci/components.py` 只使用清單內已審核的確切封存，上游升到未審版本時自動回釘到「不新於鎖定版本的最新已審封存」（目前 `0.13.0`／`40eeaba1…`），並在 `component-preparation.json` 與發布說明標明 `reviewed-holdback` 與上游版本。離線預編譯 daemon 自帶 Go 工具鏈，版本號無法證明其編譯器，因此只能以精確位元組審核，不能靠版本字串放行。
+> - **未放寬任何校驗**：例外仍只覆蓋 0.13.0 的精確 binary（`64d4fc08…`）；`PKG_HASH`、官方來源 origin、Go 版本門檻、x509 SPKI 常數、pin／merge-base 比對全部不變。影像門禁另新增一道檢查：`quickstart` 套件版本必須等於已審 pin，否則 `component_gate` 失敗。
+> - **恢復上游版本的方式**（無需改程式）：上游以 Go ≥1.26.10 重建 prebuilt 後，把新封存加進 `reviewed_prebuilt_archives`（`security_exception_id` 填 `null` 表示已修補、不需例外）→ 下次解析自動採用新版本。清單每筆都必須與 `source_archive_url` 的檔名、SHA256 完全對應，且未修補者必須指向既有的精確例外。
+> - **上游問題**：[istoreos/quickstart#16](https://github.com/istoreos/quickstart/issues/16)，請求以 Go ≥1.26.10（或 ≥1.27.3）重建並重新發布 prebuilt。這條回釘是上游修好前的可控狀態，不是放行未修補二進位。
+> - **歷史**：暫停期間（2026-11-10 07:50 起）曾以 `gh workflow disable` 停用排程；本次改動後重新啟用。停用與回釘都沒有刪除校驗步驟、跳過測試或使用 `continue-on-error`。
 
 目前正式下載入口為[CLX-S20P 主線韌體 2026-10-31 固定來源正式版](https://github.com/LucxXxifer/clx-s20p-firmware/releases/tag/s20p-a-25.12-fixed-candidate-41083116478-1-9f397975)（run `41083116478`）。維護者已將此 release 正式發布並設為 Latest；原始 tag、映像內容與同批封存保持不變，`live_acceptance=not-run`、`stable_eligible=false` 及 QuickStart 未修補例外仍如實保留。正式發布不等於實機／長期穩定性驗收；三個保留版本見[首頁](README.md#韌體下載)。本文件以下說明自動編譯政策，並不自動把新候選提升為正式版。
 
@@ -19,7 +19,7 @@
 
 2026-10-30 每日建置政策：系統和全部已選第三方插件一併追蹤，移除 Honk／TingReader，暫不預裝 AdGuard Home，加入控制面板修復。CA 下限為 `20260816-r2`，Go 下限為 1.26.10／1.27.3；採用相容上游與官方穩定版本中較新的版本，不為復刻而降版。實際 image ELF 仍檢查 Go build info／x509 拒絕清單。
 
-保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。每日會追蹤 QuickStart 更新，新版修補後可通過；不同 bytes 的未修補新版會阻擋發佈，不會擴張舊例外。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。
+保留的官方 QuickStart 0.13.0 預編譯後端仍是 Go 1.25.0，尚未包含此次修補；僅對已核對的精確 binary 設立可稽核例外，候選報告標為 `pass_with_known_exception`。上游版本仍由每日 resolver 追蹤並記錄，但只有列入 `reviewed_prebuilt_archives` 的封存能進入映像：未審的新版會被回釘而不是直接採用，已審的修補版才會放行。這不是全機修補完成；既有例外與限制見 [SECURITY-BUILD.md](docs/SECURITY-BUILD.md)。
 
 2026-10-31 官方來源複核更正了「未找到可公開重編 QuickStart 後端」的舊結論：已確認 iStoreOS 官方 MIT source，且 ARM64 靜態交叉編譯通過 Go 1.26.10 與 x509 檢查；尚未整合現有 LuCI／dashboard/API、build gates 或實機驗收，該 source 也未納入每日 resolver。較新的 app-hub 測試預編譯仍不符合 Go／SPKI 門檻。這項研究不改變目前固定映像的精確例外與建置門檻，詳見 [2026-10-31 研究更正](docs/SECURITY-BUILD.md#2026-10-31-官方來源複核與更正)。
 

@@ -23,7 +23,10 @@ def inputs():
              "comparison": {"base_commit": row["commit"], "merge_base": row["commit"], "compare_status": "identical"},
              "previous_comparison": None} for row in plugin_sources.selected(lock)]
     ca = b"PKG_VERSION:=20260816\nPKG_RELEASE:=2\nPKG_HASH:=" + b"a" * 64 + b"\n"
-    quick = b"PKG_VERSION:=0.13.0\nPKG_HASH:=" + b"b" * 64 + b"\nPKG_SOURCE_URL:=https://github.com/linkease/istore-packages/releases/download/prebuilt/\n"
+    quick = (b"PKG_NAME:=quickstart\nPKG_VERSION:=0.13.1\nPKG_RELEASE:=1\n"
+             b"PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz\n"
+             b"PKG_SOURCE_URL:=https://github.com/linkease/istore-packages/releases/download/prebuilt/\n"
+             b"PKG_HASH:=" + b"b" * 64 + b"\n")
     value = {"schema_version": 1, "plugin_sources": rows,
              "ca": {"repository": components.CA_REPOSITORY, "commit": "a" * 40,
                     "path": "package/system/ca-certificates", "files": files(ca)},

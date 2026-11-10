@@ -1129,6 +1129,7 @@ class Gate:
             "recipe_count": index["recipe_count"],
             "skipped_recipes": index["skipped_recipes"],
             "declared_packages": len(index["packages"]),
+            "resolved_duplicates": index.get("resolved_duplicates", []),
             "conflicts": index["conflicts"]})
 
     def attribute(self, category, subject, expected, actual, evidence, reason):

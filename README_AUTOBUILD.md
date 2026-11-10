@@ -114,6 +114,8 @@ rolling 每日追上游 head，而 `ci/baseline` 固定不動，因此 `axonhub`
 - `file_sha256`：該檔案 owned package 的 recipe 宣告了完全相同的下載 `HASH`（等同證明位元組是上游下載檔，即使是 critical 路徑）；
 - `package_dependencies`／`added_file`：屬於「版本剛好等於 recipe 宣告值」的套件，且該 recipe 目錄下沒有本地 `patches/`（有補丁則不歸因，仍需人工複核）。
 
+同一套件名可能同時存在於兩份 recipe（例如 `feeds/packages/net/miniupnpd` 是 2.3.9，`custom_feed/miniupnpd` 是日期版 20261110）。這類重複不再一律判為 conflict：`feeds install` 只會把其中一份連結成 `package/feeds/<feed>/<dir>`，被連結的那份才是實際編進映像的來源，索引因此改以 manifest 記錄的連結集判定——恰好一個候選被連結時採用它，並在證據裡記下被遮蔽的 recipe（`shadowed_recipes`，同時列入 `resolved_duplicates`）；零個或多個候選被連結時仍判為 conflict，差異留在待審佇列，不猜測贏家。
+
 不在歸因範圍、一律仍需逐項審查：新增／移除套件、`/etc/apk/world` 根集合、檔案 mode/owner、上游**原地改檔但未升版**（例如只改 lua 不 bump `PKG_VERSION`）、以及任何本地補丁過的 recipe。索引缺漏、schema 不符或無法解析時門禁直接失敗（exit 1），不會靜默退回「全部批准」。下載 `PKG_HASH`、簽章、Go/x509 門檻與 source pin 比對全部照舊，未新增任何跳過或 `continue-on-error`。
 
 

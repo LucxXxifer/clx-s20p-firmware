@@ -164,6 +164,86 @@ class IndexTests(unittest.TestCase):
         self.assertEqual(rotation.attest_version(index, "axonhub", "20261110-r1")["declared_version"],
                          "20261110-r1")
 
+    def link(self, relative, target):
+        return {"path": relative, "mode": "0o777", "target": target}
+
+    def test_installed_link_selects_the_compiled_duplicate(self):
+        """Only the copy feeds install linked is built, so it is the answer."""
+        entries = []
+        for relative, text in (("custom_feed/axonhub/Makefile", AXONHUB),
+                               ("feeds/other/axonhub/Makefile",
+                                AXONHUB.replace("PKG_VERSION:=20261110",
+                                                "PKG_VERSION:=20261111"))):
+            path = self.write(relative, text)
+            entries.append(self.entry(path, relative))
+        entries.append(self.link("feeds/custom_feed", str(self.tree / "custom_feed")))
+        entries.append(self.link("package/feeds/custom_feed/axonhub",
+                                 "../../../feeds/custom_feed/axonhub"))
+        index = rotation.build_index(self.manifest(entries), self.tree)
+        self.assertEqual(index["conflicts"], [])
+        self.assertEqual(index["packages"]["axonhub"]["recipe"], "custom_feed/axonhub/Makefile")
+        self.assertEqual(index["packages"]["axonhub"]["version"], "20261110-r1")
+        self.assertEqual(index["packages"]["axonhub"]["shadowed_recipes"],
+                         ["feeds/other/axonhub/Makefile"])
+        self.assertEqual(index["resolved_duplicates"],
+                         [{"package": "axonhub", "recipe": "custom_feed/axonhub/Makefile",
+                           "shadowed_recipes": ["feeds/other/axonhub/Makefile"]}])
+        evidence = rotation.attest_version(index, "axonhub", "20261110-r1")
+        self.assertEqual(evidence["shadowed_recipes"], ["feeds/other/axonhub/Makefile"])
+
+    def test_two_installed_links_remain_a_conflict(self):
+        """Both copies linked means the winner cannot be told apart by layout."""
+        entries = []
+        for relative, text in (("custom_feed/axonhub/Makefile", AXONHUB),
+                               ("feeds/other/axonhub/Makefile",
+                                AXONHUB.replace("PKG_VERSION:=20261110",
+                                                "PKG_VERSION:=20261111"))):
+            path = self.write(relative, text)
+            entries.append(self.entry(path, relative))
+        entries.append(self.link("package/feeds/custom_feed/axonhub",
+                                 "../../../custom_feed/axonhub"))
+        entries.append(self.link("package/feeds/other/axonhub", "../../../feeds/other/axonhub"))
+        index = rotation.build_index(self.manifest(entries), self.tree)
+        self.assertEqual(index["packages"], {})
+        self.assertEqual(index["conflicts"], ["axonhub"])
+        self.assertEqual(index["resolved_duplicates"], [])
+
+    def test_no_links_means_no_duplicate_resolution(self):
+        """Without the install links nothing may be resolved away."""
+        index = self.build(("custom_feed/axonhub/Makefile", AXONHUB),
+                           ("feeds/other/axonhub/Makefile",
+                            AXONHUB.replace("PKG_VERSION:=20261110", "PKG_VERSION:=20261111")))
+        self.assertEqual(index["conflicts"], ["axonhub"])
+        self.assertEqual(index["resolved_duplicates"], [])
+
+    def test_base_tree_recipe_survives_a_shadowed_feed_recipe(self):
+        """package/ is scanned directly, so it needs no install link."""
+        entries = []
+        for relative, text in (("package/base-files/Makefile",
+                                "PKG_NAME:=base-files\nPKG_VERSION:=1\n"
+                                "define Package/conffiles\n  VERSION:=$(PKG_VERSION)-r1\nendef\n"),
+                               ("custom_feed/base-files/Makefile",
+                                "PKG_NAME:=base-files\nPKG_VERSION:=9\n"
+                                "define Package/conffiles\n  VERSION:=$(PKG_VERSION)-r1\nendef\n")):
+            path = self.write(relative, text)
+            entries.append(self.entry(path, relative))
+        entries.append(self.link("package/feeds/custom_feed/base-files",
+                                 "../../../custom_feed/base-files"))
+        index = rotation.build_index(self.manifest(entries), self.tree)
+        self.assertEqual(index["conflicts"], ["conffiles"])
+        entries = entries[:2]
+        index = rotation.build_index(self.manifest(entries), self.tree)
+        self.assertEqual(index["conflicts"], [])
+        self.assertEqual(index["packages"]["conffiles"]["recipe"], "package/base-files/Makefile")
+
+    def test_load_rejects_malformed_shadowed_paths(self):
+        index = self.build(("custom_feed/axonhub/Makefile", AXONHUB))
+        index["packages"]["axonhub"]["shadowed_recipes"] = "feeds/other/Makefile"
+        path = self.root / "index.json"
+        path.write_text(json.dumps(index))
+        with self.assertRaises(rotation.RotationError):
+            rotation.load(path)
+
     def test_local_patch_directory_is_recorded(self):
         self.write("custom_feed/axonhub/patches/100-fix.patch", "diff\n")
         index = self.build(("custom_feed/axonhub/Makefile", AXONHUB))

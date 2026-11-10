@@ -19,6 +19,12 @@ Nothing is relaxed.  Download hashes, signatures, Go/x509 floors, source pins an
 per-file checks all still run; the index only answers "did this difference come
 from the recipe the reviewed sources declare, or from something else?".
 
+Two feeds may ship the same package name.  ``feeds install`` links only one copy
+into ``package/feeds``, and that linked directory is the one compiled, so the
+manifest's link set disambiguates such duplicates: exactly one linked candidate
+is attributed (the shadowed recipe is recorded in the evidence), while zero or
+several linked candidates stay a conflict and remain a review item.
+
 Examples:
   upstream_rotation.py index --prepared output/provenance/prepared-source-files.json \
       --tree action_build --output output/provenance/recipe-index.json
@@ -29,6 +35,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import posixpath
 import re
 import sys
 
@@ -120,13 +127,114 @@ def has_local_patches(tree, recipe_relative):
     return any(path.is_file() and not path.is_symlink() for path in directory.rglob("*"))
 
 
+def resolve_links(value, links, roots):
+    """Resolve a manifest path through the symlinks the manifest itself records.
+
+    ``feeds install`` links every installed feed package into the build tree as
+    ``package/feeds/<feed>/<dir>``; the link target is the directory that is
+    actually compiled.  Two feeds may ship the same package name, and only the
+    linked copy is built, so the link set is the authority on which recipe the
+    image came from.  Paths that escape the recorded roots are returned
+    unresolved instead of guessed.
+    """
+    value = posixpath.normpath(value)
+    for _ in range(16):
+        parts = value.split("/")
+        target = None
+        for index in range(len(parts), 0, -1):
+            prefix = "/".join(parts[:index])
+            if prefix in links:
+                target = (prefix, links[prefix])
+                break
+        if target is None:
+            break
+        prefix, destination = target
+        remainder = value[len(prefix):]
+        if destination.startswith("/"):
+            base = destination
+        else:
+            base = posixpath.normpath(posixpath.join(posixpath.dirname(prefix), destination))
+        value = posixpath.normpath(base + remainder)
+        for root in roots:
+            if value.startswith(root + "/"):
+                value = value[len(root) + 1:]
+                break
+    return value
+
+
+def link_resolver(manifest, tree):
+    """Return a normalizer that follows the symlinks the manifest records.
+
+    ``feeds install`` links every installed feed package into the build tree as
+    ``package/feeds/<feed>/<dir>``; the link target is the directory that is
+    actually compiled.  Two feeds may ship the same package name, and only the
+    linked copy is built, so the link set is the authority on which recipe the
+    image came from.
+    """
+    links = {}
+    for entry in manifest:
+        if not isinstance(entry, dict):
+            continue
+        path, target = entry.get("path"), entry.get("target")
+        if isinstance(path, str) and isinstance(target, str) and "sha256" not in entry:
+            if ".." not in Path(path).parts:
+                links[path] = target
+    roots = [posixpath.normpath(str(tree))]
+    try:
+        resolved = posixpath.normpath(str(Path(tree).resolve()))
+    except OSError:
+        resolved = roots[0]
+    if resolved not in roots:
+        roots.append(resolved)
+
+    def normalize(value):
+        return resolve_links(value, links, roots)
+
+    normalize.links = links
+    normalize.roots = roots
+    return normalize
+
+
+def installed_directories(normalize):
+    """Directories that ``feeds install`` linked into ``package/feeds``.
+
+    Only links are read: the build compiles what is linked, so a feed recipe
+    without a link was never part of the image.  The base tree below
+    ``package/`` is handled by the caller because it is scanned directly.
+    """
+    installed = set()
+    for path in normalize.links:
+        if not path.startswith("package/feeds/"):
+            continue
+        installed.add(normalize(path))
+    installed.discard("")
+    return installed
+
+
+def is_direct_source(recipe_relative, normalize, installed):
+    """Is this recipe the copy that the build actually compiles?
+
+    The base tree (``package/`` minus the installed-feed links below it) is
+    scanned directly, so it is always a source.  A feed recipe is a source only
+    when ``feeds install`` linked its directory into ``package/feeds``.
+    """
+    directory = posixpath.dirname(recipe_relative)
+    if directory.startswith("package/") and not directory.startswith("package/feeds/"):
+        return True
+    if not installed:
+        return False
+    return normalize(directory) in installed
+
+
 def build_index(manifest_path, tree):
     """Index recipes that the prepared-source manifest already vouches for."""
     manifest = json.loads(Path(manifest_path).read_text())
     if not isinstance(manifest, list):
         raise RotationError("prepared-source manifest must be a file list")
     tree = Path(tree)
-    packages, conflicts, skipped, recipes = {}, set(), 0, 0
+    normalize = link_resolver(manifest, tree)
+    installed = installed_directories(normalize)
+    packages, candidates, conflicts, skipped, recipes = {}, {}, set(), 0, 0
     for entry in manifest:
         if not isinstance(entry, dict):
             continue
@@ -153,19 +261,37 @@ def build_index(manifest_path, tree):
         variables = assignments(text)
         hashes = declared_hashes(text, variables)
         patched = has_local_patches(tree, relative)
+        source = is_direct_source(relative, normalize, installed)
         for package, version in package_versions(text, variables).items():
             if package in SKIP_PACKAGES:
                 continue
             record = {"version": version, "recipe": relative, "recipe_sha256": recorded,
-                      "hashes": hashes, "local_patches": patched}
-            previous = packages.get(package)
-            if previous is None:
-                packages[package] = record
-            elif previous["version"] != version or previous["hashes"] != hashes:
-                # Two recipes disagree: neither may be used for attribution.
-                conflicts.add(package)
+                      "hashes": hashes, "local_patches": patched, "installed": source}
+            candidates.setdefault(package, []).append(record)
+    for package, records in candidates.items():
+        first = records[0]
+        if all(item["version"] == first["version"] and item["hashes"] == first["hashes"]
+               for item in records):
+            packages[package] = first
+            continue
+        # Two feeds ship the same package name with different content.  Only a
+        # copy that ``feeds install`` linked is compiled, so exactly one linked
+        # source is a verified answer; zero or several stay a conflict.
+        linked = [item for item in records if item["installed"]]
+        if len(linked) != 1:
+            conflicts.add(package)
+            continue
+        chosen = dict(linked[0])
+        chosen["shadowed_recipes"] = sorted(item["recipe"] for item in records
+                                            if item is not linked[0])
+        packages[package] = chosen
+    for name, record in packages.items():
+        record.pop("installed", None)
     for package in conflicts:
         packages.pop(package, None)
+    resolved = [{"package": name, "recipe": record["recipe"],
+                 "shadowed_recipes": record["shadowed_recipes"]}
+                for name, record in sorted(packages.items()) if record.get("shadowed_recipes")]
     return {"schema_version": SCHEMA_VERSION,
             "scope": ("recipe-declared package versions and download hashes in the prepared tree; "
                       "each entry bound to prepared-source-files.json, no network access"),
@@ -173,6 +299,7 @@ def build_index(manifest_path, tree):
             "recipe_count": recipes,
             "skipped_recipes": skipped,
             "packages": packages,
+            "resolved_duplicates": resolved,
             "conflicts": sorted(conflicts)}
 
 
@@ -202,9 +329,16 @@ def load(path):
             raise RotationError("recipe record hashes must be SHA256 values: " + str(name))
         if not isinstance(record.get("local_patches"), bool):
             raise RotationError("recipe record requires the local-patch flag: " + str(name))
+        shadowed = record.get("shadowed_recipes", [])
+        if not isinstance(shadowed, list) or any(not isinstance(value, str) or not value
+                                                for value in shadowed):
+            raise RotationError("recipe record shadowed paths must be strings: " + str(name))
     conflicts = index.setdefault("conflicts", [])
     if not isinstance(conflicts, list) or any(not isinstance(value, str) for value in conflicts):
         raise RotationError("recipe index conflicts must be package names")
+    resolved = index.setdefault("resolved_duplicates", [])
+    if not isinstance(resolved, list) or any(not isinstance(value, dict) for value in resolved):
+        raise RotationError("recipe index resolved duplicates must be objects")
     for conflict in conflicts:
         packages.pop(conflict, None)
     index.setdefault("recipe_count", len(packages))
@@ -214,9 +348,12 @@ def load(path):
 
 def evidence(record):
     """Compact, auditable evidence copied into the gate report."""
-    return {"recipe": record["recipe"], "recipe_sha256": record["recipe_sha256"],
-            "declared_version": record["version"], "local_patches": record["local_patches"],
-            "declared_download_hashes": record["hashes"]}
+    value = {"recipe": record["recipe"], "recipe_sha256": record["recipe_sha256"],
+             "declared_version": record["version"], "local_patches": record["local_patches"],
+             "declared_download_hashes": record["hashes"]}
+    if record.get("shadowed_recipes"):
+        value["shadowed_recipes"] = record["shadowed_recipes"]
+    return value
 
 
 def attest_version(index, package, version):

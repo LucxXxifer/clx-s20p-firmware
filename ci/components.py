@@ -74,9 +74,28 @@ def api(path):
 
 def field(data, name):
     values = re.findall(r"^" + re.escape(name) + r":=([^\r\n]*)$", data, re.MULTILINE)
-    if len(values) != 1:
+    if len(values) == 1:
+        return values[0].strip()
+    if not values:
         raise ValueError("missing/ambiguous component recipe field: " + name)
-    return values[0].strip()
+    # Multiple assignments are still ambiguous, with one narrow exception:
+    # a trailing self-referential $(subst ...) re-assignment, e.g. upstream
+    # quickstart/Makefile (kenzok8/small-package f56c587):
+    #   PKG_VERSION:=0.17.1-rc20261028
+    #   PKG_VERSION:=$(subst -rc,_rc,$(PKG_VERSION))
+    # The first value stays the literal version; the later line only transforms
+    # it in place and introduces no new literal. Two distinct literals, or any
+    # other re-assignment, remain ambiguous. This does NOT relax the version
+    # policy: version() still rejects the rc value returned here.
+    first = values[0].strip()
+    if "$(" + name + ")" in first:
+        raise ValueError("missing/ambiguous component recipe field: " + name)
+    subst = re.compile(r"\$\(\s*subst\s+[^,()]+?\s*,\s*[^,()]+?\s*,\s*\$\(\s*"
+                       + re.escape(name) + r"\s*\)\s*\)")
+    for extra in values[1:]:
+        if not subst.fullmatch(extra.strip()):
+            raise ValueError("missing/ambiguous component recipe field: " + name)
+    return first
 
 
 def version(value):

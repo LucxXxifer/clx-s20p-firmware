@@ -144,6 +144,41 @@ class ComponentTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 components.quickstart_recipe(invalid)
 
+    def test_field_accepts_upstream_subst_reassignment_and_still_rejects_rc(self):
+        recipe = ("PKG_VERSION:=0.17.1-rc20261028\n"
+                  "PKG_VERSION:=$(subst -rc,_rc,$(PKG_VERSION))\n")
+        self.assertEqual(components.field(recipe, "PKG_VERSION"), "0.17.1-rc20261028")
+        with self.assertRaisesRegex(ValueError, "stable three-part"):
+            components.version(components.field(recipe, "PKG_VERSION"))
+
+    def test_field_still_rejects_two_literal_versions_and_other_reassignments(self):
+        for recipe in (
+            "PKG_VERSION:=0.13.0\nPKG_VERSION:=0.13.1\n",
+            "PKG_VERSION:=0.13.0\nPKG_VERSION:=0.14.0\n",
+            "PKG_VERSION:=0.13.0\nPKG_VERSION:=$(PKG_VERSION)-r1\n",
+            "PKG_VERSION:=$(subst -rc,_rc,$(PKG_VERSION))\nPKG_VERSION:=0.13.0\n",
+            "PKG_VERSION:=0.13.0\nPKG_VERSION:=$(OTHER)\n",
+        ):
+            with self.subTest(recipe=recipe), self.assertRaisesRegex(ValueError, "missing/ambiguous"):
+                components.field(recipe, "PKG_VERSION")
+
+    def test_upstream_subst_reassignment_reaches_rc_rejection_in_prepare(self):
+        recipe = quickstart_upload('0.17.1-rc20261028', 'f' * 64).decode()
+        recipe = recipe.replace("PKG_VERSION:=0.17.1-rc20261028\n",
+                                "PKG_VERSION:=0.17.1-rc20261028\n"
+                                "PKG_VERSION:=$(subst -rc,_rc,$(PKG_VERSION))\n", 1)
+        with self.assertRaisesRegex(ValueError, "stable three-part"):
+            self.run_prepare(recipe.encode())
+
+    def test_stable_version_with_subst_reassignment_still_prepares(self):
+        recipe = quickstart_upload('0.13.1', 'f' * 64).decode()
+        recipe = recipe.replace("PKG_VERSION:=0.13.1\n",
+                                "PKG_VERSION:=0.13.1\n"
+                                "PKG_VERSION:=$(subst -rc,_rc,$(PKG_VERSION))\n", 1)
+        _, _, result = self.run_prepare(recipe.encode())
+        self.assertEqual(result['quickstart']['status'], 'reviewed-holdback')
+        self.assertEqual(result['quickstart']['upstream_version'], '0.13.1')
+
     def test_omitted_adguard_does_not_resolve_or_download_a_release(self):
         value = inputs()
         releases = [{'stable': True, 'version': row['version'],
